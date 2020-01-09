@@ -18,11 +18,12 @@ import java.util.Map;
 public class CheckerPiece {
 
     protected Cylinder cylinder = null; // Cylinder shape
-    protected StackPane cylinderContainer = null; // Cylinder container
+    protected StackPane cylinderContainer = new StackPane(); // Cylinder container
     protected boolean isActive = false; // Is this piece added to board?
     protected boolean isKing = false; // Is this piece a king?
     protected Cylinder kingCylinder = null; // King cylinder shape
     protected PhongMaterial material = null; // Cylinder texture
+    protected Pane parent = null; // Parent containing cylinderContainer
     protected Point position = null; // Current position of piece
     protected double size; // Size of one field
     protected Team team; // Team of this piece
@@ -57,10 +58,6 @@ public class CheckerPiece {
 
     // Setup pane, shape and material
     protected void setupPiece() {
-        if(this.cylinderContainer == null) {
-            this.cylinderContainer = new StackPane();
-        }
-
         if(this.material == null) {
             this.setupMaterial();
         }
@@ -119,6 +116,7 @@ public class CheckerPiece {
 
         // Add to pane
         pane.getChildren().add(this.getPane());
+        this.parent = pane;
 
         // Justify activeCount if applicable
         if (!this.isActive) {
@@ -166,12 +164,8 @@ public class CheckerPiece {
 
     // Detach from current field and set activeCount accordingly
     public void detach(HashMap<Team, Integer> activeCount) {
-        Pane p = this.getPane();
-        Object parent = p.getParent();
-
-        if (parent instanceof StackPane) {
-            StackPane parentPane = (StackPane) parent;
-            parentPane.getChildren().remove(p);
+        if (this.parent != null) {
+            this.parent.getChildren().clear();
         }
 
         if (this.isActive) {
