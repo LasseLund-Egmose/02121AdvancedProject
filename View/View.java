@@ -53,31 +53,6 @@ public class View extends Application {
         launch(args);
     }
 
-    // Setup one black field
-    protected void setupField(int i, int j) {
-        StackPane field = new StackPane();
-        field.setStyle(View.BACKGROUND_FIELD);
-        field.setPrefSize(this.getSize(), this.getSize());
-
-        // Add it to the grid
-        this.grid.add(field, i, j);
-
-        // Bring field background to front
-        field.setTranslateZ(0.01);
-
-        // Add it to HashMap in controller
-        this.controller.addField(new Point(i + 1, j + 1), field);
-    }
-
-    // Setup black fields
-    protected void setupFields() {
-        for (int i = 0; i < this.dimension; i++) {
-            for (int j = i % 2; j < this.dimension; j += 2) {
-                this.setupField(i, j);
-            }
-        }
-    }
-
     // Setup GridPane on board surface
     protected void setupGrid() {
         this.grid = new GridPane();
@@ -194,6 +169,18 @@ public class View extends Application {
         this.displayTurn.setText(isWhiteTurn ? "White's turn" : "Black's turn");
     }
 
+    // Setup one black field
+    public void setupField(StackPane field, Point position) {
+        field.setStyle(View.BACKGROUND_FIELD);
+        field.setPrefSize(this.getSize(), this.getSize());
+
+        // Add it to the grid
+        this.grid.add(field, position.x - 1, position.y - 1);
+
+        // Bring field background to front
+        field.setTranslateZ(0.01);
+    }
+
     // Handle dimension argument and setup View.View elements
     public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
@@ -265,7 +252,7 @@ public class View extends Application {
         this.controller = new SimpDamController(this, this.dimension, this.grid);
 
         // Setup black fields (with click events) and game pieces
-        this.setupFields();
+        this.controller.setupFields();
         this.controller.setupPieces();
 
         // Setup scene (with depthBuffer to avoid z-fighting and unexpected behaviour) and apply it

@@ -141,6 +141,21 @@ abstract public class AbstractController {
         }
     }
 
+    // Setup one black field by position
+    public void setupField(Point p) {
+        StackPane field = new StackPane();
+
+        field.addEventFilter(MouseEvent.MOUSE_PRESSED, this.moveClickEventHandler);
+
+        if (!this.fields.containsKey(p.x)) {
+            this.fields.put(p.x, new HashMap<>());
+        }
+
+        this.fields.get(p.x).put(p.y, field);
+
+        this.view.setupField(field, p);
+    }
+
     // Create a piece by team and attach it to given position
     protected void setupPiece(Point position, Team team) {
         CheckerPiece piece = new CheckerPiece(this.view.getSize(), team);
@@ -190,17 +205,6 @@ abstract public class AbstractController {
         this.activeCount.put(Team.WHITE, 0);
     }
 
-    // Add click event to field and add field to HashMap
-    public void addField(Point p, StackPane pane) {
-        pane.addEventFilter(MouseEvent.MOUSE_PRESSED, this.moveClickEventHandler);
-
-        if (!this.fields.containsKey(p.x)) {
-            this.fields.put(p.x, new HashMap<>());
-        }
-
-        this.fields.get(p.x).put(p.y, pane);
-    }
-
     // Get selected piece
     public CheckerPiece getSelectedPiece() {
         return this.selectedPiece;
@@ -226,5 +230,14 @@ abstract public class AbstractController {
         // Remove highlight and reset selectedPiece
         this.normalizeFields();
         this.selectedPiece = null;
+    }
+
+    // Setup black fields
+    public void setupFields() {
+        for (int i = 0; i < this.dimension; i++) {
+            for (int j = i % 2; j < this.dimension; j += 2) {
+                this.setupField(new Point(i + 1, j + 1));
+            }
+        }
     }
 }
