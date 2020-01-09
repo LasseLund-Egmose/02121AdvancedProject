@@ -20,6 +20,7 @@ public class CheckerPiece {
     protected Cylinder cylinder; // Cylinder shape
     protected StackPane cylinderContainer; // Cylinder container
     protected boolean isActive = false; // Is this piece added to board?
+    protected boolean isKing = false; // Is this piece a king?
     protected PhongMaterial material; // Cylinder texture
     protected Point position; // Current position of piece
     protected double size; // Size of one field
@@ -136,6 +137,10 @@ public class CheckerPiece {
         }
 
         this.isActive = false;
+    }
+
+    public boolean getIsKing() {
+        return this.isKing;
     }
 
     public PhongMaterial getMaterial() {

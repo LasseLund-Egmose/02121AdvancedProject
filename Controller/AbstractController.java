@@ -30,9 +30,6 @@ abstract public class AbstractController {
     protected CheckerPiece selectedPiece = null; // Keep track of selected piece
     protected View view; // Reference to view instance
 
-    // Highlight fields a selected piece can move to
-    abstract protected void highlightEligibleFields(CheckerPiece piece);
-
     // Setup a piece in each corner
     abstract public void setupPieces();
 
@@ -104,6 +101,40 @@ abstract public class AbstractController {
         this.view.rotate();
     }
 
+    protected boolean fieldShouldBeConsidered(CheckerPiece piece, Point position) {
+        return true;
+    }
+
+    // Highlight fields a selected piece can move to
+    protected void highlightEligibleFields(CheckerPiece piece) {
+        // Iterate surrounding diagonal fields of given piece
+        for (Point p : this.surroundingFields(piece.getPosition())) {
+            if(!this.fieldShouldBeConsidered(piece, p)) {
+                continue;
+            }
+
+            // Get pane of current field
+            StackPane pane = this.fields.get(p.x).get(p.y);
+
+            // Is this position occupied - and is it possible to jump it?
+            if (pane.getChildren().size() > 0) {
+                Object eligibleJumpMove = this.eligibleJumpMoveOrNull(piece, p);
+
+                // Check if jump move is eligible - per eligibleJumpMoveOrNull
+                if (eligibleJumpMove instanceof StackPane) {
+                    // Handle jump move if not null (e.g. instance of StackPane)
+                    StackPane eligibleJumpMovePane = (StackPane) eligibleJumpMove;
+
+                    this.possibleJumpMoves.put(eligibleJumpMovePane, p);
+                    this.view.highlightPane(eligibleJumpMovePane);
+                }
+            } else { // Else allow a regular move
+                this.possibleRegularMoves.add(pane);
+                this.view.highlightPane(pane);
+            }
+        }
+    }
+
     // Check if position is within boundaries of board
     protected boolean isPositionValid(Point p) {
         return p.x >= 1 && p.y >= 1 && p.x <= this.dimension && p.y <= this.dimension;
@@ -142,7 +173,7 @@ abstract public class AbstractController {
     }
 
     // Setup one black field by position
-    public void setupField(Point p) {
+    protected void setupField(Point p) {
         StackPane field = new StackPane();
 
         field.addEventFilter(MouseEvent.MOUSE_PRESSED, this.moveClickEventHandler);
@@ -214,6 +245,7 @@ abstract public class AbstractController {
     public void setSelectedPiece(CheckerPiece piece) {
         // Remove highlight from currently selected piece
         if (this.selectedPiece != null) {
+            this.normalizeFields();
             this.selectedPiece.assertHighlight(false);
         }
 
@@ -227,16 +259,15 @@ abstract public class AbstractController {
             return;
         }
 
-        // Remove highlight and reset selectedPiece
-        this.normalizeFields();
+        // Reset selectedPiece
         this.selectedPiece = null;
     }
 
     // Setup black fields
     public void setupFields() {
         for (int i = 0; i < this.dimension; i++) {
-            for (int j = i % 2; j < this.dimension; j += 2) {
-                this.setupField(new Point(i + 1, j + 1));
+            for (int j = (i + 1) % 2; j < this.dimension; j += 2) {
+                this.setupField(new Point(j + 1, i + 1));
             }
         }
     }

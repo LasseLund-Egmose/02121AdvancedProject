@@ -1,6 +1,7 @@
 package View;
 
 import Controller.AbstractController;
+import Controller.RegularCheckersController;
 import Controller.SimpDamController;
 import javafx.animation.RotateTransition;
 import javafx.application.Application;
@@ -249,7 +250,7 @@ public class View extends Application {
         StackPane.setAlignment(this.displayTurn, Pos.CENTER);
 
         // Setup controller
-        this.controller = new SimpDamController(this, this.dimension, this.grid);
+        this.controller = new RegularCheckersController(this, this.dimension, this.grid);
 
         // Setup black fields (with click events) and game pieces
         this.controller.setupFields();
