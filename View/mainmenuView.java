@@ -1,23 +1,16 @@
 package View;
 
-import Controller.SimpDamController;
-import Model.Setting;
-import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
-import javafx.stage.Stage;
 
-public class mainmenuView {
+public class MainMenuView {
 
     public static String[] args;
 
-    public Scene setupMainmenuScene() {
-
+    public Scene setupMainMenuScene() {
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.CENTER);
         grid.setHgap(10);
@@ -26,13 +19,12 @@ public class mainmenuView {
 
         Button SimpDam = new Button("SimpDam");
         SimpDam.setOnMouseClicked( e ->{
-            //mainview.setSettings(new SimpDamController(this, this.dimension, this.grid););
             MainView.changeToGameScene();
         });
         grid.getChildren().add(SimpDam);
 
         grid.setStyle("-fx-background-color: red");
-        Scene scene = new Scene(grid, View.WIDTH, View.HEIGHT, true, null);
-        return scene;
+
+        return new Scene(grid, View.WIDTH, View.HEIGHT, true, null);
     }
 }

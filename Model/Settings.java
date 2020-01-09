@@ -2,7 +2,7 @@ package Model;
 
 import Controller.AbstractController;
 
-public class Setting {
+public class Settings {
     protected AbstractController controller;
 
     public void setController(AbstractController controller) {

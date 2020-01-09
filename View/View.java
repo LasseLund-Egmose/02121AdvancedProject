@@ -2,11 +2,8 @@ package View;
 
 import Controller.AbstractController;
 import Controller.RegularCheckersController;
-import Controller.SimpDamController;
-import Model.Setting;
+import Model.Settings;
 import javafx.animation.RotateTransition;
-import javafx.application.Application;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
@@ -49,7 +46,7 @@ public class View {
     protected RotateTransition surfacePaneRotation; // Transition rotating board after each turn
     protected Stage primaryStage;
 
-    protected Setting settings;
+    protected Settings settings;
 
     // Setup GridPane on board surface
     protected void setupGrid() {

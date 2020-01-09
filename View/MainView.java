@@ -1,18 +1,17 @@
 package View;
 
-import Model.Setting;
+import Model.Settings;
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 import static javafx.application.Application.launch;
 
 public class MainView extends Application {
-   protected mainmenuView mainmenuView;
+   protected MainMenuView mainMenuView;
    protected boolean menuView = true;
    protected static View view;
-   protected Setting settings;
+   protected Settings settings;
    protected static Stage primaryStage;
 
     public static void main(String[] args) {
@@ -22,35 +21,30 @@ public class MainView extends Application {
     }
 
     public void start(Stage primaryStage) {
-        this.primaryStage = primaryStage;
-        this.mainmenuView = new mainmenuView();
-        this.view = new View();
-        primaryStage.setScene(mainmenuView.setupMainmenuScene());
-        //primaryStage.setScene(view.setupGameScene());
+        MainView.primaryStage = primaryStage;
+        MainView.view = new View();
+
+        this.mainMenuView = new MainMenuView();
+
+        primaryStage.setScene(mainMenuView.setupMainMenuScene());
         primaryStage.show();
     }
 
     public Scene changeScene() {
-        if (menuView) {
-            this.primaryStage.setTitle("Mainmenu");
-            return mainmenuView.setupMainmenuScene();
-        } else {
-            this.primaryStage.setTitle("SimpDam");
-            return view.setupGameScene();
-        }
+        MainView.primaryStage.setTitle(menuView ? "Main Menu" : "SimpDam");
+        return menuView ? mainMenuView.setupMainMenuScene() : view.setupGameScene();
     }
 
     public static void changeToGameScene(){
-        primaryStage.setScene(view.setupGameScene());
-        primaryStage.show();
+        MainView.primaryStage.setScene(view.setupGameScene());
+        MainView.primaryStage.show();
     }
 
-    public void flipMenuView(){
-        this.menuView = !this.menuView;
-    }
-
-    public void setSettings(Setting settings) {
+    public void setSettings(Settings settings) {
         this.settings = settings;
     }
 
+    public void toggleMenuView(){
+        this.menuView = !this.menuView;
+    }
 }
