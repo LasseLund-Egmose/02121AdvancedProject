@@ -50,7 +50,7 @@ public class View {
 
     // Calculate how far away elements should be moved to avoid colliding with background
     // Using the Pythagorean theorem and the law of sines
-    public static double zOffset() {
+    protected static double zOffset() {
         return Math.sqrt(2) * (View.BOARD_SIZE / 2.0) * Math.sin(Math.toRadians(View.BOARD_TILT));
     }
 
