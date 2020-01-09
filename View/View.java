@@ -3,8 +3,10 @@ package View;
 import Controller.AbstractController;
 import Controller.RegularCheckersController;
 import Controller.SimpDamController;
+import Model.Setting;
 import javafx.animation.RotateTransition;
 import javafx.application.Application;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
@@ -22,7 +24,7 @@ import javafx.util.Duration;
 
 import java.awt.*;
 
-public class View extends Application {
+public class View {
 
     // Program arguments
     public static String[] args;
@@ -47,12 +49,7 @@ public class View extends Application {
     protected RotateTransition surfacePaneRotation; // Transition rotating board after each turn
     protected Stage primaryStage;
 
-    // Set received args and launch application
-    public static void main(String[] args) {
-        View.args = args;
-
-        launch(args);
-    }
+    protected Setting settings;
 
     // Setup GridPane on board surface
     protected void setupGrid() {
@@ -183,9 +180,7 @@ public class View extends Application {
     }
 
     // Handle dimension argument and setup View.View elements
-    public void start(Stage primaryStage) {
-        this.primaryStage = primaryStage;
-        this.primaryStage.setTitle("SimpDam");
+    public Scene setupGameScene() {
 
         // Handle n-argument
         if (View.args.length == 1) {
@@ -259,7 +254,8 @@ public class View extends Application {
         // Setup scene (with depthBuffer to avoid z-fighting and unexpected behaviour) and apply it
         Scene scene = new Scene(root, View.WIDTH, View.HEIGHT, true, null);
         scene.setCamera(new PerspectiveCamera());
-        primaryStage.setScene(scene);
-        primaryStage.show();
+
+        return scene;
     }
+
 }
