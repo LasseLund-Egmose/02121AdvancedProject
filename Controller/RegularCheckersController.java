@@ -3,7 +3,7 @@ package Controller;
 import Enum.Team;
 import Model.CheckerPiece;
 import Model.Field;
-import View.View;
+import View.GameView;
 
 import javafx.scene.layout.GridPane;
 
@@ -78,7 +78,7 @@ public class RegularCheckersController extends AbstractController {
         this.finishTurn();
     }
 
-    public RegularCheckersController(View view, int dimension, GridPane grid) {
+    public RegularCheckersController(GameView view, int dimension, GridPane grid) {
         super(view, dimension, grid);
     }
 

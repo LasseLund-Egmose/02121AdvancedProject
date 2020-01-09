@@ -21,7 +21,7 @@ import javafx.util.Duration;
 
 import java.awt.*;
 
-public class View {
+public class GameView {
 
     // Program arguments
     public static String[] args;
@@ -44,25 +44,24 @@ public class View {
     protected GridPane grid;
     protected Pane surfacePane;
     protected RotateTransition surfacePaneRotation; // Transition rotating board after each turn
-    protected Stage primaryStage;
 
     protected Settings settings;
 
     // Calculate how far away elements should be moved to avoid colliding with background
     // Using the Pythagorean theorem and the law of sines
     protected static double zOffset() {
-        return Math.sqrt(2) * (View.BOARD_SIZE / 2.0) * Math.sin(Math.toRadians(View.BOARD_TILT));
+        return Math.sqrt(2) * (GameView.BOARD_SIZE / 2.0) * Math.sin(Math.toRadians(GameView.BOARD_TILT));
     }
 
     // Setup GridPane on board surface
     protected void setupGrid() {
         this.grid = new GridPane();
 
-        this.grid.setMinHeight(View.BOARD_SIZE);
-        this.grid.setMinWidth(View.BOARD_SIZE);
-        this.grid.setMaxHeight(View.BOARD_SIZE);
-        this.grid.setMaxWidth(View.BOARD_SIZE);
-        this.grid.setTranslateZ(-View.DEPTH / 2.0);
+        this.grid.setMinHeight(GameView.BOARD_SIZE);
+        this.grid.setMinWidth(GameView.BOARD_SIZE);
+        this.grid.setMaxHeight(GameView.BOARD_SIZE);
+        this.grid.setMaxWidth(GameView.BOARD_SIZE);
+        this.grid.setTranslateZ(-GameView.DEPTH / 2.0);
 
         // Invert y-axis leaving position (1,1) at bottom-left
         this.grid.setRotationAxis(Rotate.X_AXIS);
@@ -84,9 +83,9 @@ public class View {
 
         // Setup box below board surface
         Box box = new Box();
-        box.setWidth(View.BOARD_SIZE);
-        box.setHeight(View.BOARD_SIZE);
-        box.setDepth(View.DEPTH);
+        box.setWidth(GameView.BOARD_SIZE);
+        box.setHeight(GameView.BOARD_SIZE);
+        box.setDepth(GameView.DEPTH);
 
         // Pass through click events and remove shadow
         box.setPickOnBounds(false);
@@ -94,7 +93,7 @@ public class View {
 
         // Add wood texture to box
         PhongMaterial material = new PhongMaterial();
-        material.setDiffuseMap(new Image(getClass().getResourceAsStream(View.ASSET_GRID)));
+        material.setDiffuseMap(new Image(getClass().getResourceAsStream(GameView.ASSET_GRID)));
         box.setMaterial(material);
 
         // Alignment
@@ -117,18 +116,21 @@ public class View {
 
     // Setup win scene and display it
     public void displayWin(String whoWon) {
-        this.primaryStage.setTitle("You won!");
+        MainView.changeToMainMenuScene();
+
+        Stage dialog = new Stage();
+        dialog.setTitle("You won!");
 
         StackPane root = new StackPane();
 
         Button button = new Button("Close");
         button.setStyle("-fx-background-color: transparent; -fx-cursor: hand; -fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: #DAA520;");
-        button.setOnMouseClicked(e -> this.primaryStage.close());
+        button.setOnMouseClicked(e -> dialog.close());
 
         StackPane pane = new StackPane();
         pane.setStyle("-fx-background-color: antiquewhite; -fx-border-color: #DAA520; -fx-border-width: 5px;");
-        pane.setMinSize(View.POPUP_SIZE, View.POPUP_SIZE);
-        pane.setMaxSize(View.POPUP_SIZE, View.POPUP_SIZE);
+        pane.setMinSize(GameView.POPUP_SIZE, GameView.POPUP_SIZE);
+        pane.setMaxSize(GameView.POPUP_SIZE, GameView.POPUP_SIZE);
 
         Text text = new Text();
         text.setText(whoWon);
@@ -141,25 +143,25 @@ public class View {
         pane.getChildren().addAll(text, button);
         root.getChildren().add(pane);
 
-        Scene scene = new Scene(root, View.WIDTH, View.HEIGHT);
-        this.primaryStage.setScene(scene);
-        this.primaryStage.show();
+        Scene scene = new Scene(root, GameView.WIDTH, GameView.HEIGHT);
+        dialog.setScene(scene);
+        dialog.show();
     }
 
     // Get size (in pixels) of one field in board
     public double getFieldSize() {
-        return ((double) View.BOARD_SIZE) / this.dimension;
+        return ((double) GameView.BOARD_SIZE) / this.dimension;
     }
 
     // Add highlight to black field
     public void highlightPane(StackPane pane) {
         int borderWidth = this.getFieldSize() < 20 ? 2 : 5;
-        pane.setStyle(View.BACKGROUND_FIELD + " -fx-border-color: green; -fx-border-width: " + borderWidth + ";");
+        pane.setStyle(GameView.BACKGROUND_FIELD + " -fx-border-color: green; -fx-border-width: " + borderWidth + ";");
     }
 
     // Remove highlight from black field
     public void normalizePane(StackPane pane) {
-        pane.setStyle(View.BACKGROUND_FIELD);
+        pane.setStyle(GameView.BACKGROUND_FIELD);
     }
 
     // Rotate board
@@ -174,7 +176,7 @@ public class View {
 
     // Setup one black field
     public void setupField(StackPane field, Point position) {
-        field.setStyle(View.BACKGROUND_FIELD);
+        field.setStyle(GameView.BACKGROUND_FIELD);
         field.setPrefSize(this.getFieldSize(), this.getFieldSize());
 
         // Add it to the grid
@@ -188,8 +190,8 @@ public class View {
     public Scene setupGameScene() {
 
         // Handle n-argument
-        if (View.args.length == 1) {
-            int newN = Integer.parseInt(View.args[0]);
+        if (GameView.args.length == 1) {
+            int newN = Integer.parseInt(GameView.args[0]);
 
             if (newN >= 3 && newN <= 100) {
                 this.dimension = newN;
@@ -198,8 +200,8 @@ public class View {
 
         // Setup root pane
         StackPane root = new StackPane();
-        root.setMinSize(View.WIDTH, View.HEIGHT);
-        root.setMaxSize(View.WIDTH, View.HEIGHT);
+        root.setMinSize(GameView.WIDTH, GameView.HEIGHT);
+        root.setMaxSize(GameView.WIDTH, GameView.HEIGHT);
 
         // Setup turn text and its container
         this.displayTurn = new Text();
@@ -214,20 +216,20 @@ public class View {
         displayTurnContainer.setMaxWidth(300);
         displayTurnContainer.setStyle("-fx-border-color: gray; -fx-border-width: 4;");
         displayTurnContainer.getChildren().add(this.displayTurn);
-        displayTurnContainer.setTranslateZ(-View.zOffset());
+        displayTurnContainer.setTranslateZ(-GameView.zOffset());
 
         // Setup background and move it behind the board
-        Rectangle background = new Rectangle(View.WIDTH * 2, View.HEIGHT * 2);
+        Rectangle background = new Rectangle(GameView.WIDTH * 2, GameView.HEIGHT * 2);
         background.setFill(Color.web("antiquewhite"));
 
         // Setup container for board and rotate it according to BOARD_TILT
         StackPane boardContainer = new StackPane();
-        boardContainer.setPrefSize(View.WIDTH, View.HEIGHT);
+        boardContainer.setPrefSize(GameView.WIDTH, GameView.HEIGHT);
         boardContainer.setRotationAxis(Rotate.X_AXIS);
-        boardContainer.setRotate(-View.BOARD_TILT);
+        boardContainer.setRotate(-GameView.BOARD_TILT);
         boardContainer.setPickOnBounds(false);
         boardContainer.setStyle("-fx-effect: null;");
-        boardContainer.setTranslateZ(-View.zOffset());
+        boardContainer.setTranslateZ(-GameView.zOffset());
 
         // Setup board surface and add it to board container
         this.setupSurface();
@@ -254,11 +256,11 @@ public class View {
         this.controller.setupPieces();
 
         // Setup scene (with depthBuffer to avoid z-fighting and unexpected behaviour) and apply it
-        Scene scene = new Scene(root, View.WIDTH, View.HEIGHT, true, null);
+        Scene scene = new Scene(root, GameView.WIDTH, GameView.HEIGHT, true, null);
 
         // Setup camera for scene
         PerspectiveCamera pc = new PerspectiveCamera();
-        pc.setTranslateZ(-View.zOffset());
+        pc.setTranslateZ(-GameView.zOffset());
         scene.setCamera(pc);
 
         return scene;

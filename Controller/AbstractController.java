@@ -3,7 +3,7 @@ package Controller;
 import Enum.Team;
 import Model.CheckerPiece;
 import Model.Field;
-import View.View;
+import View.GameView;
 
 import javafx.event.EventHandler;
 import javafx.scene.input.MouseEvent;
@@ -29,7 +29,7 @@ abstract public class AbstractController {
     protected EventHandler<MouseEvent> moveClickEventHandler; // EventHandler for click events on black fields
     protected boolean pieceHighlightLocked = false; // Should highlight be locked to one piece? Happens when jumping multiple pieces in one turn
     protected CheckerPiece selectedPiece = null; // Keep track of selected piece
-    protected View view; // Reference to view instance
+    protected GameView view; // Reference to view instance
 
     // Setup a piece in each corner
     abstract public void setupPieces();
@@ -242,7 +242,7 @@ abstract public class AbstractController {
     }
 
     // Construct controller
-    public AbstractController(View view, int dimension, GridPane grid) {
+    public AbstractController(GameView view, int dimension, GridPane grid) {
         this.dimension = dimension;
         this.grid = grid;
         this.moveClickEventHandler = mouseEvent -> this.onFieldClick(mouseEvent.getSource());

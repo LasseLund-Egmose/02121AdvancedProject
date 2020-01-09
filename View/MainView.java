@@ -8,36 +8,47 @@ import javafx.stage.Stage;
 import static javafx.application.Application.launch;
 
 public class MainView extends Application {
-   protected MainMenuView mainMenuView;
-   protected boolean menuView = true;
-   protected static View view;
-   protected Settings settings;
-   protected static Stage primaryStage;
 
-    public static void changeToGameScene(){
-        MainView.primaryStage.setScene(MainView.view.setupGameScene());
+    protected static GameView gameView;
+    protected static MainMenuView mainMenuView;
+    protected static Stage primaryStage;
+
+    protected boolean menuView = true;
+    protected Settings settings;
+
+    protected static void changeToScene(Scene s) {
+        MainView.primaryStage.setScene(s);
         MainView.primaryStage.show();
     }
 
+    public static void changeToGameScene() {
+        Scene game = MainView.gameView.setupGameScene();
+        MainView.changeToScene(game);
+    }
+
+    public static void changeToMainMenuScene() {
+        Scene mainMenu = MainView.mainMenuView.setupMainMenuScene();
+        MainView.changeToScene(mainMenu);
+    }
+
     public static void main(String[] args) {
-        View.args = args;
+        GameView.args = args;
 
         launch(args);
     }
 
     public void start(Stage primaryStage) {
         MainView.primaryStage = primaryStage;
-        MainView.view = new View();
 
-        this.mainMenuView = new MainMenuView();
+        MainView.mainMenuView = new MainMenuView();
+        MainView.gameView = new GameView();
 
-        primaryStage.setScene(mainMenuView.setupMainMenuScene());
-        primaryStage.show();
+        MainView.changeToMainMenuScene();
     }
 
     public Scene changeScene() {
         MainView.primaryStage.setTitle(menuView ? "Main Menu" : "SimpDam");
-        return menuView ? mainMenuView.setupMainMenuScene() : MainView.view.setupGameScene();
+        return menuView ? MainView.mainMenuView.setupMainMenuScene() : MainView.gameView.setupGameScene();
     }
 
     public void setSettings(Settings settings) {

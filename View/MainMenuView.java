@@ -25,6 +25,6 @@ public class MainMenuView {
 
         grid.setStyle("-fx-background-color: red");
 
-        return new Scene(grid, View.WIDTH, View.HEIGHT, true, null);
+        return new Scene(grid, GameView.WIDTH, GameView.HEIGHT, true, null);
     }
 }

@@ -1,7 +1,7 @@
 package Controller;
 
 import Enum.Team;
-import View.View;
+import View.GameView;
 
 import javafx.scene.layout.GridPane;
 
@@ -9,7 +9,7 @@ import java.awt.*;
 
 public class SimpDamController extends AbstractController {
 
-    public SimpDamController(View view, int dimension, GridPane grid) {
+    public SimpDamController(GameView view, int dimension, GridPane grid) {
         super(view, dimension, grid);
     }
 
