@@ -3,8 +3,10 @@ package View;
 import Controller.AbstractController;
 import Controller.RegularCheckersController;
 import Controller.SimpDamController;
+import Model.Setting;
 import javafx.animation.RotateTransition;
 import javafx.application.Application;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
@@ -22,7 +24,7 @@ import javafx.util.Duration;
 
 import java.awt.*;
 
-public class View extends Application {
+public class View {
 
     // Program arguments
     public static String[] args;
@@ -47,11 +49,33 @@ public class View extends Application {
     protected RotateTransition surfacePaneRotation; // Transition rotating board after each turn
     protected Stage primaryStage;
 
-    // Set received args and launch application
-    public static void main(String[] args) {
-        View.args = args;
+    protected Setting settings;
 
-        launch(args);
+    // Set received args and launch application
+
+    // Setup one black field
+    protected void setupField(int i, int j) {
+        StackPane field = new StackPane();
+        field.setStyle(View.BACKGROUND_FIELD);
+        field.setPrefSize(this.getSize(), this.getSize());
+
+        // Add it to the grid
+        this.grid.add(field, i, j);
+
+        // Bring field background to front
+        field.setTranslateZ(0.01);
+
+        // Add it to HashMap in controller
+        this.controller.addField(new Point(i + 1, j + 1), field);
+    }
+
+    // Setup black fields
+    protected void setupFields() {
+        for (int i = 0; i < this.dimension; i++) {
+            for (int j = i % 2; j < this.dimension; j += 2) {
+                this.setupField(i, j);
+            }
+        }
     }
 
     // Setup GridPane on board surface
@@ -183,9 +207,7 @@ public class View extends Application {
     }
 
     // Handle dimension argument and setup View.View elements
-    public void start(Stage primaryStage) {
-        this.primaryStage = primaryStage;
-        this.primaryStage.setTitle("SimpDam");
+    public Scene setupGameScene() {
 
         // Handle n-argument
         if (View.args.length == 1) {
@@ -259,7 +281,8 @@ public class View extends Application {
         // Setup scene (with depthBuffer to avoid z-fighting and unexpected behaviour) and apply it
         Scene scene = new Scene(root, View.WIDTH, View.HEIGHT, true, null);
         scene.setCamera(new PerspectiveCamera());
-        primaryStage.setScene(scene);
-        primaryStage.show();
+
+        return scene;
     }
+
 }
