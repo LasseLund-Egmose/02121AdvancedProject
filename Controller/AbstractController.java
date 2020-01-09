@@ -1,7 +1,9 @@
 package Controller;
 
+import Enum.Team;
 import Model.CheckerPiece;
 import View.View;
+
 import javafx.event.EventHandler;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
@@ -11,7 +13,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Controller {
+abstract public class AbstractController {
 
     protected ArrayList<CheckerPiece> checkerPieces = new ArrayList<>(); // A list of all pieces
     protected HashMap<Integer, HashMap<Integer, StackPane>> fields = new HashMap<>(); // A map (x -> y -> pane) of all dark fields (StackPanes)
@@ -28,11 +30,11 @@ public class Controller {
     protected CheckerPiece selectedPiece = null; // Keep track of selected piece
     protected View view; // Reference to view instance
 
-    // Team enum
-    public enum Team {
-        BLACK,
-        WHITE
-    }
+    // Highlight fields a selected piece can move to
+    abstract protected void highlightEligibleFields(CheckerPiece piece);
+
+    // Setup a piece in each corner
+    abstract public void setupPieces();
 
     // Check if a team has won
     protected void checkForWin() {
@@ -100,32 +102,6 @@ public class Controller {
 
         this.view.setupDisplayTurn(this.isWhiteTurn);
         this.view.rotate();
-    }
-
-    // Highlight fields a selected piece can move to
-    protected void highlightEligibleFields(CheckerPiece piece) {
-        // Iterate surrounding diagonal fields of given piece
-        for (Point p : this.surroundingFields(piece.getPosition())) {
-            // Get pane of current field
-            StackPane pane = this.fields.get(p.x).get(p.y);
-
-            // Is this position occupied - and is it possible to jump it?
-            if (pane.getChildren().size() > 0) {
-                Object eligibleJumpMove = this.eligibleJumpMoveOrNull(piece, p);
-
-                // Check if jump move is eligible - per eligibleJumpMoveOrNull
-                if (eligibleJumpMove instanceof StackPane) {
-                    // Handle jump move if not null (e.g. instance of StackPane)
-                    StackPane eligibleJumpMovePane = (StackPane) eligibleJumpMove;
-
-                    this.possibleJumpMoves.put(eligibleJumpMovePane, p);
-                    this.view.highlightPane(eligibleJumpMovePane);
-                }
-            } else { // Else allow a regular move
-                this.possibleRegularMoves.add(pane);
-                this.view.highlightPane(pane);
-            }
-        }
     }
 
     // Check if position is within boundaries of board
@@ -204,7 +180,7 @@ public class Controller {
     }
 
     // Construct controller
-    public Controller(View view, int dimension, GridPane grid) {
+    public AbstractController(View view, int dimension, GridPane grid) {
         this.dimension = dimension;
         this.grid = grid;
         this.moveClickEventHandler = mouseEvent -> this.onFieldClick(mouseEvent.getSource());
@@ -250,11 +226,5 @@ public class Controller {
         // Remove highlight and reset selectedPiece
         this.normalizeFields();
         this.selectedPiece = null;
-    }
-
-    // Setup a piece in each corner
-    public void setupPieces() {
-        this.setupPiece(new Point(1, 1), Team.WHITE);
-        this.setupPiece(new Point(this.dimension, this.dimension), Team.BLACK);
     }
 }

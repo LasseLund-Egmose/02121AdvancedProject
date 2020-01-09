@@ -1,6 +1,8 @@
 package Model;
 
-import Controller.Controller;
+import Controller.AbstractController;
+import Enum.Team;
+
 import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -21,7 +23,7 @@ public class CheckerPiece {
     protected PhongMaterial material; // Cylinder texture
     protected Point position; // Current position of piece
     protected double size; // Size of one field
-    protected Controller.Team team; // Team of this piece
+    protected Team team; // Team of this piece
 
     // Setup pane, shape and material
     protected void setupPiece() {
@@ -30,7 +32,7 @@ public class CheckerPiece {
         this.material = new PhongMaterial();
         this.material.setDiffuseMap(
             new Image(getClass().getResourceAsStream(
-                team == Controller.Team.BLACK ? "/assets/piece_black.jpg" : "/assets/piece_white.jpg"
+                team == Team.BLACK ? "/assets/piece_black.jpg" : "/assets/piece_white.jpg"
             ))
         );
 
@@ -45,7 +47,7 @@ public class CheckerPiece {
     }
 
     // Construct
-    public CheckerPiece(double size, Controller.Team team) {
+    public CheckerPiece(double size, Team team) {
         this.size = size;
         this.team = team;
 
@@ -63,7 +65,7 @@ public class CheckerPiece {
     }
 
     // Detach and afterwards attach piece to given pane (black field)
-    public void attachToField(StackPane pane, Point position, HashMap<Controller.Team, Integer> activeCount) {
+    public void attachToField(StackPane pane, Point position, HashMap<Team, Integer> activeCount) {
         // Detach
         this.detach(activeCount);
 
@@ -88,7 +90,7 @@ public class CheckerPiece {
     public void attachToFieldByPane(
         HashMap<Integer, HashMap<Integer, StackPane>> fields,
         StackPane pane,
-        HashMap<Controller.Team, Integer> activeCount
+        HashMap<Team, Integer> activeCount
     ) {
         // Reverse lookup position by pane in fields HashMap
         for (Map.Entry<Integer, HashMap<Integer, StackPane>> hmap : fields.entrySet()) {
@@ -111,14 +113,14 @@ public class CheckerPiece {
     public void attachToFieldByPosition(
         HashMap<Integer, HashMap<Integer, StackPane>> fields,
         Point position,
-        HashMap<Controller.Team, Integer> activeCount
+        HashMap<Team, Integer> activeCount
     ) {
         StackPane pane = fields.get(position.x).get(position.y);
         this.attachToField(pane, position, activeCount);
     }
 
     // Detach from current field and set activeCount accordingly
-    public void detach(HashMap<Controller.Team, Integer> activeCount) {
+    public void detach(HashMap<Team, Integer> activeCount) {
         Pane p = this.getPane();
         Object parent = p.getParent();
 
@@ -148,12 +150,12 @@ public class CheckerPiece {
         return this.position;
     }
 
-    public Controller.Team getTeam() {
+    public Team getTeam() {
         return this.team;
     }
 
     // Setup click event on piece
-    public void setupEvent(Controller controller) {
+    public void setupEvent(AbstractController controller) {
         this.cylinderContainer.setOnMouseClicked(e -> controller.setSelectedPiece(this));
     }
 }

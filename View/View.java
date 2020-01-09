@@ -1,6 +1,7 @@
 package View;
 
-import Controller.Controller;
+import Controller.AbstractController;
+import Controller.SimpDamController;
 import javafx.animation.RotateTransition;
 import javafx.application.Application;
 import javafx.geometry.Pos;
@@ -37,7 +38,7 @@ public class View extends Application {
     protected static final String ASSET_GRID = "/assets/grid.png";
     protected static final String BACKGROUND_FIELD = "-fx-background-image: url(/assets/dark_wood.jpg);";
 
-    protected Controller controller; // GameControllers.Controller instance
+    protected AbstractController controller; // GameControllers.Controller instance
     protected int dimension = 8; // Board dimension
     protected Text displayTurn; // Text element displaying turn
     protected GridPane grid;
@@ -261,7 +262,7 @@ public class View extends Application {
         StackPane.setAlignment(this.displayTurn, Pos.CENTER);
 
         // Setup controller
-        this.controller = new Controller(this, this.dimension, this.grid);
+        this.controller = new SimpDamController(this, this.dimension, this.grid);
 
         // Setup black fields (with click events) and game pieces
         this.setupFields();
