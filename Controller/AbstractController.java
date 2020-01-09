@@ -77,7 +77,7 @@ abstract public class AbstractController {
     }
 
     // Check if a jump move is eligible (e.g. no piece behind jumped piece)
-    // Return pane from new position if yes and null if no
+    // Return field from new position if yes and null if no
     protected Object eligibleJumpMoveOrNull(CheckerPiece thisPiece, Point opponentPosition) {
         Point thisPos = thisPiece.getPosition();
         Point diff = new Point(opponentPosition.x - thisPos.x, opponentPosition.y - thisPos.y);
@@ -110,6 +110,7 @@ abstract public class AbstractController {
         this.view.rotate();
     }
 
+    // Should a piece be allowed to move to the given position? - Default yes
     protected boolean fieldShouldBeConsidered(CheckerPiece piece, Point position) {
         return true;
     }
@@ -181,6 +182,7 @@ abstract public class AbstractController {
         }
     }
 
+    // Called every time a piece is moved
     protected boolean onPieceMove(CheckerPiece movedPiece, boolean didJump) {
         return true;
     }
@@ -202,7 +204,7 @@ abstract public class AbstractController {
 
     // Create a piece by team and attach it to given position
     protected void setupPiece(Point position, Team team) {
-        CheckerPiece piece = new CheckerPiece(this.view.getSize(), team);
+        CheckerPiece piece = new CheckerPiece(this.view.getFieldSize(), team);
 
         Field field = this.fields.get(position.x).get(position.y);
 

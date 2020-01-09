@@ -87,6 +87,8 @@ public class View {
         box.setWidth(View.BOARD_SIZE);
         box.setHeight(View.BOARD_SIZE);
         box.setDepth(View.DEPTH);
+
+        // Pass through click events and remove shadow
         box.setPickOnBounds(false);
         box.setStyle("-fx-effect: null;");
 
@@ -104,9 +106,9 @@ public class View {
         this.surfacePaneRotation.setByAngle(180);
         this.surfacePaneRotation.setCycleCount(1);
         this.surfacePaneRotation.setDuration(Duration.millis(1000));
-        this.surfacePaneRotation.setAutoReverse(false);
         this.surfacePaneRotation.setNode(this.surfacePane);
 
+        // Add to surfacePane
         this.surfacePane.getChildren().add(box);
 
         // Setup grid
@@ -145,13 +147,13 @@ public class View {
     }
 
     // Get size (in pixels) of one field in board
-    public double getSize() {
+    public double getFieldSize() {
         return ((double) View.BOARD_SIZE) / this.dimension;
     }
 
     // Add highlight to black field
     public void highlightPane(StackPane pane) {
-        int borderWidth = this.getSize() < 20 ? 2 : 5;
+        int borderWidth = this.getFieldSize() < 20 ? 2 : 5;
         pane.setStyle(View.BACKGROUND_FIELD + " -fx-border-color: green; -fx-border-width: " + borderWidth + ";");
     }
 
@@ -173,7 +175,7 @@ public class View {
     // Setup one black field
     public void setupField(StackPane field, Point position) {
         field.setStyle(View.BACKGROUND_FIELD);
-        field.setPrefSize(this.getSize(), this.getSize());
+        field.setPrefSize(this.getFieldSize(), this.getFieldSize());
 
         // Add it to the grid
         this.grid.add(field, position.x - 1, position.y - 1);
@@ -254,6 +256,7 @@ public class View {
         // Setup scene (with depthBuffer to avoid z-fighting and unexpected behaviour) and apply it
         Scene scene = new Scene(root, View.WIDTH, View.HEIGHT, true, null);
 
+        // Setup camera for scene
         PerspectiveCamera pc = new PerspectiveCamera();
         pc.setTranslateZ(-View.zOffset());
         scene.setCamera(pc);
