@@ -1,3 +1,6 @@
+package Model;
+
+import Controller.Controller;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -143,6 +146,10 @@ public class CheckerPiece {
 
     public Point getPosition() {
         return this.position;
+    }
+
+    public Controller.Team getTeam() {
+        return this.team;
     }
 
     // Setup click event on piece

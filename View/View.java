@@ -1,3 +1,6 @@
+package View;
+
+import Controller.Controller;
 import javafx.animation.RotateTransition;
 import javafx.application.Application;
 import javafx.geometry.Pos;
@@ -34,7 +37,7 @@ public class View extends Application {
     protected static final String ASSET_GRID = "/assets/grid.png";
     protected static final String BACKGROUND_FIELD = "-fx-background-image: url(/assets/dark_wood.jpg);";
 
-    protected Controller controller; // Controller instance
+    protected Controller controller; // GameControllers.Controller instance
     protected int dimension = 8; // Board dimension
     protected Text displayTurn; // Text element displaying turn
     protected GridPane grid;
@@ -190,7 +193,7 @@ public class View extends Application {
         this.displayTurn.setText(isWhiteTurn ? "White's turn" : "Black's turn");
     }
 
-    // Handle dimension argument and setup View elements
+    // Handle dimension argument and setup View.View elements
     public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
         this.primaryStage.setTitle("SimpDam");
