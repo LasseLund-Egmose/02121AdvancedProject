@@ -51,33 +51,6 @@ public class View {
 
     protected Setting settings;
 
-    // Set received args and launch application
-
-    // Setup one black field
-    protected void setupField(int i, int j) {
-        StackPane field = new StackPane();
-        field.setStyle(View.BACKGROUND_FIELD);
-        field.setPrefSize(this.getSize(), this.getSize());
-
-        // Add it to the grid
-        this.grid.add(field, i, j);
-
-        // Bring field background to front
-        field.setTranslateZ(0.01);
-
-        // Add it to HashMap in controller
-        this.controller.addField(new Point(i + 1, j + 1), field);
-    }
-
-    // Setup black fields
-    protected void setupFields() {
-        for (int i = 0; i < this.dimension; i++) {
-            for (int j = i % 2; j < this.dimension; j += 2) {
-                this.setupField(i, j);
-            }
-        }
-    }
-
     // Setup GridPane on board surface
     protected void setupGrid() {
         this.grid = new GridPane();
