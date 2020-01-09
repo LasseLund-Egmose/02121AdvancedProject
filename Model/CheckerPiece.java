@@ -13,7 +13,6 @@ import javafx.scene.transform.Rotate;
 
 import java.awt.*;
 import java.util.HashMap;
-import java.util.Map;
 
 public class CheckerPiece {
 
@@ -23,8 +22,7 @@ public class CheckerPiece {
     protected boolean isKing = false; // Is this piece a king?
     protected Cylinder kingCylinder = null; // King cylinder shape
     protected PhongMaterial material = null; // Cylinder texture
-    protected Pane parent = null; // Parent containing cylinderContainer
-    protected Point position = null; // Current position of piece
+    protected Field parent = null; // Parent field containing cylinderContainer
     protected double size; // Size of one field
     protected Team team; // Team of this piece
 
@@ -107,16 +105,15 @@ public class CheckerPiece {
     }
 
     // Detach and afterwards attach piece to given pane (black field)
-    public void attachToField(StackPane pane, Point position, HashMap<Team, Integer> activeCount) {
+    public void attachToField(Field field, HashMap<Team, Integer> activeCount) {
         // Detach
         this.detach(activeCount);
 
-        // Set new position
-        this.position = position;
+        // Add to field
+        field.getChildren().add(this.getPane());
 
-        // Add to pane
-        pane.getChildren().add(this.getPane());
-        this.parent = pane;
+        this.parent = field;
+        field.setAttachedPiece(this);
 
         // Justify activeCount if applicable
         if (!this.isActive) {
@@ -129,43 +126,12 @@ public class CheckerPiece {
         this.isActive = true;
     }
 
-    // Find position of given pane (black field) and run attachToField
-    public void attachToFieldByPane(
-        HashMap<Integer, HashMap<Integer, StackPane>> fields,
-        StackPane pane,
-        HashMap<Team, Integer> activeCount
-    ) {
-        // Reverse lookup position by pane in fields HashMap
-        for (Map.Entry<Integer, HashMap<Integer, StackPane>> hmap : fields.entrySet()) {
-            int x = hmap.getKey();
-
-            for (Map.Entry<Integer, StackPane> e : hmap.getValue().entrySet()) {
-                if (e.getValue() != pane) {
-                    continue;
-                }
-
-                Point p = new Point(x, e.getKey());
-                this.attachToField(pane, p, activeCount);
-
-                return;
-            }
-        }
-    }
-
-    // Find pane (black field) by position and run attachToField
-    public void attachToFieldByPosition(
-        HashMap<Integer, HashMap<Integer, StackPane>> fields,
-        Point position,
-        HashMap<Team, Integer> activeCount
-    ) {
-        StackPane pane = fields.get(position.x).get(position.y);
-        this.attachToField(pane, position, activeCount);
-    }
-
     // Detach from current field and set activeCount accordingly
     public void detach(HashMap<Team, Integer> activeCount) {
         if (this.parent != null) {
             this.parent.getChildren().clear();
+            this.parent.setAttachedPiece(null);
+            this.parent = null;
         }
 
         if (this.isActive) {
@@ -189,8 +155,12 @@ public class CheckerPiece {
         return this.cylinderContainer;
     }
 
+    public Field getParent() {
+        return this.parent;
+    }
+
     public Point getPosition() {
-        return this.position;
+        return this.getParent().getPosition();
     }
 
     public Team getTeam() {
@@ -204,12 +174,6 @@ public class CheckerPiece {
 
     public void setKing() {
         this.isKing = true;
-
-        this.setupPiece();
-    }
-
-    public void setNormal() {
-        this.isKing = false;
 
         this.setupPiece();
     }

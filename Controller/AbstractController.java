@@ -2,12 +2,12 @@ package Controller;
 
 import Enum.Team;
 import Model.CheckerPiece;
+import Model.Field;
 import View.View;
 
 import javafx.event.EventHandler;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.StackPane;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -16,17 +16,18 @@ import java.util.HashMap;
 abstract public class AbstractController {
 
     protected ArrayList<CheckerPiece> checkerPieces = new ArrayList<>(); // A list of all pieces
-    protected HashMap<Integer, HashMap<Integer, StackPane>> fields = new HashMap<>(); // A map (x -> y -> pane) of all dark fields (StackPanes)
+    protected HashMap<Integer, HashMap<Integer, Field>> fields = new HashMap<>(); // A map (x -> y -> pane) of all fields
 
     protected HashMap<Team, Integer> activeCount = new HashMap<>(); // A map (Team -> int) of number of active pieces on each team
 
-    protected HashMap<StackPane, Point> possibleJumpMoves = new HashMap<>(); // A map (pane -> jumped position) of all possible jump moves
-    protected ArrayList<StackPane> possibleRegularMoves = new ArrayList<>(); // A list of all possible regular moves
+    protected HashMap<Field, Field> possibleJumpMoves = new HashMap<>(); // A map (pane -> jumped position) of all possible jump moves
+    protected ArrayList<Field> possibleRegularMoves = new ArrayList<>(); // A list of all possible regular moves
 
     protected int dimension; // Dimension of board
     protected GridPane grid;
     protected boolean isWhiteTurn = true; // Keep track of turn
     protected EventHandler<MouseEvent> moveClickEventHandler; // EventHandler for click events on black fields
+    protected boolean pieceHighlightLocked = false;
     protected CheckerPiece selectedPiece = null; // Keep track of selected piece
     protected View view; // Reference to view instance
 
@@ -45,38 +46,34 @@ abstract public class AbstractController {
     }
 
     // Handle a jump move
-    protected void doJumpMove(StackPane toPane, Point jumpedPosition) {
+    protected void doJumpMove(Field toField, Field jumpedField) {
         // Detach (remove) jumped Model.CheckerPiece
-        for (CheckerPiece piece : this.checkerPieces) {
-            if (!piece.getPosition().equals(jumpedPosition)) {
-                continue;
-            }
-
-            piece.detach(this.activeCount);
-
-            break;
-        }
+        jumpedField.getAttachedPiece().detach(this.activeCount);
 
         // Handle rest of move as a regular move
-        this.doRegularMove(toPane);
+        this.doRegularMove(toField, true);
     }
 
     // Handle a regular move
-    protected void doRegularMove(StackPane toPane) {
+    protected void doRegularMove(Field toField, boolean didJump) {
         // Attach selected piece to chosen field
-        this.getSelectedPiece().attachToFieldByPane(this.fields, toPane, this.activeCount);
+        this.getSelectedPiece().attachToField(toField, this.activeCount);
 
         // Remove highlight of piece and fields
         this.selectedPiece.assertHighlight(false);
         this.normalizeFields();
 
         // Reset highlight-related properties
-        this.selectedPiece = null;
         this.possibleJumpMoves.clear();
         this.possibleRegularMoves.clear();
 
-        // Finish turn
-        this.finishTurn();
+        // Finish turn if onPieceMove returns true
+        if(this.onPieceMove(this.selectedPiece, didJump)) {
+            this.selectedPiece = null;
+
+            // Finish turn
+            this.finishTurn();
+        }
     }
 
     // Check if a jump move is eligible (e.g. no piece behind jumped piece)
@@ -88,12 +85,24 @@ abstract public class AbstractController {
         Point newPos = (Point) opponentPosition.clone();
         newPos.translate(diff.x, diff.y);
 
-        return this.isPositionValid(newPos) ? fields.get(newPos.x).get(newPos.y) : null;
+        if(!this.isPositionValid(newPos)) {
+            return null;
+        }
+
+        Field jumpOver = fields.get(opponentPosition.x).get(opponentPosition.y);
+        Field jumpTo = fields.get(newPos.x).get(newPos.y);
+
+        if(jumpOver.getAttachedPiece() == null || jumpOver.getAttachedPiece().getTeam() == thisPiece.getTeam()) {
+            return null;
+        }
+
+        return jumpTo.getAttachedPiece() == null ? jumpTo : null;
     }
 
     // Check if game is over, toggle isWhiteTurn and setup turn for other team
     protected void finishTurn() {
         this.isWhiteTurn = !this.isWhiteTurn;
+        this.pieceHighlightLocked = false;
 
         checkForWin();
 
@@ -114,23 +123,23 @@ abstract public class AbstractController {
             }
 
             // Get pane of current field
-            StackPane pane = this.fields.get(p.x).get(p.y);
+            Field field = this.fields.get(p.x).get(p.y);
 
             // Is this position occupied - and is it possible to jump it?
-            if (pane.getChildren().size() > 0) {
+            if (field.getChildren().size() > 0) {
                 Object eligibleJumpMove = this.eligibleJumpMoveOrNull(piece, p);
 
                 // Check if jump move is eligible - per eligibleJumpMoveOrNull
-                if (eligibleJumpMove instanceof StackPane) {
-                    // Handle jump move if not null (e.g. instance of StackPane)
-                    StackPane eligibleJumpMovePane = (StackPane) eligibleJumpMove;
+                if (eligibleJumpMove instanceof Field) {
+                    // Handle jump move if not null (e.g. instance of Field)
+                    Field eligibleJumpMovePane = (Field) eligibleJumpMove;
 
-                    this.possibleJumpMoves.put(eligibleJumpMovePane, p);
+                    this.possibleJumpMoves.put(eligibleJumpMovePane, field);
                     this.view.highlightPane(eligibleJumpMovePane);
                 }
             } else { // Else allow a regular move
-                this.possibleRegularMoves.add(pane);
-                this.view.highlightPane(pane);
+                this.possibleRegularMoves.add(field);
+                this.view.highlightPane(field);
             }
         }
     }
@@ -142,39 +151,43 @@ abstract public class AbstractController {
 
     // Remove highlights from highlighted fields
     protected void normalizeFields() {
-        ArrayList<StackPane> allHighlightedPanes = new ArrayList<>();
+        ArrayList<Field> allHighlightedPanes = new ArrayList<>();
         allHighlightedPanes.addAll(this.possibleJumpMoves.keySet());
         allHighlightedPanes.addAll(this.possibleRegularMoves);
 
-        for (StackPane p : allHighlightedPanes) {
-            this.view.normalizePane(p);
+        for (Field field : allHighlightedPanes) {
+            this.view.normalizePane(field);
         }
     }
 
     // Handle click on black field
     protected void onFieldClick(Object clickedElement) {
-        // Check if StackPane is clicked and a selectedPiece is chosen
-        if (!(clickedElement instanceof StackPane) || this.getSelectedPiece() == null) {
+        // Check if Field is clicked and a selectedPiece is chosen
+        if (!(clickedElement instanceof Field) || this.getSelectedPiece() == null) {
             return;
         }
 
-        StackPane clickedElementPane = (StackPane) clickedElement;
+        Field clickedElementField = (Field) clickedElement;
 
         // Is a jump move chosen?
         if (this.possibleJumpMoves.containsKey(clickedElement)) {
-            this.doJumpMove(clickedElementPane, this.possibleJumpMoves.get(clickedElement));
+            this.doJumpMove(clickedElementField, this.possibleJumpMoves.get(clickedElement));
             return;
         }
 
         // Is a regular move chosen?
         if (this.possibleRegularMoves.contains(clickedElement)) {
-            this.doRegularMove(clickedElementPane);
+            this.doRegularMove(clickedElementField, false);
         }
+    }
+
+    protected boolean onPieceMove(CheckerPiece movedPiece, boolean didJump) {
+        return true;
     }
 
     // Setup one black field by position
     protected void setupField(Point p) {
-        StackPane field = new StackPane();
+        Field field = new Field(p);
 
         field.addEventFilter(MouseEvent.MOUSE_PRESSED, this.moveClickEventHandler);
 
@@ -191,12 +204,10 @@ abstract public class AbstractController {
     protected void setupPiece(Point position, Team team) {
         CheckerPiece piece = new CheckerPiece(this.view.getSize(), team);
 
+        Field field = this.fields.get(position.x).get(position.y);
+
         // Attach to field by position
-        piece.attachToFieldByPosition(
-            this.fields,
-            position,
-            this.activeCount
-        );
+        piece.attachToField(field, this.activeCount);
 
         // Setup click event for field
         piece.setupEvent(this);
@@ -243,6 +254,10 @@ abstract public class AbstractController {
 
     // Set selected piece
     public void setSelectedPiece(CheckerPiece piece) {
+        if(this.pieceHighlightLocked) {
+            return;
+        }
+
         // Remove highlight from currently selected piece
         if (this.selectedPiece != null) {
             this.normalizeFields();
