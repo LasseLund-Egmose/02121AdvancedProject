@@ -17,33 +17,69 @@ import java.util.Map;
 
 public class CheckerPiece {
 
-    protected Cylinder cylinder; // Cylinder shape
-    protected StackPane cylinderContainer; // Cylinder container
+    protected Cylinder cylinder = null; // Cylinder shape
+    protected StackPane cylinderContainer = null; // Cylinder container
     protected boolean isActive = false; // Is this piece added to board?
     protected boolean isKing = false; // Is this piece a king?
-    protected PhongMaterial material; // Cylinder texture
-    protected Point position; // Current position of piece
+    protected Cylinder kingCylinder = null; // King cylinder shape
+    protected PhongMaterial material = null; // Cylinder texture
+    protected Point position = null; // Current position of piece
     protected double size; // Size of one field
     protected Team team; // Team of this piece
 
-    // Setup pane, shape and material
-    protected void setupPiece() {
+    protected void setupCylinder(boolean isKing) {
         double radius = (this.size * 2) / 5;
+        double height = radius / 1.5;
 
+        Cylinder cylinder = new Cylinder(radius, height);
+
+        cylinder.setMaterial(this.getMaterial());
+        cylinder.setRotationAxis(Rotate.X_AXIS);
+        cylinder.setRotate(90);
+
+        if(isKing) {
+            cylinder.setTranslateZ(height + height / 2 + 2);
+            this.kingCylinder = cylinder;
+        } else {
+            cylinder.setTranslateZ(height / 2);
+            this.cylinder = cylinder;
+        }
+    }
+
+    protected void setupMaterial() {
         this.material = new PhongMaterial();
         this.material.setDiffuseMap(
             new Image(getClass().getResourceAsStream(
                 team == Team.BLACK ? "/assets/piece_black.jpg" : "/assets/piece_white.jpg"
             ))
         );
+    }
 
-        this.cylinder = new Cylinder(radius, radius / 1.5);
-        this.cylinder.setMaterial(this.getMaterial());
-        this.cylinder.setRotationAxis(Rotate.X_AXIS);
-        this.cylinder.setRotate(90);
-        this.cylinder.setTranslateZ(4);
+    // Setup pane, shape and material
+    protected void setupPiece() {
+        if(this.cylinderContainer == null) {
+            this.cylinderContainer = new StackPane();
+        }
 
-        this.cylinderContainer = new StackPane();
+        if(this.material == null) {
+            this.setupMaterial();
+        }
+
+        if(this.cylinder == null) {
+            this.setupCylinder(false);
+        }
+
+        if(this.isKing && this.kingCylinder == null) {
+            this.setupCylinder(true);
+        }
+
+        this.cylinderContainer.getChildren().clear();
+
+        if(this.isKing) {
+            this.cylinderContainer.getChildren().addAll(this.cylinder, this.kingCylinder);
+            return;
+        }
+
         this.cylinderContainer.getChildren().add(this.cylinder);
     }
 
@@ -58,8 +94,16 @@ public class CheckerPiece {
     // Make sure piece is either highlighted or not
     public void assertHighlight(boolean shouldHighlight) {
         if (shouldHighlight) {
+            if(this.kingCylinder != null) {
+                this.kingCylinder.setMaterial(new PhongMaterial(Color.LIMEGREEN));
+            }
+
             this.cylinder.setMaterial(new PhongMaterial(Color.LIMEGREEN));
             return;
+        }
+
+        if(this.kingCylinder != null) {
+            this.kingCylinder.setMaterial(this.getMaterial());
         }
 
         this.cylinder.setMaterial(this.getMaterial());
@@ -162,5 +206,17 @@ public class CheckerPiece {
     // Setup click event on piece
     public void setupEvent(AbstractController controller) {
         this.cylinderContainer.setOnMouseClicked(e -> controller.setSelectedPiece(this));
+    }
+
+    public void setKing() {
+        this.isKing = true;
+
+        this.setupPiece();
+    }
+
+    public void setNormal() {
+        this.isKing = false;
+
+        this.setupPiece();
     }
 }

@@ -1,11 +1,9 @@
 package Controller;
 
 import Enum.Team;
-import Model.CheckerPiece;
 import View.View;
 
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.StackPane;
 
 import java.awt.*;
 
