@@ -14,6 +14,11 @@ public class MainView extends Application {
    protected Settings settings;
    protected static Stage primaryStage;
 
+    public static void changeToGameScene(){
+        MainView.primaryStage.setScene(MainView.view.setupGameScene());
+        MainView.primaryStage.show();
+    }
+
     public static void main(String[] args) {
         View.args = args;
 
@@ -32,12 +37,7 @@ public class MainView extends Application {
 
     public Scene changeScene() {
         MainView.primaryStage.setTitle(menuView ? "Main Menu" : "SimpDam");
-        return menuView ? mainMenuView.setupMainMenuScene() : view.setupGameScene();
-    }
-
-    public static void changeToGameScene(){
-        MainView.primaryStage.setScene(view.setupGameScene());
-        MainView.primaryStage.show();
+        return menuView ? mainMenuView.setupMainMenuScene() : MainView.view.setupGameScene();
     }
 
     public void setSettings(Settings settings) {
