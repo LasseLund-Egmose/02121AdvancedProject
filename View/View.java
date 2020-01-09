@@ -48,6 +48,12 @@ public class View {
 
     protected Settings settings;
 
+    // Calculate how far away elements should be moved to avoid colliding with background
+    // Using the Pythagorean theorem and the law of sines
+    public static double zOffset() {
+        return Math.sqrt(2) * (View.BOARD_SIZE / 2.0) * Math.sin(Math.toRadians(View.BOARD_TILT));
+    }
+
     // Setup GridPane on board surface
     protected void setupGrid() {
         this.grid = new GridPane();
@@ -206,15 +212,11 @@ public class View {
         displayTurnContainer.setMaxWidth(300);
         displayTurnContainer.setStyle("-fx-border-color: gray; -fx-border-width: 4;");
         displayTurnContainer.getChildren().add(this.displayTurn);
+        displayTurnContainer.setTranslateZ(-View.zOffset());
 
         // Setup background and move it behind the board
         Rectangle background = new Rectangle(View.WIDTH * 2, View.HEIGHT * 2);
         background.setFill(Color.web("antiquewhite"));
-
-        // Calculate how far away the background should be moved (using the Pythagorean theorem and the law of sines)
-        double boardDiagonal = Math.sqrt(2) * (View.BOARD_SIZE / 2.0);
-        double backgroundOffset = boardDiagonal * Math.sin(Math.toRadians(View.BOARD_TILT));
-        background.setTranslateZ(backgroundOffset);
 
         // Setup container for board and rotate it according to BOARD_TILT
         StackPane boardContainer = new StackPane();
@@ -223,6 +225,7 @@ public class View {
         boardContainer.setRotate(-View.BOARD_TILT);
         boardContainer.setPickOnBounds(false);
         boardContainer.setStyle("-fx-effect: null;");
+        boardContainer.setTranslateZ(-View.zOffset());
 
         // Setup board surface and add it to board container
         this.setupSurface();
@@ -250,7 +253,10 @@ public class View {
 
         // Setup scene (with depthBuffer to avoid z-fighting and unexpected behaviour) and apply it
         Scene scene = new Scene(root, View.WIDTH, View.HEIGHT, true, null);
-        scene.setCamera(new PerspectiveCamera());
+
+        PerspectiveCamera pc = new PerspectiveCamera();
+        pc.setTranslateZ(-View.zOffset());
+        scene.setCamera(pc);
 
         return scene;
     }
