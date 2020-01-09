@@ -29,6 +29,8 @@ public class RegularCheckersController extends AbstractController {
                 Field eligibleJumpMoveField = (Field) eligibleJumpMove;
 
                 if(eligibleJumpMoveField.getAttachedPiece() == null) {
+                    this.pieceHighlightLocked = true;
+
                     this.possibleJumpMoves.put(eligibleJumpMoveField, field);
                     this.view.highlightPane(eligibleJumpMoveField);
 
@@ -62,6 +64,18 @@ public class RegularCheckersController extends AbstractController {
         }
 
         return !didJump || !this.canJumpMore(movedPiece);
+    }
+
+    protected void onSelectedPieceClick() {
+        if(!this.pieceHighlightLocked) {
+            return;
+        }
+
+        // Abort multi-jump
+        this.normalizeFields();
+        this.selectedPiece.assertHighlight(false);
+        this.selectedPiece = null;
+        this.finishTurn();
     }
 
     public RegularCheckersController(View view, int dimension, GridPane grid) {

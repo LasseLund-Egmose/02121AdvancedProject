@@ -27,7 +27,7 @@ abstract public class AbstractController {
     protected GridPane grid;
     protected boolean isWhiteTurn = true; // Keep track of turn
     protected EventHandler<MouseEvent> moveClickEventHandler; // EventHandler for click events on black fields
-    protected boolean pieceHighlightLocked = false;
+    protected boolean pieceHighlightLocked = false; // Should highlight be locked to one piece? Happens when jumping multiple pieces in one turn
     protected CheckerPiece selectedPiece = null; // Keep track of selected piece
     protected View view; // Reference to view instance
 
@@ -59,8 +59,7 @@ abstract public class AbstractController {
         // Attach selected piece to chosen field
         this.getSelectedPiece().attachToField(toField, this.activeCount);
 
-        // Remove highlight of piece and fields
-        this.selectedPiece.assertHighlight(false);
+        // Remove highlight fields
         this.normalizeFields();
 
         // Reset highlight-related properties
@@ -69,6 +68,8 @@ abstract public class AbstractController {
 
         // Finish turn if onPieceMove returns true
         if(this.onPieceMove(this.selectedPiece, didJump)) {
+            // Reset selected field
+            this.selectedPiece.assertHighlight(false);
             this.selectedPiece = null;
 
             // Finish turn
@@ -182,6 +183,8 @@ abstract public class AbstractController {
         }
     }
 
+    protected void onSelectedPieceClick() {}
+
     // Called every time a piece is moved
     protected boolean onPieceMove(CheckerPiece movedPiece, boolean didJump) {
         return true;
@@ -256,6 +259,10 @@ abstract public class AbstractController {
 
     // Set selected piece
     public void setSelectedPiece(CheckerPiece piece) {
+        if(piece != null && this.selectedPiece == piece) {
+            this.onSelectedPieceClick();
+        }
+
         if(this.pieceHighlightLocked) {
             return;
         }
