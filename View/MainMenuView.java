@@ -25,19 +25,35 @@ public class MainMenuView extends AbstractView {
     // Setup scene
     public Scene setupScene() {
         GridPane grid = new GridPane();
-        grid.setAlignment(Pos.CENTER);
+        grid.setAlignment(Pos.TOP_LEFT);
         grid.setHgap(10);
         grid.setVgap(10);
         grid.setPadding(new Insets(25, 25, 25, 25));
 
-        Button SimpDam = new Button("SimpDam");
+        Button SimpDam = constructButton("Two player dam");
         SimpDam.setOnMouseClicked( e ->{
             Main.setView(Main.gameView);
         });
         grid.getChildren().add(SimpDam);
 
-        grid.setStyle("-fx-background-color: red");
+        grid.setStyle("-fx-background-color: antiquewhite; -fx-border-color: #DAA520; -fx-border-width: 5px;");
 
         return new Scene(grid, GameView.WIDTH, GameView.HEIGHT, true, null);
     }
+
+    public Button constructButton(String name) {
+        Button button = new Button(name);
+        button.setStyle("-fx-background-image: url(/assets/dark_wood.jpg); -fx-cursor: hand;" +
+                " -fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: #DAA520;" +
+                "-fx-border-color: #DAA520; -fx-border-width: 5px;");
+        return button;
+    }
+
+
+    public void setSettings(){
+
+    }
+
+
+
 }
