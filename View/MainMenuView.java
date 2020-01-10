@@ -1,16 +1,29 @@
 package View;
 
+import Boot.Main;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
 
-public class MainMenuView {
+public class MainMenuView extends AbstractView {
 
-    public static String[] args;
+    // Title
+    public String title = "Main Menu";
 
-    public Scene setupMainMenuScene() {
+    // Construct
+    public MainMenuView(String[] args) {
+        super(args);
+    }
+
+    // Title
+    public String getTitle() {
+        return "Main Menu";
+    }
+
+    // Setup scene
+    public Scene setupScene() {
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.CENTER);
         grid.setHgap(10);
@@ -19,7 +32,7 @@ public class MainMenuView {
 
         Button SimpDam = new Button("SimpDam");
         SimpDam.setOnMouseClicked( e ->{
-            MainView.changeToGameScene();
+            Main.setView(Main.gameView);
         });
         grid.getChildren().add(SimpDam);
 

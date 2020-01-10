@@ -1,5 +1,6 @@
 package View;
 
+import Boot.Main;
 import Controller.AbstractController;
 import Controller.RegularCheckersController;
 import Model.Settings;
@@ -21,10 +22,7 @@ import javafx.util.Duration;
 
 import java.awt.*;
 
-public class GameView {
-
-    // Program arguments
-    public static String[] args;
+public class GameView extends AbstractView {
 
     // Constants
     protected static final int BOARD_SIZE = 700;
@@ -44,7 +42,6 @@ public class GameView {
     protected GridPane grid;
     protected Pane surfacePane;
     protected RotateTransition surfacePaneRotation; // Transition rotating board after each turn
-
     protected Settings settings;
 
     // Calculate how far away elements should be moved to avoid colliding with background
@@ -114,9 +111,14 @@ public class GameView {
         this.setupGrid();
     }
 
+    // Construct
+    public GameView(String[] args) {
+        super(args);
+    }
+
     // Setup win scene and display it
     public void displayWin(String whoWon) {
-        MainView.changeToMainMenuScene();
+        Main.setView(Main.mainMenuView);
 
         Stage dialog = new Stage();
         dialog.setTitle("You won!");
@@ -159,6 +161,11 @@ public class GameView {
         pane.setStyle(GameView.BACKGROUND_FIELD + " -fx-border-color: green; -fx-border-width: " + borderWidth + ";");
     }
 
+    // Title
+    public String getTitle() {
+        return "Game";
+    }
+
     // Remove highlight from black field
     public void normalizePane(StackPane pane) {
         pane.setStyle(GameView.BACKGROUND_FIELD);
@@ -186,12 +193,12 @@ public class GameView {
         field.setTranslateZ(0.01);
     }
 
-    // Handle dimension argument and setup View.View elements
-    public Scene setupGameScene() {
+    // Setup scene
+    public Scene setupScene() {
 
         // Handle n-argument
-        if (GameView.args.length == 1) {
-            int newN = Integer.parseInt(GameView.args[0]);
+        if (this.args.length == 1) {
+            int newN = Integer.parseInt(this.args[0]);
 
             if (newN >= 3 && newN <= 100) {
                 this.dimension = newN;
