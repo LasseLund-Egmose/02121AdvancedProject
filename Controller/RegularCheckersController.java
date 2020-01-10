@@ -13,9 +13,14 @@ import java.util.ArrayList;
 public class RegularCheckersController extends AbstractController {
 
     protected boolean canJumpMore(CheckerPiece piece) {
-        ArrayList<Point> surrounding = this.surroundingFields(piece.getPosition());
+        this.forcedJumpMoves.clear();
 
+        ArrayList<Point> surrounding = this.surroundingFields(piece.getPosition());
         for(Point surroundingField : surrounding) {
+            if(this.fieldShouldNotBeConsidered(piece, surroundingField)) {
+                continue;
+            }
+
             Field field = this.fields.get(surroundingField.x).get(surroundingField.y);
 
             if(field.getChildren().size() == 0) {
@@ -31,24 +36,25 @@ public class RegularCheckersController extends AbstractController {
                 if(eligibleJumpMoveField.getAttachedPiece() == null) {
                     this.pieceHighlightLocked = true;
 
+                    piece.setCanHighlight(true);
+
+                    this.forcedJumpMoves.add(piece);
                     this.possibleJumpMoves.put(eligibleJumpMoveField, field);
                     this.view.highlightPane(eligibleJumpMoveField);
-
-                    return true;
                 }
             }
         }
 
-        return false;
+        return this.forcedJumpMoves.size() > 0;
     }
 
-    protected boolean fieldShouldBeConsidered(CheckerPiece piece, Point position) {
+    protected boolean fieldShouldNotBeConsidered(CheckerPiece piece, Point position) {
         if(piece.getIsKing()) {
-            return true;
+            return false;
         }
 
-        return (piece.getTeam() != Team.WHITE || !(position.getY() < piece.getPosition().getY())) &&
-            (piece.getTeam() != Team.BLACK || !(position.getY() > piece.getPosition().getY()));
+        return (piece.getTeam() == Team.WHITE && position.getY() < piece.getPosition().getY()) ||
+            (piece.getTeam() == Team.BLACK && position.getY() > piece.getPosition().getY());
     }
 
     protected boolean onPieceMove(CheckerPiece movedPiece, boolean didJump) {
@@ -63,19 +69,58 @@ public class RegularCheckersController extends AbstractController {
             movedPiece.setKing();
         }
 
+        for(CheckerPiece piece : this.forcedJumpMoves) {
+            piece.setCanHighlight(false);
+        }
+
         return !didJump || !this.canJumpMore(movedPiece);
     }
 
-    protected void onSelectedPieceClick() {
-        if(!this.pieceHighlightLocked) {
-            return;
+    // Check if any jump moves can be made and if yes, force the player to select one
+    protected void onTurnStart() {
+        for(CheckerPiece piece : this.checkerPieces) {
+            if(!piece.isActive()) {
+                continue;
+            }
+
+            if(this.isWhiteTurn && piece.getTeam() == Team.BLACK || !this.isWhiteTurn && piece.getTeam() == Team.WHITE) {
+                piece.setCanHighlight(true);
+                continue;
+            }
+
+            boolean pieceHasJumps = false;
+
+            for (Point p : this.surroundingFields(piece.getPosition())) {
+                if(this.fieldShouldNotBeConsidered(piece, p)) {
+                    continue;
+                }
+
+                // Get pane of current field
+                Field field = this.fields.get(p.x).get(p.y);
+
+                // Is this position occupied - and is it possible to jump it?
+                if (field.getChildren().size() > 0) {
+                    Object eligibleJumpMove = this.eligibleJumpMoveOrNull(piece, p);
+
+                    // Check if jump move is eligible - per eligibleJumpMoveOrNull
+                    if (eligibleJumpMove != null) {
+                        // Force player to do this (or another) jump
+                        this.forcedJumpMoves.add(piece);
+                        piece.setCanHighlight(true);
+                        pieceHasJumps = true;
+                        break;
+                    }
+                }
+            }
+
+            piece.setCanHighlight(pieceHasJumps);
         }
 
-        // Abort multi-jump
-        this.normalizeFields();
-        this.selectedPiece.assertHighlight(false);
-        this.selectedPiece = null;
-        this.finishTurn();
+        if(this.forcedJumpMoves.size() == 0) {
+            for(CheckerPiece piece : this.checkerPieces) {
+                piece.setCanHighlight(true);
+            }
+        }
     }
 
     public RegularCheckersController(GameView view, int dimension, GridPane grid) {

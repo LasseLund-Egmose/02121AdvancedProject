@@ -16,6 +16,7 @@ import java.util.HashMap;
 
 public class CheckerPiece {
 
+    protected boolean canHighlight = true; // Can this piece be highlighted?
     protected Cylinder cylinder = null; // Cylinder shape
     protected StackPane cylinderContainer = new StackPane(); // Cylinder container
     protected boolean isActive = false; // Is this piece added to board?
@@ -88,6 +89,10 @@ public class CheckerPiece {
 
     // Make sure piece is either highlighted or not
     public void assertHighlight(boolean shouldHighlight) {
+        if(!this.canHighlight) {
+            return;
+        }
+
         if (shouldHighlight) {
             if(this.kingCylinder != null) {
                 this.kingCylinder.setMaterial(new PhongMaterial(Color.LIMEGREEN));
@@ -167,9 +172,32 @@ public class CheckerPiece {
         return this.team;
     }
 
+    public boolean isActive() {
+        return this.isActive;
+    }
+
     // Setup click event on piece
     public void setupEvent(AbstractController controller) {
         this.cylinderContainer.setOnMouseClicked(e -> controller.setSelectedPiece(this));
+    }
+
+    public void setCanHighlight(boolean canHighlight) {
+        this.canHighlight = canHighlight;
+
+        if (!canHighlight) {
+            if(this.kingCylinder != null) {
+                this.kingCylinder.setMaterial(new PhongMaterial(Color.GRAY));
+            }
+
+            this.cylinder.setMaterial(new PhongMaterial(Color.GRAY));
+            return;
+        }
+
+        if(this.kingCylinder != null) {
+            this.kingCylinder.setMaterial(this.getMaterial());
+        }
+
+        this.cylinder.setMaterial(this.getMaterial());
     }
 
     public void setKing() {

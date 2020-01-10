@@ -20,6 +20,7 @@ abstract public class AbstractController {
 
     protected HashMap<Team, Integer> activeCount = new HashMap<>(); // A map (Team -> int) of number of active pieces on each team
 
+    protected ArrayList<CheckerPiece> forcedJumpMoves = new ArrayList<>(); // A list of all pieces with jump moves that has to be done (one has to be selected)
     protected HashMap<Field, Field> possibleJumpMoves = new HashMap<>(); // A map (pane -> jumped position) of all possible jump moves
     protected ArrayList<Field> possibleRegularMoves = new ArrayList<>(); // A list of all possible regular moves
 
@@ -68,6 +69,9 @@ abstract public class AbstractController {
 
         // Finish turn if onPieceMove returns true
         if(this.onPieceMove(this.selectedPiece, didJump)) {
+            // Reset forced jump moves
+            this.forcedJumpMoves.clear();
+
             // Reset selected field
             this.selectedPiece.assertHighlight(false);
             this.selectedPiece = null;
@@ -108,19 +112,21 @@ abstract public class AbstractController {
         checkForWin();
 
         this.view.setupDisplayTurn(this.isWhiteTurn);
+        this.onTurnStart();
+
         this.view.rotate();
     }
 
     // Should a piece be allowed to move to the given position? - Default yes
-    protected boolean fieldShouldBeConsidered(CheckerPiece piece, Point position) {
-        return true;
+    protected boolean fieldShouldNotBeConsidered(CheckerPiece piece, Point position) {
+        return false;
     }
 
     // Highlight fields a selected piece can move to
     protected void highlightEligibleFields(CheckerPiece piece) {
         // Iterate surrounding diagonal fields of given piece
         for (Point p : this.surroundingFields(piece.getPosition())) {
-            if(!this.fieldShouldBeConsidered(piece, p)) {
+            if(this.fieldShouldNotBeConsidered(piece, p)) {
                 continue;
             }
 
@@ -139,7 +145,7 @@ abstract public class AbstractController {
                     this.possibleJumpMoves.put(eligibleJumpMovePane, field);
                     this.view.highlightPane(eligibleJumpMovePane);
                 }
-            } else { // Else allow a regular move
+            } else if (this.forcedJumpMoves.size() == 0) { // Else allow a regular move if a player isn't forced to do a jump
                 this.possibleRegularMoves.add(field);
                 this.view.highlightPane(field);
             }
@@ -184,6 +190,8 @@ abstract public class AbstractController {
     }
 
     protected void onSelectedPieceClick() {}
+
+    protected void onTurnStart() {}
 
     // Called every time a piece is moved
     protected boolean onPieceMove(CheckerPiece movedPiece, boolean didJump) {
