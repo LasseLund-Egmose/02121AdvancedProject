@@ -15,8 +15,6 @@ public class Main extends Application {
     public static GameView gameView;
     public static MainMenuView mainMenuView;
 
-    protected Settings settings;
-
     protected static void setScene(Scene s) {
         Main.primaryStage.setScene(s);
         Main.primaryStage.show();
@@ -42,9 +40,5 @@ public class Main extends Application {
 
         // Set initial view
         Main.setView(Main.mainMenuView);
-    }
-
-    public void setSettings(Settings settings) {
-        this.settings = settings;
     }
 }

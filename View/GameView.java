@@ -3,6 +3,7 @@ package View;
 import Boot.Main;
 import Controller.AbstractController;
 import Controller.RegularCheckersController;
+import Enum.Setting;
 import Enum.Team;
 import Model.Settings;
 
@@ -197,15 +198,7 @@ public class GameView extends AbstractView {
 
     // Setup scene
     public Scene setupScene() {
-
-        // Handle n-argument
-        if (this.args.length == 1) {
-            int newN = Integer.parseInt(this.args[0]);
-
-            if (newN >= 3 && newN <= 100) {
-                this.dimension = newN;
-            }
-        }
+        this.dimension = (int) Settings.get(Setting.Dimension);
 
         // Setup root pane
         StackPane root = new StackPane();

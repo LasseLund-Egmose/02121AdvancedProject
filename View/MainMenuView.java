@@ -1,10 +1,9 @@
 package View;
 
 import Boot.Main;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+import Enum.Setting;
+import Model.Settings;
 import javafx.geometry.Insets;
-import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -30,6 +29,16 @@ public class MainMenuView extends AbstractView {
 
     // Setup scene
     public Scene setupScene() {
+        int dimension = 8;
+
+        if (this.args.length == 1) {
+            int newN = Integer.parseInt(this.args[0]);
+
+            if (newN >= 3 && newN <= 100) {
+                dimension = newN;
+            }
+        }
+
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.TOP_LEFT);
         grid.setHgap(50);
@@ -61,7 +70,7 @@ public class MainMenuView extends AbstractView {
                 " -fx-border-image-width: 10; -fx-border-image-slice: 10");
 
 
-        Slider tileSize = new Slider(3, 100, 8);
+        Slider tileSize = new Slider(3, 100, dimension);
         tileSize.setShowTickMarks(true);
         tileSize.setShowTickLabels(true);
         tileSize.setPrefSize(1000,50);
@@ -73,18 +82,27 @@ public class MainMenuView extends AbstractView {
         TextField showTileSize = new TextField("" + (int)tileSize.getValue());
         showTileSize.setMaxSize(50,50);
 
-        tileSize.setOnMouseDragged( e ->{
+        Settings.set(Setting.Dimension, dimension);
+
+
+
+        tileSize.valueProperty().addListener((observable, oldValue, newValue) -> {
             showTileSize.setText("" + (int)tileSize.getValue());
+            Settings.set(Setting.Dimension,(int)tileSize.getValue());
         });
+
 
         showTileSize.textProperty().addListener((observable, oldValue, newValue) -> {
                 try {
                     double value = Double.parseDouble(newValue);
                     tileSize.setValue(value);
+                    Settings.set(Setting.Dimension,(int)value);
                 } catch ( Exception e) {
                     tileSize.setValue(3);
+                    Settings.set(Setting.Dimension,3);
                 }
         });
+
 
         grid.getChildren().addAll(SimpDam,twoPlayer,vsAI,international,tileSize,containSlider);
 
@@ -92,8 +110,6 @@ public class MainMenuView extends AbstractView {
         GridPane.setConstraints(vsAI, 0, 2);
         GridPane.setConstraints(international, 0, 3);
         GridPane.setConstraints(containSlider,0,8);
-        //GridPane.setConstraints(tileSize,0,9);
-        //GridPane.setConstraints(showTileSize,0,8);
 
         containSlider.getChildren().addAll(showTileSize,tileSize);
 
@@ -110,14 +126,5 @@ public class MainMenuView extends AbstractView {
                 "-fx-border-color: #DAA520; -fx-border-width: 5px;");
         return button;
     }
-
-
-
-
-    public void setSettings(){
-
-    }
-
-
 
 }
