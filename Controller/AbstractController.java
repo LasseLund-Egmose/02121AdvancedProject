@@ -112,9 +112,9 @@ abstract public class AbstractController {
         checkForWin();
 
         this.view.setupDisplayTurn(this.isWhiteTurn);
-        this.onTurnStart();
-
-        this.view.rotate();
+        if(this.onTurnStart()) {
+            this.view.rotate();
+        }
     }
 
     // Should a piece be allowed to move to the given position? - Default yes
@@ -191,7 +191,10 @@ abstract public class AbstractController {
 
     protected void onSelectedPieceClick() {}
 
-    protected void onTurnStart() {}
+    // Returns boolean whether or not board should rotate
+    protected boolean onTurnStart() {
+        return true;
+    }
 
     // Called every time a piece is moved
     protected boolean onPieceMove(CheckerPiece movedPiece, boolean didJump) {
@@ -260,9 +263,54 @@ abstract public class AbstractController {
         this.activeCount.put(Team.WHITE, 0);
     }
 
+    public ArrayList<CheckerPiece> getCheckerPieces() {
+        return this.checkerPieces;
+    }
+
+    public HashMap<Integer, HashMap<Integer, Field>> getFields() {
+        return this.fields;
+    }
+
+    public ArrayList<CheckerPiece> getForcedJumpMoves() {
+        return this.forcedJumpMoves;
+    }
+
+    public Field getOppositeDiagonalField(Field mainField, Field diagonalField) {
+        Point mainFieldPosition = mainField.getPosition();
+        Point diagonalFieldPosition = diagonalField.getPosition();
+
+        Point diff = new Point(
+            mainFieldPosition.x - diagonalFieldPosition.x,
+            mainFieldPosition.y - diagonalFieldPosition.y
+        );
+
+        Point otherDiagonalPosition = new Point(mainFieldPosition.x + diff.x, mainFieldPosition.y + diff.y);
+
+        return this.fields.get(otherDiagonalPosition.x).get(otherDiagonalPosition.y);
+    }
+
+    public HashMap<Field, Field> getPossibleJumpMoves() {
+        return this.possibleJumpMoves;
+    }
+
+    public ArrayList<Field> getPossibleRegularMoves() {
+        return this.possibleRegularMoves;
+    }
+
     // Get selected piece
     public CheckerPiece getSelectedPiece() {
         return this.selectedPiece;
+    }
+
+    public ArrayList<Field> getSurroundingFields(Field f) {
+        ArrayList<Field> fields = new ArrayList<>();
+        ArrayList<Point> points = this.surroundingFields(f.getPosition());
+
+        for(Point p : points) {
+            fields.add(this.fields.get(p.x).get(p.y));
+        }
+
+        return fields;
     }
 
     // Set selected piece

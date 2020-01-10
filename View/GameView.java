@@ -2,6 +2,7 @@ package View;
 
 import Boot.Main;
 import Controller.AbstractController;
+import Controller.CPURegularCheckersController;
 import Controller.RegularCheckersController;
 import Enum.Team;
 import Model.Settings;
@@ -258,7 +259,7 @@ public class GameView extends AbstractView {
         StackPane.setAlignment(this.displayTurn, Pos.CENTER);
 
         // Setup controller
-        this.controller = new RegularCheckersController(this, this.dimension, this.grid);
+        this.controller = new CPURegularCheckersController(this, this.dimension, this.grid);
 
         // Setup black fields (with click events) and game pieces
         this.controller.setupFields();
