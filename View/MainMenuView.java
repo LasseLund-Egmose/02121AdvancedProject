@@ -1,11 +1,17 @@
 package View;
 
 import Boot.Main;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
+import javafx.scene.control.Slider;
+import javafx.scene.layout.VBox;
 
 public class MainMenuView extends AbstractView {
 
@@ -26,15 +32,71 @@ public class MainMenuView extends AbstractView {
     public Scene setupScene() {
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.TOP_LEFT);
-        grid.setHgap(10);
-        grid.setVgap(10);
-        grid.setPadding(new Insets(25, 25, 25, 25));
+        grid.setHgap(50);
+        grid.setVgap(30);
+        grid.setPadding(new Insets(35, 35, 35, 35));
 
-        Button SimpDam = constructButton("Two player dam");
+        Button SimpDam = constructButton("Simpdam");
         SimpDam.setOnMouseClicked( e ->{
             Main.setView(Main.gameView);
         });
-        grid.getChildren().add(SimpDam);
+
+        Button twoPlayer = constructButton("Two player dam");
+        twoPlayer.setOnMouseClicked( e ->{
+            Main.setView(Main.gameView);
+        });
+
+        Button vsAI = constructButton("Single player dam");
+        vsAI.setOnMouseClicked( e ->{
+            System.out.println("Not made yet");
+        });
+
+        Button international = constructButton("International dam");
+        vsAI.setOnMouseClicked( e ->{
+            System.out.println("Not made yet");
+        });
+
+        VBox containSlider = new VBox();
+        containSlider.setStyle("-fx-border-image-source: url(/assets/dark_wood.jpg);" +
+                " -fx-border-image-width: 10; -fx-border-image-slice: 10");
+
+
+        Slider tileSize = new Slider(3, 100, 8);
+        tileSize.setShowTickMarks(true);
+        tileSize.setShowTickLabels(true);
+        tileSize.setPrefSize(1000,50);
+        tileSize.setBlockIncrement(1);
+        tileSize.setMajorTickUnit(1);
+        tileSize.setMinorTickCount(0);
+        tileSize.setSnapToTicks(true);
+
+        TextField showTileSize = new TextField("" + (int)tileSize.getValue());
+        showTileSize.setMaxSize(50,50);
+
+        tileSize.setOnMouseDragged( e ->{
+            showTileSize.setText("" + (int)tileSize.getValue());
+        });
+
+        showTileSize.textProperty().addListener((observable, oldValue, newValue) -> {
+                try {
+                    double value = Double.parseDouble(newValue);
+                    tileSize.setValue(value);
+                } catch ( Exception e) {
+                    tileSize.setValue(3);
+                }
+        });
+
+        grid.getChildren().addAll(SimpDam,twoPlayer,vsAI,international,tileSize,containSlider);
+
+        GridPane.setConstraints(twoPlayer,0,1);
+        GridPane.setConstraints(vsAI, 0, 2);
+        GridPane.setConstraints(international, 0, 3);
+        GridPane.setConstraints(containSlider,0,8);
+        //GridPane.setConstraints(tileSize,0,9);
+        //GridPane.setConstraints(showTileSize,0,8);
+
+        containSlider.getChildren().addAll(showTileSize,tileSize);
+
 
         grid.setStyle("-fx-background-color: antiquewhite; -fx-border-color: #DAA520; -fx-border-width: 5px;");
 
@@ -48,6 +110,8 @@ public class MainMenuView extends AbstractView {
                 "-fx-border-color: #DAA520; -fx-border-width: 5px;");
         return button;
     }
+
+
 
 
     public void setSettings(){
