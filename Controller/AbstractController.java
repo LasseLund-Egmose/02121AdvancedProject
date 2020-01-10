@@ -38,11 +38,11 @@ abstract public class AbstractController {
     // Check if a team has won
     protected void checkForWin() {
         if (this.activeCount.get(Team.BLACK) == 0) {
-            this.view.displayWin("White won");
+            this.view.displayWin(Team.WHITE);
         }
 
         if (this.activeCount.get(Team.WHITE) == 0) {
-            this.view.displayWin("Black won");
+            this.view.displayWin(Team.BLACK);
         }
     }
 

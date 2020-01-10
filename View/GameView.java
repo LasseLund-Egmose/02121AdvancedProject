@@ -3,7 +3,9 @@ package View;
 import Boot.Main;
 import Controller.AbstractController;
 import Controller.RegularCheckersController;
+import Enum.Team;
 import Model.Settings;
+
 import javafx.animation.RotateTransition;
 import javafx.geometry.Pos;
 import javafx.scene.PerspectiveCamera;
@@ -117,7 +119,7 @@ public class GameView extends AbstractView {
     }
 
     // Setup win scene and display it
-    public void displayWin(String whoWon) {
+    public void displayWin(Team winningTeam) {
         Main.setView(Main.mainMenuView);
 
         Stage dialog = new Stage();
@@ -135,7 +137,7 @@ public class GameView extends AbstractView {
         pane.setMaxSize(GameView.POPUP_SIZE, GameView.POPUP_SIZE);
 
         Text text = new Text();
-        text.setText(whoWon);
+        text.setText(winningTeam == Team.BLACK ? "Black won" : "White won");
         text.setStyle("-fx-font: 70px Arial");
 
         StackPane.setAlignment(text, Pos.CENTER);

@@ -78,6 +78,8 @@ public class RegularCheckersController extends AbstractController {
 
     // Check if any jump moves can be made and if yes, force the player to select one
     protected void onTurnStart() {
+        boolean teamHasMoves = false;
+
         for(CheckerPiece piece : this.checkerPieces) {
             if(!piece.isActive()) {
                 continue;
@@ -94,6 +96,8 @@ public class RegularCheckersController extends AbstractController {
                 if(this.fieldShouldNotBeConsidered(piece, p)) {
                     continue;
                 }
+
+                teamHasMoves = true;
 
                 // Get pane of current field
                 Field field = this.fields.get(p.x).get(p.y);
@@ -114,6 +118,10 @@ public class RegularCheckersController extends AbstractController {
             }
 
             piece.setCanHighlight(pieceHasJumps);
+        }
+
+        if(!teamHasMoves) {
+            this.view.displayWin(this.isWhiteTurn ? Team.BLACK : Team.WHITE);
         }
 
         if(this.forcedJumpMoves.size() == 0) {
