@@ -91,25 +91,32 @@ public class ObjectDB implements Serializable {
         }
 
         if (this.fields != null) {
+            // Loop over all the fields in the fields hashmap
             for (HashMap.Entry<Integer, HashMap<Integer, Field>> x : this.fields.entrySet()) {
                 for (HashMap.Entry<Integer, Field> y : x.getValue().entrySet()) {
+                    // Create a new field with the position of the original
+                    Field newField = new Field(new Point(x.getKey(), y.getKey()));
+
+                    // Insert the new field in the fields hashmap
                     if (!fields.containsKey(x.getKey())) {
                         fields.put(x.getKey(), new HashMap<>());
                     }
-                    Field newField = new Field(new Point(x.getKey(), y.getKey()));
                     fields.get(x.getKey()).put(y.getKey(), newField);
                 }
             }
         }
 
+        // Set global variables
         this.checkerPieces = copy;
         this.fields = fields;
 
+        // Remove the cylinder container in every checker piece as they are instances of StackPane
+        // which is not serializable
         for (CheckerPiece piece : this.checkerPieces) {
             piece.setCylinderContainer(null);
         }
 
-
+        // Create an object stream and write a file with the state of this
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(filename))) {
             oos.writeObject(this);
         } catch (IOException e) {
@@ -119,16 +126,19 @@ public class ObjectDB implements Serializable {
 
     // deserialize file and load data into state
     public ObjectDB loadState(String filename) {
+        // Create an object stream from file and load that into an instance of ObjectDB
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(filename))) {
             ObjectDB db = (ObjectDB) ois.readObject();
 
             ArrayList<CheckerPiece> checkerPieces = db.getCheckerPieces();
 
+            // For each checker piece -> set cylinder continer to a new StackPane and setup piece
             for (CheckerPiece piece : checkerPieces) {
                 piece.setCylinderContainer(new StackPane());
                 piece.setupPiece();
             }
 
+            // return the db instance
             return db;
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
