@@ -87,6 +87,13 @@ public class CheckerPiece {
         this.setupPiece();
     }
 
+    public CheckerPiece(boolean isActive, boolean isKing, double size, Team team) {
+        this.isActive = isActive;
+        this.isKing = isKing;
+        this.size = size;
+        this.team = team;
+    }
+
     // Make sure piece is either highlighted or not
     public void assertHighlight(boolean shouldHighlight) {
         if(!this.canHighlight) {
