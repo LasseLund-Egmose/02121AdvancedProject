@@ -175,6 +175,10 @@ public class CheckerPiece {
         return this.getParent().getPosition();
     }
 
+    public double getSize() {
+        return size;
+    }
+
     public Team getTeam() {
         return this.team;
     }
@@ -211,5 +215,13 @@ public class CheckerPiece {
         this.isKing = true;
 
         this.setupPiece();
+    }
+
+    public void setCylinderContainer(StackPane cylinderContainer) {
+        this.cylinderContainer = cylinderContainer;
+    }
+
+    public void setParent(Field parent) {
+        this.parent = parent;
     }
 }
