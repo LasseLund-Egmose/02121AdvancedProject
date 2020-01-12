@@ -1,6 +1,8 @@
 package View;
 
 import Boot.Main;
+import Controller.RegularCheckersController;
+import Controller.SimpDamController;
 import Enum.Setting;
 import Model.Settings;
 import javafx.geometry.Insets;
@@ -47,11 +49,14 @@ public class MainMenuView extends AbstractView {
 
         Button SimpDam = constructButton("Simpdam");
         SimpDam.setOnMouseClicked( e ->{
+            Settings.set(Setting.Controller, new SimpDamController(Main.gameView,(int)Settings.get(Setting.Dimension),Main.gameView.grid));
             Main.setView(Main.gameView);
         });
 
         Button twoPlayer = constructButton("Two player dam");
-        twoPlayer.setOnMouseClicked( e ->{
+        int finalDimension = dimension;
+        twoPlayer.setOnMouseClicked(e ->{
+            Settings.set(Setting.Controller, new RegularCheckersController(Main.gameView,(int)Settings.get(Setting.Dimension),Main.gameView.grid));
             Main.setView(Main.gameView);
         });
 
@@ -61,7 +66,7 @@ public class MainMenuView extends AbstractView {
         });
 
         Button international = constructButton("International dam");
-        vsAI.setOnMouseClicked( e ->{
+        international.setOnMouseClicked( e ->{
             System.out.println("Not made yet");
         });
 
@@ -105,16 +110,16 @@ public class MainMenuView extends AbstractView {
 
 
         grid.getChildren().addAll(SimpDam,twoPlayer,vsAI,international,tileSize,containSlider);
+        containSlider.getChildren().addAll(showTileSize,tileSize);
+        grid.setStyle("-fx-background-color: antiquewhite; -fx-border-color: #DAA520; -fx-border-width: 5px;");
 
         GridPane.setConstraints(twoPlayer,0,1);
         GridPane.setConstraints(vsAI, 0, 2);
         GridPane.setConstraints(international, 0, 3);
         GridPane.setConstraints(containSlider,0,8);
 
-        containSlider.getChildren().addAll(showTileSize,tileSize);
 
 
-        grid.setStyle("-fx-background-color: antiquewhite; -fx-border-color: #DAA520; -fx-border-width: 5px;");
 
         return new Scene(grid, GameView.WIDTH, GameView.HEIGHT, true, null);
     }
@@ -125,6 +130,10 @@ public class MainMenuView extends AbstractView {
                 " -fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: #DAA520;" +
                 "-fx-border-color: #DAA520; -fx-border-width: 5px;");
         return button;
+    }
+
+    public void constructSettingsRoot(){
+
     }
 
 }
