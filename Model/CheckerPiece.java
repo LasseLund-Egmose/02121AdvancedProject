@@ -56,7 +56,7 @@ public class CheckerPiece {
     }
 
     // Setup pane, shape and material
-    protected void setupPiece() {
+    public void setupPiece() {
         if(this.material == null) {
             this.setupMaterial();
         }
