@@ -1,7 +1,7 @@
 package CPU.Strategy;
 
-import CPU.Model.Move;
-import CPU.Model.VulnerablePosition;
+import Model.Move;
+import Model.VulnerablePosition;
 import Controller.CPURegularCheckersController;
 import Enum.Team;
 import Model.CheckerPiece;

@@ -1,5 +1,7 @@
 package Controller;
 
+import Model.Move;
+import Enum.MoveType;
 import Enum.Team;
 import Model.CheckerPiece;
 import Model.Field;
@@ -124,31 +126,20 @@ abstract public class AbstractController {
 
     // Highlight fields a selected piece can move to
     protected void highlightEligibleFields(CheckerPiece piece) {
-        // Iterate surrounding diagonal fields of given piece
-        for (Point p : this.surroundingFields(piece.getPosition())) {
-            if(this.fieldShouldNotBeConsidered(piece, p)) {
+        ArrayList<Move> legalMoves = this.getLegalMovesForPiece(piece);
+
+        for(Move move : legalMoves) {
+            Field toField = move.getToField();
+
+            if(move.getMoveType() == MoveType.JUMP) {
+                this.possibleJumpMoves.put(toField, move.getJumpedField());
+                this.view.highlightPane(toField);
                 continue;
             }
 
-            // Get pane of current field
-            Field field = this.fields.get(p.x).get(p.y);
-
-            // Is this position occupied - and is it possible to jump it?
-            if (field.getChildren().size() > 0) {
-                Object eligibleJumpMove = this.eligibleJumpMoveOrNull(piece, p);
-
-                // Check if jump move is eligible - per eligibleJumpMoveOrNull
-                if (eligibleJumpMove instanceof Field) {
-                    // Handle jump move if not null (e.g. instance of Field)
-                    Field eligibleJumpMovePane = (Field) eligibleJumpMove;
-
-                    this.possibleJumpMoves.put(eligibleJumpMovePane, field);
-                    this.view.highlightPane(eligibleJumpMovePane);
-                }
-            } else if (this.forcedJumpMoves.size() == 0) { // Else allow a regular move if a player isn't forced to do a jump
-                this.possibleRegularMoves.add(field);
-                this.view.highlightPane(field);
-            }
+            // Regular move
+            this.possibleRegularMoves.add(toField);
+            this.view.highlightPane(toField);
         }
     }
 
@@ -273,6 +264,39 @@ abstract public class AbstractController {
 
     public ArrayList<CheckerPiece> getForcedJumpMoves() {
         return this.forcedJumpMoves;
+    }
+
+    public ArrayList<Move> getLegalMovesForPiece(CheckerPiece piece) {
+        ArrayList<Move> legalMoves = new ArrayList<>();
+
+        // Iterate surrounding diagonal fields of given piece
+        for (Point p : this.surroundingFields(piece.getPosition())) {
+            if(this.fieldShouldNotBeConsidered(piece, p)) {
+                continue;
+            }
+
+            // Get pane of current field
+            Field field = this.fields.get(p.x).get(p.y);
+
+            // Is this position occupied - and is it possible to jump it?
+            if (field.getChildren().size() > 0) {
+                Object eligibleJumpMove = this.eligibleJumpMoveOrNull(piece, p);
+
+                // Check if jump move is eligible - per eligibleJumpMoveOrNull
+                if (eligibleJumpMove instanceof Field) {
+                    // Handle jump move if not null (e.g. instance of Field)
+                    Field eligibleJumpMovePane = (Field) eligibleJumpMove;
+
+                    // Add new move to legalMoves
+                    legalMoves.add(new Move(piece, eligibleJumpMovePane, field));
+                }
+            } else if (this.forcedJumpMoves.size() == 0) {
+                // Else allow a regular move if a player isn't forced to do a jump
+                legalMoves.add(new Move(piece, field));
+            }
+        }
+
+        return legalMoves;
     }
 
     public Field getOppositeDiagonalField(Field mainField, Field diagonalField) {

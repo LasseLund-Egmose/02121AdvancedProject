@@ -1,4 +1,4 @@
-package CPU.Model;
+package Model;
 
 import Model.CheckerPiece;
 
