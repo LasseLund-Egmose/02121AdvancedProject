@@ -21,6 +21,11 @@ public class Field extends StackPane {
         this.position = position;
     }
 
+    public Field(CheckerPiece attachedPiece, Point position) {
+        this.attachedPiece = attachedPiece;
+        this.position = position;
+    }
+
     public void setAttachedPiece(CheckerPiece piece) {
         this.attachedPiece = piece;
     }
