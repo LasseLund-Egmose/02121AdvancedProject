@@ -40,49 +40,18 @@ abstract public class AbstractController {
     abstract public void setupPieces();
 
     // Check if a team has won
-    protected void checkForWin() {
+    protected boolean checkForWin() {
         if (this.activeCount.get(Team.BLACK) == 0) {
             this.view.displayWin(Team.WHITE);
+            return true;
         }
 
         if (this.activeCount.get(Team.WHITE) == 0) {
             this.view.displayWin(Team.BLACK);
+            return true;
         }
-    }
 
-    // Handle a jump move
-    protected void doJumpMove(Field toField, Field jumpedField) {
-        // Detach (remove) jumped Model.CheckerPiece
-        jumpedField.getAttachedPiece().detach(this.activeCount);
-
-        // Handle rest of move as a regular move
-        this.doRegularMove(toField, true);
-    }
-
-    // Handle a regular move
-    protected void doRegularMove(Field toField, boolean didJump) {
-        // Attach selected piece to chosen field
-        this.getSelectedPiece().attachToField(toField, this.activeCount);
-
-        // Remove highlight fields
-        this.normalizeFields();
-
-        // Reset highlight-related properties
-        this.possibleJumpMoves.clear();
-        this.possibleRegularMoves.clear();
-
-        // Finish turn if onPieceMove returns true
-        if(this.onPieceMove(this.selectedPiece, didJump)) {
-            // Reset forced jump moves
-            this.forcedJumpMoves.clear();
-
-            // Reset selected field
-            this.selectedPiece.assertHighlight(false);
-            this.selectedPiece = null;
-
-            // Finish turn
-            this.finishTurn();
-        }
+        return false;
     }
 
     // Check if a jump move is eligible (e.g. no piece behind jumped piece)
@@ -110,14 +79,17 @@ abstract public class AbstractController {
 
     // Check if game is over, toggle isWhiteTurn and setup turn for other team
     protected void finishTurn() {
+        System.out.println((this.isWhiteTurn ? "White" : "Black") + " turn finished");
+
         this.isWhiteTurn = !this.isWhiteTurn;
         this.pieceHighlightLocked = false;
 
-        checkForWin();
-
-        this.view.setupDisplayTurn(this.isWhiteTurn);
-        if(this.onTurnStart()) {
-            this.view.rotate();
+        // Is game won or can we play on?
+        if(!checkForWin()) {
+            this.view.setupDisplayTurn(this.isWhiteTurn);
+            if (this.onTurnStart()) {
+                this.view.rotate();
+            }
         }
     }
 
@@ -148,17 +120,6 @@ abstract public class AbstractController {
     // Check if position is within boundaries of board
     protected boolean isPositionValid(Point p) {
         return p.x >= 1 && p.y >= 1 && p.x <= this.dimension && p.y <= this.dimension;
-    }
-
-    // Remove highlights from highlighted fields
-    protected void normalizeFields() {
-        ArrayList<Field> allHighlightedPanes = new ArrayList<>();
-        allHighlightedPanes.addAll(this.possibleJumpMoves.keySet());
-        allHighlightedPanes.addAll(this.possibleRegularMoves);
-
-        for (Field field : allHighlightedPanes) {
-            this.view.normalizePane(field);
-        }
     }
 
     // Handle click on black field
@@ -281,12 +242,39 @@ abstract public class AbstractController {
         this.moveClickEventHandler = mouseEvent -> this.onFieldClick(mouseEvent.getSource());
     }
 
-    public ArrayList<CheckerPiece> getCheckerPieces() {
-        return checkerPieces;
+    // Handle a jump move
+    public void doJumpMove(Field toField, Field jumpedField) {
+        // Detach (remove) jumped Model.CheckerPiece
+        jumpedField.getAttachedPiece().detach(this.activeCount);
+
+        // Handle rest of move as a regular move
+        this.doRegularMove(toField, true);
     }
 
-    public HashMap<Integer, HashMap<Integer, Field>> getFields() {
-        return fields;
+    // Handle a regular move
+    public void doRegularMove(Field toField, boolean didJump) {
+        // Attach selected piece to chosen field
+        this.getSelectedPiece().attachToField(toField, this.activeCount);
+
+        // Remove highlight fields
+        this.normalizeFields();
+
+        // Reset highlight-related properties
+        this.possibleJumpMoves.clear();
+        this.possibleRegularMoves.clear();
+
+        // Finish turn if onPieceMove returns true
+        if(this.onPieceMove(this.selectedPiece, didJump)) {
+            // Reset forced jump moves
+            this.forcedJumpMoves.clear();
+
+            // Reset selected field
+            this.selectedPiece.assertHighlight(false);
+            this.selectedPiece = null;
+
+            // Finish turn
+            this.finishTurn();
+        }
     }
 
     public HashMap<Team, Integer> getActiveCount() {
@@ -311,6 +299,10 @@ abstract public class AbstractController {
 
     public ArrayList<Move> getLegalMovesForPiece(CheckerPiece piece) {
         ArrayList<Move> legalMoves = new ArrayList<>();
+
+        if(!piece.isActive()) {
+            return legalMoves;
+        }
 
         // Iterate surrounding diagonal fields of given piece
         for (Point p : this.surroundingFields(piece.getPosition())) {
@@ -380,6 +372,21 @@ abstract public class AbstractController {
         return fields;
     }
 
+    public GameView getView() {
+        return this.view;
+    }
+
+    // Remove highlights from highlighted fields
+    public void normalizeFields() {
+        ArrayList<Field> allHighlightedPanes = new ArrayList<>();
+        allHighlightedPanes.addAll(this.possibleJumpMoves.keySet());
+        allHighlightedPanes.addAll(this.possibleRegularMoves);
+
+        for (Field field : allHighlightedPanes) {
+            this.view.normalizePane(field);
+        }
+    }
+
     // Set selected piece
     public void setSelectedPiece(CheckerPiece piece) {
         if(piece != null && this.selectedPiece == piece) {
@@ -397,7 +404,7 @@ abstract public class AbstractController {
         }
 
         // Select piece if turn matches the piece's team
-        if (this.selectedPiece != piece && isWhiteTurn == (piece.getTeam() == Team.WHITE)) {
+        if (this.selectedPiece != piece && this.isWhiteTurn == (piece.getTeam() == Team.WHITE)) {
             this.selectedPiece = piece;
             this.selectedPiece.assertHighlight(true);
 

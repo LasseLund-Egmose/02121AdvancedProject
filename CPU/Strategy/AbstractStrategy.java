@@ -17,8 +17,6 @@ abstract public class AbstractStrategy {
 
     public AbstractStrategy(CPURegularCheckersController controller) {
         this.controller = controller;
-
-        this.updateAllLegalMoves();
     }
 
     protected void updateAllLegalMoves() {
@@ -29,7 +27,11 @@ abstract public class AbstractStrategy {
                 continue;
             }
 
-            this.allLegalMoves.put(piece, this.controller.getLegalMovesForPiece(piece));
+            ArrayList<Move> legalMovesForPiece = this.controller.getLegalMovesForPiece(piece);
+
+            if(legalMovesForPiece.size() > 0) {
+                this.allLegalMoves.put(piece, legalMovesForPiece);
+            }
         }
     }
 

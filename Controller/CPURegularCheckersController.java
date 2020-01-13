@@ -20,7 +20,15 @@ public class CPURegularCheckersController extends RegularCheckersController {
     protected boolean onTurnStart() {
         super.onTurnStart();
 
+        if(this.isWhiteTurn) {
+            return false;
+        }
 
+        try {
+            this.cpu.takeTurn();
+        } catch (InterruptedException e) {
+            System.out.println("Exception occurred: " + e.getMessage());
+        }
 
         return false;
     }
@@ -32,5 +40,19 @@ public class CPURegularCheckersController extends RegularCheckersController {
         }
 
         super.setSelectedPiece(piece);
+    }
+
+    public void setSelectedPieceCPU(CheckerPiece piece) {
+        if(this.isWhiteTurn) {
+            return;
+        }
+
+        this.selectedPiece = piece;
+    }
+
+    public void setupPieces() {
+        super.setupPieces();
+
+        this.cpu.initStrategies();
     }
 }

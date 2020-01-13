@@ -1,6 +1,7 @@
 package View;
 
 import Boot.Main;
+import Controller.CPURegularCheckersController;
 import Controller.RegularCheckersController;
 import Controller.SimpDamController;
 import Enum.Setting;
@@ -66,7 +67,8 @@ public class MainMenuView extends AbstractView {
         
         Button vsAI = constructButton("Single player dam");
         vsAI.setOnMouseClicked( e ->{
-            System.out.println("Not made yet");
+            Settings.set(Setting.Controller, new CPURegularCheckersController(Main.gameView,(int)Settings.get(Setting.Dimension),Main.gameView.grid));
+            Main.setView(Main.gameView);
         });
 
         Button international = constructButton("International dam");

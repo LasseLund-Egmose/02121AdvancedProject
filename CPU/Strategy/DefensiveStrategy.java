@@ -53,6 +53,8 @@ public class DefensiveStrategy extends AbstractStrategy {
     }
 
     public Move getMoveOrNull() {
+        this.updateAllLegalMoves();
+
         return null;
     }
 
