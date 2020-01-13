@@ -215,6 +215,11 @@ abstract public class AbstractController {
         this.view.setupField(field, p);
     }
 
+    public void setupField(Field field) {
+        field.addEventFilter(MouseEvent.MOUSE_PRESSED, this.moveClickEventHandler);
+        this.view.setupField(field, field.getPosition());
+    }
+
     // Create a piece by team and attach it to given position
     protected void setupPiece(Point position, Team team) {
         CheckerPiece piece = new CheckerPiece(this.view.getFieldSize(), team);
