@@ -1,6 +1,7 @@
 package Boot;
 
 import Model.Settings;
+import Persistence.ObjectDB;
 import View.AbstractView;
 import View.GameView;
 import View.MainMenuView;
@@ -14,8 +15,6 @@ public class Main extends Application {
 
     public static GameView gameView;
     public static MainMenuView mainMenuView;
-
-    protected Settings settings;
 
     protected static void setScene(Scene s) {
         Main.primaryStage.setScene(s);
@@ -37,14 +36,14 @@ public class Main extends Application {
         Main.primaryStage.setTitle(view.getTitle());
     }
 
+    public static void setGameView(ObjectDB state) {
+        Main.setScene(Main.gameView.setupScene(state));
+    }
+
     public void start(Stage primaryStage) {
         Main.primaryStage = primaryStage;
 
         // Set initial view
         Main.setView(Main.mainMenuView);
-    }
-
-    public void setSettings(Settings settings) {
-        this.settings = settings;
     }
 }

@@ -12,9 +12,10 @@ import javafx.scene.shape.Cylinder;
 import javafx.scene.transform.Rotate;
 
 import java.awt.*;
+import java.io.Serializable;
 import java.util.HashMap;
 
-public class CheckerPiece {
+public class CheckerPiece implements Serializable {
 
     protected boolean canHighlight = true; // Can this piece be highlighted?
     protected Cylinder cylinder = null; // Cylinder shape
@@ -56,7 +57,7 @@ public class CheckerPiece {
     }
 
     // Setup pane, shape and material
-    protected void setupPiece() {
+    public void setupPiece() {
         if(this.material == null) {
             this.setupMaterial();
         }
@@ -85,6 +86,13 @@ public class CheckerPiece {
         this.team = team;
 
         this.setupPiece();
+    }
+
+    public CheckerPiece(boolean isActive, boolean isKing, double size, Team team) {
+        this.isActive = isActive;
+        this.isKing = isKing;
+        this.size = size;
+        this.team = team;
     }
 
     // Make sure piece is either highlighted or not
@@ -168,6 +176,10 @@ public class CheckerPiece {
         return this.getParent().getPosition();
     }
 
+    public double getSize() {
+        return size;
+    }
+
     public Team getTeam() {
         return this.team;
     }
@@ -204,5 +216,13 @@ public class CheckerPiece {
         this.isKing = true;
 
         this.setupPiece();
+    }
+
+    public void setCylinderContainer(StackPane cylinderContainer) {
+        this.cylinderContainer = cylinderContainer;
+    }
+
+    public void setParent(Field parent) {
+        this.parent = parent;
     }
 }

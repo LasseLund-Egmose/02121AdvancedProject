@@ -33,6 +33,8 @@ abstract public class AbstractController {
     protected boolean pieceHighlightLocked = false; // Should highlight be locked to one piece? Happens when jumping multiple pieces in one turn
     protected CheckerPiece selectedPiece = null; // Keep track of selected piece
     protected GameView view; // Reference to view instance
+    protected int minFieldSize=8; //minimum field size
+    protected int maxFieldSize=100; //maximum field size
 
     // Setup a piece in each corner
     abstract public void setupPieces();
@@ -207,6 +209,11 @@ abstract public class AbstractController {
         this.view.setupField(field, p);
     }
 
+    public void setupField(Field field) {
+        field.addEventFilter(MouseEvent.MOUSE_PRESSED, this.moveClickEventHandler);
+        this.view.setupField(field, field.getPosition());
+    }
+
     // Create a piece by team and attach it to given position
     protected void setupPiece(Point position, Team team) {
         CheckerPiece piece = new CheckerPiece(this.view.getFieldSize(), team);
@@ -252,6 +259,42 @@ abstract public class AbstractController {
 
         this.activeCount.put(Team.BLACK, 0);
         this.activeCount.put(Team.WHITE, 0);
+    }
+
+
+    public AbstractController(
+            GameView view,
+            int dimension,
+            GridPane grid,
+            ArrayList<CheckerPiece> checkerPieces,
+            HashMap<Integer, HashMap<Integer, Field>> fields,
+            boolean isWhiteTurn,
+            HashMap<Team, Integer> activeCount
+    ) {
+        this.view = view;
+        this.dimension = dimension;
+        this.grid = grid;
+        this.checkerPieces = checkerPieces;
+        this.fields = fields;
+        this.isWhiteTurn = isWhiteTurn;
+        this.activeCount = activeCount;
+        this.moveClickEventHandler = mouseEvent -> this.onFieldClick(mouseEvent.getSource());
+    }
+
+    public ArrayList<CheckerPiece> getCheckerPieces() {
+        return checkerPieces;
+    }
+
+    public HashMap<Integer, HashMap<Integer, Field>> getFields() {
+        return fields;
+    }
+
+    public HashMap<Team, Integer> getActiveCount() {
+        return activeCount;
+    }
+
+    public boolean isWhiteTurn() {
+        return isWhiteTurn;
     }
 
     public ArrayList<CheckerPiece> getCheckerPieces() {
