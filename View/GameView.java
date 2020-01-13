@@ -269,4 +269,120 @@ public class GameView extends AbstractView {
         return scene;
     }
 
+    // Setup scene from saved game
+    public Scene setupScene(ObjectDB db) {
+        this.dimension = (int) Settings.get(Setting.Dimension);
+
+        // Setup root pane
+        StackPane root = new StackPane();
+        root.setMinSize(GameView.WIDTH, GameView.HEIGHT);
+        root.setMaxSize(GameView.WIDTH, GameView.HEIGHT);
+
+
+
+        Text saveGame = new Text("Save");
+        saveGame.setStyle("-fx-font: 50 Arial;");
+
+        StackPane saveGameContainer = new StackPane();
+        saveGameContainer.setMinHeight(80);
+        saveGameContainer.setMinWidth(20);
+        saveGameContainer.setMaxHeight(20);
+        saveGameContainer.setMaxWidth(300);
+        saveGameContainer.setStyle("-fx-border-color: gray; -fx-border-width: 4;");
+        saveGameContainer.getChildren().add(saveGame);
+        saveGameContainer.setTranslateZ(-GameView.zOffset());
+        saveGameContainer.setTranslateX(300);
+        saveGameContainer.setTranslateY(-300);
+
+        saveGameContainer.addEventFilter(MouseEvent.MOUSE_PRESSED, e -> {
+            ObjectDB newDB = new ObjectDB();
+            newDB.setActiveCount(controller.getActiveCount());
+            newDB.setCheckerPieces(controller.getCheckerPieces());
+            newDB.setFields(controller.getFields());
+            newDB.setSettings(this.settings);
+            newDB.setWhiteTurn(controller.isWhiteTurn());
+            newDB.saveState("NormalGame");
+        });
+
+        // Setup turn text and its container
+        this.displayTurn = new Text();
+        this.displayTurn.setStyle("-fx-font: 50 Arial;");
+        this.displayTurn.setFill(Color.BLACK);
+        this.setupDisplayTurn(db.isWhiteTurn());
+
+        StackPane displayTurnContainer = new StackPane();
+        displayTurnContainer.setMinHeight(80);
+        displayTurnContainer.setMinWidth(20);
+        displayTurnContainer.setMaxHeight(20);
+        displayTurnContainer.setMaxWidth(300);
+        displayTurnContainer.setStyle("-fx-border-color: gray; -fx-border-width: 4;");
+        displayTurnContainer.getChildren().add(this.displayTurn);
+        displayTurnContainer.setTranslateZ(-GameView.zOffset());
+
+        // Setup background and move it behind the board
+        Rectangle background = new Rectangle(GameView.WIDTH * 2, GameView.HEIGHT * 2);
+        background.setFill(Color.web("antiquewhite"));
+
+        // Setup container for board and rotate it according to BOARD_TILT
+        StackPane boardContainer = new StackPane();
+        boardContainer.setPrefSize(GameView.WIDTH, GameView.HEIGHT);
+        boardContainer.setRotationAxis(Rotate.X_AXIS);
+        boardContainer.setRotate(-GameView.BOARD_TILT);
+        boardContainer.setPickOnBounds(false);
+        boardContainer.setStyle("-fx-effect: null;");
+        boardContainer.setTranslateZ(-GameView.zOffset());
+
+        // Setup board surface and add it to board container
+        this.setupSurface();
+        boardContainer.getChildren().add(this.surfacePane);
+
+        // Add aforementioned elements to root
+        root.getChildren().addAll(background, boardContainer, displayTurnContainer, saveGameContainer);
+
+        // Pass through click events and disable shadows for root
+        root.setPickOnBounds(false);
+        root.setStyle("-fx-effect: null;");
+
+        // Set alignments for elements
+        StackPane.setAlignment(background, Pos.CENTER);
+        StackPane.setAlignment(displayTurnContainer, Pos.TOP_CENTER);
+        StackPane.setAlignment(this.surfacePane, Pos.CENTER);
+        StackPane.setAlignment(this.displayTurn, Pos.CENTER);
+
+        // Setup controller
+        this.controller = new RegularCheckersController(this, this.dimension, this.grid, db.getCheckerPieces(), db.getFields(), db.isWhiteTurn(), db.getActiveCount());
+
+        // Setup black fields (with click events) and game pieces
+        //this.controller.setupFields();
+        //this.controller.setupPieces();
+
+        // Loop over all the fields in the fields hashmap
+        for (HashMap.Entry<Integer, HashMap<Integer, Field>> x : db.getFields().entrySet()) {
+            for (HashMap.Entry<Integer, Field> y : x.getValue().entrySet()) {
+                this.controller.setupField(y.getValue());
+            }
+        }
+
+        for (CheckerPiece piece : db.getCheckerPieces()) {
+            if (piece.getParent() != null) {
+                piece.setupPiece();
+                piece.setupEvent(this.controller);
+                piece.attachToField(piece.getParent(), db.getActiveCount());
+
+            }
+        }
+
+        if (!db.isWhiteTurn()) { this.surfacePaneRotation.play(); }
+
+        // Setup scene (with depthBuffer to avoid z-fighting and unexpected behaviour) and apply it
+        Scene scene = new Scene(root, GameView.WIDTH, GameView.HEIGHT, true, null);
+
+        // Setup camera for scene
+        PerspectiveCamera pc = new PerspectiveCamera();
+        pc.setTranslateZ(-GameView.zOffset());
+        scene.setCamera(pc);
+
+        return scene;
+    }
+
 }
