@@ -4,6 +4,7 @@ import Enum.Team;
 
 import Model.CheckerPiece;
 import Model.Field;
+import Model.Settings;
 import javafx.scene.layout.StackPane;
 
 import java.awt.*;
@@ -19,23 +20,26 @@ public class ObjectDB implements Serializable {
 
     protected HashMap<Team, Integer> activeCount = new HashMap<>(); // A map (Team -> int) of number of active pieces on each team
 
-    protected int dimension; // Dimension of board
+    protected Settings settings; // Dimension of board
     protected boolean isWhiteTurn = true; // Keep track of turn
-
 
     // SETTERS
     public void setActiveCount(HashMap<Team, Integer> activeCount) {
         this.activeCount = activeCount;
     }
+
     public void setCheckerPieces(ArrayList<CheckerPiece> checkerPieces) {
         this.checkerPieces = checkerPieces;
     }
-    public void setDimension(int dimension) {
-        this.dimension = dimension;
-    }
+
     public void setFields(HashMap<Integer, HashMap<Integer, Field>> fields) {
         this.fields = fields;
     }
+
+    public void setSettings(Settings settings) {
+        this.settings = settings;
+    }
+
     public void setWhiteTurn(boolean whiteTurn) {
         isWhiteTurn = whiteTurn;
     }
@@ -44,15 +48,19 @@ public class ObjectDB implements Serializable {
     public HashMap<Team, Integer> getActiveCount() {
         return activeCount;
     }
+
     public ArrayList<CheckerPiece> getCheckerPieces() {
         return checkerPieces;
     }
-    public int getDimension() {
-        return dimension;
-    }
+
     public HashMap<Integer, HashMap<Integer, Field>> getFields() {
         return fields;
     }
+
+    public Settings getSettings() {
+        return settings;
+    }
+
     public boolean isWhiteTurn() {
         return isWhiteTurn;
     }
@@ -60,6 +68,7 @@ public class ObjectDB implements Serializable {
 
     // Serialize and save state to a file
     public void saveState(String filename) {
+        System.out.println("Save State");
 
         ArrayList<CheckerPiece> copy = new ArrayList<>();
         HashMap<Integer, HashMap<Integer, Field>> fields = new HashMap<>();
