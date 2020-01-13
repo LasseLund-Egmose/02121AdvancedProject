@@ -12,9 +12,10 @@ import javafx.scene.shape.Cylinder;
 import javafx.scene.transform.Rotate;
 
 import java.awt.*;
+import java.io.Serializable;
 import java.util.HashMap;
 
-public class CheckerPiece {
+public class CheckerPiece implements Serializable {
 
     protected boolean canHighlight = true; // Can this piece be highlighted?
     protected Cylinder cylinder = null; // Cylinder shape
