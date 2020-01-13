@@ -93,13 +93,18 @@ public class ObjectDB implements Serializable {
             // Loop over all the fields in the fields hashmap
             for (HashMap.Entry<Integer, HashMap<Integer, Field>> x : this.fields.entrySet()) {
                 for (HashMap.Entry<Integer, Field> y : x.getValue().entrySet()) {
-                    // Create a new field with the position of the original
-                    Field newField = new Field(new Point(x.getKey(), y.getKey()));
+                    // Add new field if there is not already a field with an attached piece
+                    if (y.getValue().getAttachedPiece() == null) {
+                        // Create a new field with the position of the original
+                        Field newField = new Field(new Point(x.getKey(), y.getKey()));
 
-                    // Insert the new field in the fields hashmap
-                    if (!fields.containsKey(x.getKey())) {
-                        fields.put(x.getKey(), new HashMap<>());
+                        // Insert the new field in the fields hashmap
+                        if (!fields.containsKey(x.getKey())) {
+                            fields.put(x.getKey(), new HashMap<>());
+                        }
+                        fields.get(x.getKey()).put(y.getKey(), newField);
                     }
+                    Field newField = new Field(new Point(x.getKey(), y.getKey()));
                     fields.get(x.getKey()).put(y.getKey(), newField);
                 }
             }
