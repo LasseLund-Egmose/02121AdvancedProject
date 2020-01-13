@@ -262,6 +262,42 @@ abstract public class AbstractController {
         this.activeCount.put(Team.WHITE, 0);
     }
 
+
+    public AbstractController(
+            GameView view,
+            int dimension,
+            GridPane grid,
+            ArrayList<CheckerPiece> checkerPieces,
+            HashMap<Integer, HashMap<Integer, Field>> fields,
+            boolean isWhiteTurn,
+            HashMap<Team, Integer> activeCount
+    ) {
+        this.view = view;
+        this.dimension = dimension;
+        this.grid = grid;
+        this.checkerPieces = checkerPieces;
+        this.fields = fields;
+        this.isWhiteTurn = isWhiteTurn;
+        this.activeCount = activeCount;
+        this.moveClickEventHandler = mouseEvent -> this.onFieldClick(mouseEvent.getSource());
+    }
+
+    public ArrayList<CheckerPiece> getCheckerPieces() {
+        return checkerPieces;
+    }
+
+    public HashMap<Integer, HashMap<Integer, Field>> getFields() {
+        return fields;
+    }
+
+    public HashMap<Team, Integer> getActiveCount() {
+        return activeCount;
+    }
+
+    public boolean isWhiteTurn() {
+        return isWhiteTurn;
+    }
+
     // Get selected piece
     public CheckerPiece getSelectedPiece() {
         return this.selectedPiece;
