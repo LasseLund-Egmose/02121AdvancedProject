@@ -5,6 +5,7 @@ import Controller.RegularCheckersController;
 import Controller.SimpDamController;
 import Enum.Setting;
 import Model.Settings;
+import Persistence.ObjectDB;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -73,6 +74,13 @@ public class MainMenuView extends AbstractView {
             System.out.println("Not made yet");
         });
 
+        Button loadGame = constructButton("Load Game");
+        loadGame.setOnMouseClicked(e -> {
+            ObjectDB db = new ObjectDB();
+            ObjectDB load = db.loadState("NormalGame");
+            Main.setGameView(load);
+        });
+
         VBox containSlider = new VBox();
         containSlider.setStyle("-fx-border-image-source: url(/assets/dark_wood.jpg);" +
                 " -fx-border-image-width: 10; -fx-border-image-slice: 10");
@@ -119,6 +127,7 @@ public class MainMenuView extends AbstractView {
         GridPane.setConstraints(twoPlayer,0,1);
         GridPane.setConstraints(vsAI, 0, 2);
         GridPane.setConstraints(international, 0, 3);
+        GridPane.setConstraints(loadGame, 0, 4);
         GridPane.setConstraints(containSlider,0,8);
 
 
