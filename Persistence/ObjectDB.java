@@ -68,7 +68,6 @@ public class ObjectDB implements Serializable {
 
     // Serialize and save state to a file
     public void saveState(String filename) {
-        System.out.println("Save State");
 
         ArrayList<CheckerPiece> copy = new ArrayList<>();
         HashMap<Integer, HashMap<Integer, Field>> fields = new HashMap<>();
@@ -113,8 +112,6 @@ public class ObjectDB implements Serializable {
                         }
                         fields.get(x.getKey()).put(y.getKey(), newField);
                     }
-                    Field newField = new Field(new Point(x.getKey(), y.getKey()));
-                    fields.get(x.getKey()).put(y.getKey(), newField);
                 }
             }
         }
