@@ -47,12 +47,14 @@ public class MainMenuView extends AbstractView {
         grid.setVgap(30);
         grid.setPadding(new Insets(35, 35, 35, 35));
 
+        //simpel checkers
         Button SimpDam = constructButton("Simpdam");
         SimpDam.setOnMouseClicked( e ->{
             Settings.set(Setting.Controller, new SimpDamController(Main.gameView,(int)Settings.get(Setting.Dimension),Main.gameView.grid));
             Main.setView(Main.gameView);
         });
 
+        //regular checkers
         Button twoPlayer = constructButton("Two player dam");
         int finalDimension = dimension;
         twoPlayer.setOnMouseClicked(e ->{
@@ -60,6 +62,7 @@ public class MainMenuView extends AbstractView {
             Main.setView(Main.gameView);
         });
 
+        
         Button vsAI = constructButton("Single player dam");
         vsAI.setOnMouseClicked( e ->{
             System.out.println("Not made yet");

@@ -4,7 +4,6 @@ import Enum.Team;
 
 import Model.CheckerPiece;
 import Model.Field;
-import com.sun.tools.javac.comp.Check;
 import javafx.scene.layout.StackPane;
 
 import java.awt.*;
