@@ -346,4 +346,6 @@ abstract public class AbstractController {
             }
         }
     }
+
+    public int getMinFieldSize(){ return  this.minFieldSize;}
 }

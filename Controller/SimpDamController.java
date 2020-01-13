@@ -9,6 +9,8 @@ import java.awt.*;
 
 public class SimpDamController extends AbstractController {
 
+    protected int minFieldSize=3; //minimum field size
+
     public SimpDamController(GameView view, int dimension, GridPane grid) {
         super(view, dimension, grid);
     }

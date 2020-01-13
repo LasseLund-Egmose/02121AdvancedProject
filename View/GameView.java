@@ -256,7 +256,6 @@ public class GameView extends AbstractView {
         StackPane.setAlignment(this.displayTurn, Pos.CENTER);
 
         // Setup controller
-        //this.controller = new RegularCheckersController(this, this.dimension, this.grid);
         this.controller = (AbstractController) Settings.get(Setting.Controller);
 
         // Setup black fields (with click events) and game pieces
