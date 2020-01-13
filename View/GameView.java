@@ -5,13 +5,17 @@ import Controller.AbstractController;
 import Controller.RegularCheckersController;
 import Enum.Setting;
 import Enum.Team;
+import Model.CheckerPiece;
+import Model.Field;
 import Model.Settings;
 
+import Persistence.ObjectDB;
 import javafx.animation.RotateTransition;
 import javafx.geometry.Pos;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.image.Image;
@@ -24,6 +28,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.awt.*;
+import java.util.HashMap;
 
 public class GameView extends AbstractView {
 
