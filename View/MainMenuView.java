@@ -18,7 +18,8 @@ public class MainMenuView extends AbstractView {
 
     protected enum controller {
         SimpDamController,
-        RegularCheckersController
+        RegularCheckersController,
+        FlexibleKingController
     }
 
     protected controller selectedController = controller.SimpDamController;
@@ -99,15 +100,14 @@ public class MainMenuView extends AbstractView {
         ToggleGroup toggleGroup = new ToggleGroup();
 
         //Play button setting dimension, controller and changing game view
-        this.playButton = constructButton("New Game",grid,toggleGroup);
-        toggleGroup.getToggles().remove(this.playButton);
+        this.playButton = constructButton("New Game",grid,null);
         this.playButton.setVisible(false);
         this.playButton.setOnMouseClicked( e -> {
             Settings.set(Setting.Dimension,(int)dimensionSlider.getValue());
-            if (this.selectedController == controller.SimpDamController) {
+            if (MainMenuView.selectedButton.equals(this.loadNames[0])) {
                 Settings.set(Setting.Controller,
                         new SimpDamController(Main.gameView,(int) Settings.get(Setting.Dimension),Main.gameView.grid));
-            } else if (this.selectedController == controller.RegularCheckersController) {
+            } else if (MainMenuView.selectedButton.equals(this.loadNames[1])) {
                 Settings.set(Setting.Controller, new RegularCheckersController(Main.gameView,
                         (int) Settings.get(Setting.Dimension),Main.gameView.grid));
             }
@@ -197,39 +197,46 @@ public class MainMenuView extends AbstractView {
         return new Scene(root, GameView.WIDTH, GameView.HEIGHT, true, null);
     }
 
-    public ToggleButton constructButton(String name,GridPane grid,ToggleGroup toggleGroup) {
+    public ToggleButton constructButton(String name,GridPane grid,Object toggleGroupObject) {
         ToggleButton button = new ToggleButton(name);
         button.setStyle("-fx-background-image: url(/assets/dark_wood.jpg); -fx-cursor: hand;" +
                 " -fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: #DAA520;" +
                 "-fx-border-color: #DAA520; -fx-border-width: 5px;");
-        button.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue) {
-                MainMenuView.selectedButton=name;
-                button.setStyle("-fx-background-color: Green; -fx-cursor: hand;" +
-                        " -fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: #DAA520;" +
-                        "-fx-border-color: #DAA520; -fx-border-width: 5px;");
-            } else {
-                MainMenuView.selectedButton=null;
-                button.setStyle("-fx-background-image: url(/assets/dark_wood.jpg); -fx-cursor: hand;" +
-                        " -fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: #DAA520;" +
-                        "-fx-border-color: #DAA520; -fx-border-width: 5px;");
-            }
-            if (toggleGroup.getSelectedToggle()==null) {
-                this.playButton.setVisible(false);
-                this.containSlider.setVisible(false);
-            } else {
-                this.playButton.setVisible(true);
-                this.containSlider.setVisible(true);
-            }
-            if(name.equals(loadNames[0]) || name.equals("New Game")) {
-                this.dimensionSlider.setMin(3);
 
-            } else {
-                this.dimensionSlider.setMin(8);
-            }
+        if(toggleGroupObject instanceof ToggleGroup) {
+            ToggleGroup toggleGroup = (ToggleGroup) toggleGroupObject;
+            toggleGroup.getToggles().add(button);
 
-        });
-        toggleGroup.getToggles().add(button);
+            button.selectedProperty().addListener((observable, oldValue, newValue) -> {
+                if (newValue) {
+                    MainMenuView.selectedButton=name;
+                    button.setStyle("-fx-background-color: Green; -fx-cursor: hand;" +
+                            " -fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: #DAA520;" +
+                            "-fx-border-color: #DAA520; -fx-border-width: 5px;");
+                } else {
+                    MainMenuView.selectedButton=null;
+                    button.setStyle("-fx-background-image: url(/assets/dark_wood.jpg); -fx-cursor: hand;" +
+                            " -fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: #DAA520;" +
+                            "-fx-border-color: #DAA520; -fx-border-width: 5px;");
+                }
+                if (toggleGroup.getSelectedToggle()==null) {
+                    this.playButton.setVisible(false);
+                    this.containSlider.setVisible(false);
+                } else {
+                    this.playButton.setVisible(true);
+                    this.containSlider.setVisible(true);
+                }
+                if(name.equals(loadNames[0]) || name.equals("New Game")) {
+                    this.dimensionSlider.setMin(3);
+
+                } else {
+                    this.dimensionSlider.setMin(8);
+                }
+
+            });
+        }
+
+
         this.grid.getChildren().add(button);
 
         return button;
