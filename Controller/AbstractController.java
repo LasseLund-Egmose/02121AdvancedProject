@@ -310,7 +310,6 @@ abstract public class AbstractController {
 
         this.activeCount.put(Team.BLACK, 0);
         this.activeCount.put(Team.WHITE, 0);
-        countDownTimer();
         setupSounds();
     }
 
@@ -332,7 +331,6 @@ abstract public class AbstractController {
         this.isWhiteTurn = isWhiteTurn;
         this.activeCount = activeCount;
         this.moveClickEventHandler = mouseEvent -> this.onFieldClick(mouseEvent.getSource());
-        countDownTimer();
         setupSounds();
     }
 

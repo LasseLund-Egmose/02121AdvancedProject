@@ -311,6 +311,10 @@ public class GameView extends AbstractView {
     // Setup scene
     public Scene setupScene() {
 
+        //reset time values
+        AbstractController.setTotalTime();
+        AbstractController.setTime();
+
         Scene scene = makeScene(true);
 
         // Setup controller
@@ -320,15 +324,17 @@ public class GameView extends AbstractView {
         this.controller.setupFields();
         this.controller.setupPieces();
 
-        //reset time values
-        AbstractController.setTotalTime();
-        AbstractController.setTime();
+        this.controller.countDownTimer();
 
         return scene;
     }
 
     // Setup scene from saved game
     public Scene setupScene(ObjectDB db) {
+
+        AbstractController.setTotalTime(db.getTotalTime());
+        AbstractController.setTimeWhite(db.getTimeWhite());
+        AbstractController.setTimeBlack(db.getTimeBlack());
 
         Scene scene = makeScene(db.isWhiteTurn());
 
@@ -353,9 +359,6 @@ public class GameView extends AbstractView {
             }
         }
 
-        AbstractController.setTotalTime(db.getTotalTime());
-        AbstractController.setTimeWhite(db.getTimeWhite());
-        AbstractController.setTimeBlack(db.getTimeBlack());
         this.controller.countDownTimer();
 
         // Rotate surfacePane if it's blacks turn
