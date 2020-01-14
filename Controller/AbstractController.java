@@ -5,13 +5,27 @@ import Model.CheckerPiece;
 import Model.Field;
 import View.GameView;
 
+import javafx.animation.Animation;
+import javafx.animation.Animation.Status;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.event.EventHandler;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.media.AudioClip;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.util.Duration;
 
 import java.awt.*;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static javafx.animation.Animation.Status.STOPPED;
 
 abstract public class AbstractController {
 
@@ -31,8 +45,54 @@ abstract public class AbstractController {
     protected boolean pieceHighlightLocked = false; // Should highlight be locked to one piece? Happens when jumping multiple pieces in one turn
     protected CheckerPiece selectedPiece = null; // Keep track of selected piece
     protected GameView view; // Reference to view instance
+    protected Timeline timeline = new Timeline();
+    public static int timeWhite = 300;
+    public static int timeBlack = 300;
+    public static int totalTime = 0;
+    protected static final String path = "./src/assets/chipsCollide4.wav";
+    protected AudioClip audioclip = new AudioClip(new File(path).toURI().toString());
     protected int minFieldSize=8; //minimum field size
     protected int maxFieldSize=100; //maximum field size
+
+    public GameView getView(GameView view){
+        return view;
+    }
+
+    public
+
+    public void countDownTimer() {
+        this.timeline = new Timeline(new KeyFrame(Duration.seconds(1), ev -> {
+            if (isWhiteTurn) {
+                GameView.displayWhiteTimeLeft.setText("White time left: " + formatTime(timeWhite--));
+                totalTime++;
+                if (timeWhite <= -2) {
+                    timeline.stop();
+                    this.view.displayWin("Black won");
+                }
+            } else {
+                GameView.displayBlackTimeLeft.setText("Black time left: " + formatTime(timeBlack--));
+                totalTime++;
+                if (timeBlack <= -2) {
+                    timeline.stop();
+                    this.view.displayWin("White won");
+                }
+            }
+        }));
+        timeline.setCycleCount(Animation.INDEFINITE);
+        timeline.play();
+    }
+
+    public static String formatTime(int timeSeconds) {
+            int minutes = timeSeconds / 60;
+            int seconds = timeSeconds % 60;
+            String formattedTime = "";
+            if (seconds < 10) {
+                formattedTime = minutes + ":" +  "0" + seconds;
+            } else {
+                formattedTime = minutes + ":" + seconds;
+            }
+            return formattedTime;
+    }
 
     // Setup a piece in each corner
     abstract public void setupPieces();
@@ -59,6 +119,9 @@ abstract public class AbstractController {
 
     // Handle a regular move
     protected void doRegularMove(Field toField, boolean didJump) {
+        //play on move sound
+        playOnMoveSound();
+
         // Attach selected piece to chosen field
         this.getSelectedPiece().attachToField(toField, this.activeCount);
 
@@ -81,6 +144,10 @@ abstract public class AbstractController {
             // Finish turn
             this.finishTurn();
         }
+    }
+
+    protected void playOnMoveSound() {
+        this.audioclip.play();
     }
 
     // Check if a jump move is eligible (e.g. no piece behind jumped piece)
@@ -193,7 +260,7 @@ abstract public class AbstractController {
 
     protected void onSelectedPieceClick() {}
 
-    protected void onTurnStart() {}
+    public void onTurnStart() {}
 
     // Called every time a piece is moved
     protected boolean onPieceMove(CheckerPiece movedPiece, boolean didJump) {
@@ -265,6 +332,7 @@ abstract public class AbstractController {
 
         this.activeCount.put(Team.BLACK, 0);
         this.activeCount.put(Team.WHITE, 0);
+        countDownTimer();
     }
 
 
