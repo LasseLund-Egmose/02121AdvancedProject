@@ -13,6 +13,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 
@@ -241,6 +242,10 @@ public class MainMenuView extends AbstractView {
 
     public void constructLoadButton(String fileName, int place) {
         Button button = new Button("Load Game");
+
+        button.setStyle("-fx-background-image: url(/assets/grid.png); -fx-cursor: hand;" +
+                " -fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #7d6425;" +
+                "-fx-border-color: #7d6425; -fx-border-width: 5px;");
 
         ObjectDB db =new ObjectDB();
         ObjectDB state = db.loadState(fileName);
