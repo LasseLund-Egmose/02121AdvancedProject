@@ -417,11 +417,13 @@ public class GameView extends AbstractView {
                 piece.setupPiece();
                 piece.setupEvent(this.controller);
                 piece.attachToField(piece.getParent(), db.getActiveCount());
-
+                piece.setCanHighlight(piece.getCanHighlight());
             }
         }
 
         if (!db.isWhiteTurn()) { this.surfacePaneRotation.play(); }
+
+        this.controller.onTurnStart();
 
         // Setup scene (with depthBuffer to avoid z-fighting and unexpected behaviour) and apply it
         Scene scene = new Scene(root, GameView.WIDTH, GameView.HEIGHT, true, null);
