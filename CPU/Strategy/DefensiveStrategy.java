@@ -18,7 +18,7 @@ public class DefensiveStrategy extends AbstractStrategy {
         Move coveringBehindMove = this.findFixingMoveByCoveringBehind(vulnerability);
         Move movingAwayMove = this.findFixingMoveByMovingAway(vulnerability);
 
-        return coveringBehindMove != null ? coveringBehindMove : movingAwayMove;
+        return movingAwayMove != null ? movingAwayMove : coveringBehindMove;
     }
 
     protected Move findFixingMoveByCoveringBehind(VulnerablePosition vulnerability) {
@@ -36,8 +36,35 @@ public class DefensiveStrategy extends AbstractStrategy {
         return null;
     }
 
-    // TODO
     protected Move findFixingMoveByMovingAway(VulnerablePosition vulnerability) {
+        // Get all possible moves (away) for piece in vulnerability
+        for(Move possibleMove : this.controller.getLegalMovesForPiece(vulnerability.getPiece())) {
+            boolean isSafe = true;
+
+            // Test if (possibly) new diagonal position can be jumped by opponent in next move
+            Field field = possibleMove.getToField();
+            for(Field diagonalField : this.controller.getSurroundingFields(field)) {
+                CheckerPiece newFieldSurroundingField = diagonalField.getAttachedPieceSecure();
+
+                if (newFieldSurroundingField == null || newFieldSurroundingField.getTeam() == possibleMove.getPiece().getTeam()) {
+                    // Diagonal piece does not exist or is on same team as player
+                    continue;
+                }
+
+                // Piece exists and is on opponent's team
+                Field opponentsFieldAfterPossibleJump = this.controller.getOppositeDiagonalField(field, diagonalField);
+                if (opponentsFieldAfterPossibleJump == null || opponentsFieldAfterPossibleJump.getAttachedPieceSecure() != null) {
+                    isSafe = false;
+                    break;
+                }
+            }
+
+            if(isSafe) {
+                System.out.println("Moving away to block jump...");
+                return possibleMove;
+            }
+        }
+
         return null;
     }
 
