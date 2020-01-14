@@ -14,6 +14,14 @@ public class Field extends StackPane implements Serializable {
         return this.attachedPiece;
     }
 
+    public CheckerPiece getAttachedPieceSecure() {
+        if(this.attachedPiece == null) {
+            return null;
+        }
+
+        return this.attachedPiece.getIsActive() ? this.attachedPiece : null;
+    }
+
     public Point getPosition() {
         return position;
     }

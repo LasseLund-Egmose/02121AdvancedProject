@@ -165,11 +165,13 @@ abstract public class AbstractController {
         Field jumpOver = fields.get(opponentPosition.x).get(opponentPosition.y);
         Field jumpTo = fields.get(newPos.x).get(newPos.y);
 
-        if(jumpOver.getAttachedPiece() == null || jumpOver.getAttachedPiece().getTeam() == thisPiece.getTeam()) {
+        CheckerPiece attachedPiece = jumpOver.getAttachedPieceSecure();
+
+        if(attachedPiece == null || attachedPiece.getTeam() == thisPiece.getTeam()) {
             return null;
         }
 
-        return jumpTo.getAttachedPiece() == null ? jumpTo : null;
+        return jumpTo.getAttachedPieceSecure() == null ? jumpTo : null;
     }
 
     // Check if game is over, toggle isWhiteTurn and setup turn for other team
@@ -337,7 +339,7 @@ abstract public class AbstractController {
     // Handle a jump move
     public void doJumpMove(Field toField, Field jumpedField) {
         // Detach (remove) jumped Model.CheckerPiece
-        jumpedField.getAttachedPiece().detach(this.activeCount);
+        jumpedField.getAttachedPieceSecure().detach(this.activeCount);
 
         // Handle rest of move as a regular move
         this.doRegularMove(toField, true);
@@ -412,9 +414,10 @@ abstract public class AbstractController {
 
             // Get pane of current field
             Field field = this.fields.get(p.x).get(p.y);
+            CheckerPiece attachedCheckerPiece = field.getAttachedPieceSecure();
 
             // Is this position occupied - and is it possible to jump it?
-            if (field.getChildren().size() > 0) {
+            if (attachedCheckerPiece != null && attachedCheckerPiece.getTeam() != piece.getTeam()) {
                 Object eligibleJumpMove = this.eligibleJumpMoveOrNull(piece, p);
 
                 // Check if jump move is eligible - per eligibleJumpMoveOrNull
@@ -425,7 +428,7 @@ abstract public class AbstractController {
                     // Add new move to legalMoves
                     legalMoves.add(new Move(piece, eligibleJumpMovePane, field));
                 }
-            } else if (this.forcedJumpMoves.size() == 0) {
+            } else if (attachedCheckerPiece == null && this.forcedJumpMoves.size() == 0) {
                 // Else allow a regular move if a player isn't forced to do a jump
                 legalMoves.add(new Move(piece, field));
             }
@@ -447,14 +450,6 @@ abstract public class AbstractController {
 
         return this.isPositionValid(otherDiagonalPosition) ?
             this.fields.get(otherDiagonalPosition.x).get(otherDiagonalPosition.y) : null;
-    }
-
-    public HashMap<Field, Field> getPossibleJumpMoves() {
-        return this.possibleJumpMoves;
-    }
-
-    public ArrayList<Field> getPossibleRegularMoves() {
-        return this.possibleRegularMoves;
     }
 
     // Get selected piece

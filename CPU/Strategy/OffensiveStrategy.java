@@ -39,7 +39,7 @@ public class OffensiveStrategy extends AbstractStrategy {
         for(Field diagonalField : this.controller.getSurroundingFields(field)) {
             System.out.println("Surrounding field: " + diagonalField.getPosition());
 
-            CheckerPiece surroundingPiece = diagonalField.getAttachedPiece();
+            CheckerPiece surroundingPiece = diagonalField.getAttachedPieceSecure();
 
             if(surroundingPiece == null || surroundingPiece.getTeam() == move.getPiece().getTeam()) {
                 continue;
@@ -47,13 +47,13 @@ public class OffensiveStrategy extends AbstractStrategy {
 
             Field reverseDiagonalField = this.controller.getOppositeDiagonalField(field, diagonalField);
 
-            if(reverseDiagonalField != null && reverseDiagonalField.getAttachedPiece() == null) {
+            if(reverseDiagonalField != null && reverseDiagonalField.getAttachedPieceSecure() == null) {
                 System.out.println("Reverse diagonal field: " + reverseDiagonalField.getPosition());
                 return -1;
             }
 
             Field fieldBehindOpponentNextTurn = this.controller.getOppositeDiagonalField(diagonalField, field);
-            if(fieldBehindOpponentNextTurn != null && fieldBehindOpponentNextTurn.getAttachedPiece() == null) {
+            if(fieldBehindOpponentNextTurn != null && fieldBehindOpponentNextTurn.getAttachedPieceSecure() == null) {
                 System.out.println("Field behind: " + fieldBehindOpponentNextTurn.getPosition());
                 gain = 1;
             }
