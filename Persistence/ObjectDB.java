@@ -96,7 +96,7 @@ public class ObjectDB implements Serializable {
     }
 
     // Serialize and save state to a file
-    public void saveState(String filename) {
+    public boolean saveState(String filename) {
 
         ArrayList<CheckerPiece> copy = new ArrayList<>();
         HashMap<Integer, HashMap<Integer, Field>> fields = new HashMap<>();
@@ -158,8 +158,9 @@ public class ObjectDB implements Serializable {
         // Create an object stream and write a file with the state of this
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(filename))) {
             oos.writeObject(this);
+            return true;
         } catch (IOException e) {
-            e.printStackTrace();
+            return false;
         }
     }
 

@@ -218,7 +218,11 @@ public class GameView extends AbstractView {
             saveGame.setTimeWhite(AbstractController.timeWhite);
             saveGame.setTimeBlack(AbstractController.timeBlack);
             saveGame.setTotalTime(AbstractController.totalTime);
-            saveGame.saveState(MainMenuView.selectedButton);
+            if (saveGame.saveState(MainMenuView.selectedButton)) {
+                saveButton.setText("Game Saved!");
+            } else {
+                saveButton.setText("Couldn't Save Game");
+            }
         });
 
         Button quitButton = new Button("Quit game");
