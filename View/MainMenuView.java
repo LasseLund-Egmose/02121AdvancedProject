@@ -18,14 +18,6 @@ import javafx.scene.text.TextFlow;
 
 public class MainMenuView extends AbstractView {
 
-    protected enum Controller {
-        CPURegularCheckersController,
-        FlexibleKingController,
-        RegularCheckersController,
-        SimpDamController,
-    }
-
-    protected Controller selectedController = Controller.SimpDamController;
     protected ToggleButton playButton;
     protected Slider dimensionSlider;
     protected VBox containSlider;
@@ -126,26 +118,22 @@ public class MainMenuView extends AbstractView {
         //simpel checkers
         ToggleButton SimpDam = constructButton(loadNames[0],grid,toggleGroup);
         SimpDam.setOnMouseClicked( e ->{
-            this.selectedController = Controller.SimpDamController;
             changetext();
         });
 
         //regular checkers
         ToggleButton twoPlayer = constructButton(loadNames[1],grid,toggleGroup);
         twoPlayer.setOnMouseClicked(e ->{
-            this.selectedController = Controller.RegularCheckersController;
             changetext();
         });
         
         ToggleButton vsAI = constructButton(loadNames[2],grid,toggleGroup);
         vsAI.setOnMouseClicked( e ->{
-            this.selectedController = Controller.CPURegularCheckersController;
             changetext();
         });
 
         ToggleButton international = constructButton(loadNames[3],grid,toggleGroup);
         international.setOnMouseClicked( e ->{
-            System.out.println("Not made yet");
             changetext();
         });
 
@@ -173,7 +161,7 @@ public class MainMenuView extends AbstractView {
                     double value = Double.parseDouble(newValue);
                     dimensionSlider.setValue(value);
                 } catch ( Exception e) {
-                    if (this.selectedController == Controller.SimpDamController) {
+                    if (MainMenuView.selectedButton.equals(loadNames[0])) {
                         dimensionSlider.setValue(3);
                     } else {
                         dimensionSlider.setValue(8);
