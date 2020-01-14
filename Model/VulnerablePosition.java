@@ -36,8 +36,4 @@ public class VulnerablePosition {
         this.riskLevel = riskLevel;
     }
 
-    /*
-     * End getters and setters
-     */
-
 }

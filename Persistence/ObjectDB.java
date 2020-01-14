@@ -1,13 +1,13 @@
 package Persistence;
 
+import Enum.GameType;
+import Enum.Setting;
 import Enum.Team;
-
 import Model.CheckerPiece;
 import Model.Field;
 import Model.Settings;
-import javafx.scene.layout.StackPane;
 
-import Enum.Setting;
+import javafx.scene.layout.StackPane;
 
 import java.awt.*;
 import java.io.*;
@@ -30,7 +30,7 @@ public class ObjectDB implements Serializable {
     protected int timeBlack;
     protected int totalTime;
 
-    protected String selectedButton;
+    protected GameType selectedGameType;
 
     // SETTERS
     public void setActiveCount(HashMap<Team, Integer> activeCount) {
@@ -65,45 +65,45 @@ public class ObjectDB implements Serializable {
         this.dimension = dimension;
     }
 
-    public void setSelectedButton(String selectedButton) {
-        this.selectedButton = selectedButton;
+    public void setSelectedGameType(GameType setSelectedGameType) {
+        this.selectedGameType = setSelectedGameType;
     }
 
     // GETTERS
     public HashMap<Team, Integer> getActiveCount() {
-        return activeCount;
+        return this.activeCount;
     }
 
     public ArrayList<CheckerPiece> getCheckerPieces() {
-        return checkerPieces;
+        return this.checkerPieces;
     }
 
     public HashMap<Integer, HashMap<Integer, Field>> getFields() {
-        return fields;
+        return this.fields;
     }
 
     public boolean isWhiteTurn() {
-        return isWhiteTurn;
+        return this.isWhiteTurn;
     }
 
     public int getTimeWhite() {
-        return timeWhite;
+        return this.timeWhite;
     }
 
     public int getTimeBlack() {
-        return timeBlack;
+        return this.timeBlack;
     }
 
     public int getTotalTime() {
-        return totalTime;
+        return this.totalTime;
     }
 
     public int getDimension() {
-        return dimension;
+        return this.dimension;
     }
 
-    public String getSelectedButton() {
-        return selectedButton;
+    public GameType getSelectedButton() {
+        return this.selectedGameType;
     }
 
     // Serialize and save state to a file
