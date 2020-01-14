@@ -20,7 +20,7 @@ abstract public class AbstractStrategy {
         ArrayList<Move> jumps = new ArrayList<>();
 
         for(Field jumpedField : this.controller.getSurroundingFields(fromField)) {
-            CheckerPiece attachedPiece = jumpedField.getAttachedPiece();
+            CheckerPiece attachedPiece = jumpedField.getAttachedPieceSecure();
             if(attachedPiece == null || attachedPiece.getTeam() == piece.getTeam()) {
                 continue;
             }
@@ -30,7 +30,7 @@ abstract public class AbstractStrategy {
             }
 
             Field oppositeField = this.controller.getOppositeDiagonalField(jumpedField, fromField);
-            if(oppositeField == null || oppositeField.getAttachedPiece() != null) {
+            if(oppositeField == null || oppositeField.getAttachedPieceSecure() != null) {
                 continue;
             }
 

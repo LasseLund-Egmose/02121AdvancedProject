@@ -197,7 +197,13 @@ public class CheckerPiece implements Serializable {
         return this.isActive;
     }
 
-    public boolean getCanHighlight() { return canHighlight; }
+    public boolean getCanHighlight() {
+        return canHighlight;
+    }
+
+    public boolean getIsActive() {
+        return this.isActive;
+    }
 
     // Setup click event on piece
     public void setupEvent(AbstractController controller) {

@@ -14,7 +14,7 @@ public class FlexibleKingController extends RegularCheckersController {
 
     protected ArrayList<Point> surroundingFields(Point p) {
         Field field = this.fields.get(p.x).get(p.y);
-        CheckerPiece fieldAttachedPiece = field.getAttachedPiece();
+        CheckerPiece fieldAttachedPiece = field.getAttachedPieceSecure();
 
         if(fieldAttachedPiece == null || !fieldAttachedPiece.getIsKing()) {
             return super.surroundingFields(p);
@@ -40,7 +40,7 @@ public class FlexibleKingController extends RegularCheckersController {
 
             for (int j = 2; j < this.dimension; j++) {
                 Point ip1 = new Point(p.x + (j * differencX), p.y + (j * differencY));
-                if (this.isPositionValid(ip1) && this.fields.get(ip1.x).get(ip1.y).getAttachedPiece() == null) {
+                if (this.isPositionValid(ip1) && this.fields.get(ip1.x).get(ip1.y).getAttachedPieceSecure() == null) {
                     eligiblePoints.add(ip1);
                 } else {
                     break;

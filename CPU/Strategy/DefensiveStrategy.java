@@ -46,7 +46,7 @@ public class DefensiveStrategy extends AbstractStrategy {
         Field pieceField = piece.getParent();
 
         for(Field opField : this.controller.getSurroundingFields(pieceField)) {
-            CheckerPiece fieldPiece = opField.getAttachedPiece();
+            CheckerPiece fieldPiece = opField.getAttachedPieceSecure();
 
             if(fieldPiece == null || fieldPiece.getTeam() == Team.BLACK) {
                 continue;
@@ -56,7 +56,7 @@ public class DefensiveStrategy extends AbstractStrategy {
 
             if(
                 oppositeDiagonalField != null &&
-                oppositeDiagonalField.getAttachedPiece() == null &&
+                oppositeDiagonalField.getAttachedPieceSecure() == null &&
                 !this.controller.fieldShouldNotBeConsidered(fieldPiece, oppositeDiagonalField.getPosition())
             ) {
                 Move opponentMove = new Move(fieldPiece, oppositeDiagonalField, pieceField);

@@ -126,7 +126,7 @@ public class RegularCheckersController extends AbstractController {
             if (eligibleJumpMove instanceof Field) {
                 Field eligibleJumpMoveField = (Field) eligibleJumpMove;
 
-                if(eligibleJumpMoveField.getAttachedPiece() == null) {
+                if(eligibleJumpMoveField.getAttachedPieceSecure() == null) {
                     this.pieceHighlightLocked = true;
 
                     piece.setCanHighlight(true);
