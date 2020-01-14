@@ -327,11 +327,11 @@ public class GameView extends AbstractView {
         // Setup controller
         this.controller = (AbstractController) Settings.get(Setting.Controller);
 
-        // Setup black fields (with click events) and game pieces
+        // Setup black fields (with click events), game pieces and start game
         this.controller.setupFields();
         this.controller.setupPieces();
-
         this.controller.countDownTimer();
+        this.controller.onTurnStart();
 
         return scene;
     }

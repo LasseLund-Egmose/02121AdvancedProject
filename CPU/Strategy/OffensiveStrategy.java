@@ -76,15 +76,14 @@ public class OffensiveStrategy extends AbstractStrategy {
     }
 
     public Move getMoveOrNull() {
+        this.assessedMoves.clear();
         this.updateAllLegalMoves();
-
-        ArrayList<Move> possibleMoves = new ArrayList<>(this.allLegalMoves);
 
         if(this.allLegalMoves.size() == 0) {
             return null;
         }
 
-        for(Move possibleMove : possibleMoves) {
+        for(Move possibleMove : this.allLegalMoves) {
             int gain = this.gainAssessment(possibleMove);
 
             if(gain > this.highestGain) {
