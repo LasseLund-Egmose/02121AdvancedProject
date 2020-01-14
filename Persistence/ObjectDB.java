@@ -151,8 +151,7 @@ public class ObjectDB implements Serializable {
             // return the db instance
             return db;
         } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
+            return null;
         }
-        return null;
     }
 }
