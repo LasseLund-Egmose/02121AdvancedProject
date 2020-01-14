@@ -13,7 +13,9 @@ import Model.Settings;
 import Persistence.ObjectDB;
 import javafx.animation.RotateTransition;
 import javafx.event.EventHandler;
+import javafx.geometry.HPos;
 import javafx.geometry.Pos;
+import javafx.geometry.VPos;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -35,6 +37,7 @@ import java.awt.*;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 
 public class GameView extends AbstractView {
 
@@ -187,13 +190,31 @@ public class GameView extends AbstractView {
         dialog.setTitle("Game paused");
 
         StackPane root = new StackPane();
+        root.setMinSize(GameView.WIDTH, GameView.HEIGHT);
+        root.setMaxSize(GameView.WIDTH, GameView.HEIGHT);
+        root.setStyle("-fx-border-color: #DAA520; -fx-border-width: 5px; -fx-background-color: antiquewhite;");
 
-        Button button = new Button("Close");
-        button.setStyle("-fx-background-color: transparent; -fx-cursor: hand; -fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: #DAA520;");
-        button.setOnMouseClicked(e -> {
+        Button resumeButton = new Button("Resume game");
+        resumeButton.setStyle("-fx-background-color: transparent; -fx-cursor: hand; -fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: #DAA520;");
+        resumeButton.setOnMouseClicked(e -> {
             this.root.getChildren().remove(stopGamePane);
             dialog.close();
             this.controller.startTime();
+        });
+
+        Button saveButton = new Button("Save game");
+        saveButton.setStyle("-fx-background-color: transparent; -fx-cursor: hand; -fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: #DAA520;");
+        saveButton.setOnMouseClicked(e -> {
+            this.root.getChildren().remove(stopGamePane);
+            dialog.close();
+            this.controller.startTime();
+        });
+
+        Button quitButton = new Button("Quit game");
+        quitButton.setStyle("-fx-background-color: transparent; -fx-cursor: hand; -fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: #DAA520;");
+        quitButton.setOnMouseClicked(e -> {
+            Main.setView(Main.mainMenuView);
+            dialog.close();
         });
 
         dialog.setOnCloseRequest(new EventHandler<WindowEvent>() {
@@ -203,7 +224,14 @@ public class GameView extends AbstractView {
                 GameView.this.controller.startTime();
             }
         });
-        root.getChildren().add(button);
+
+        VBox pauseMenuVBox = new VBox();
+
+        pauseMenuVBox.getChildren().addAll(resumeButton, saveButton, quitButton);
+        root.getChildren().add(pauseMenuVBox);
+
+        StackPane.setAlignment(pauseMenuVBox, Pos.CENTER);
+
         Scene scene = new Scene(root, GameView.WIDTH, GameView.HEIGHT);
         dialog.setScene(scene);
         dialog.show();
@@ -325,13 +353,13 @@ public class GameView extends AbstractView {
         //setup pause button
         this.stopGamePane.setMinSize(GameView.WIDTH, GameView.HEIGHT);
         this.stopGamePane.setMaxSize(GameView.WIDTH, GameView.HEIGHT);
-        this.stopGamePane.setStyle("-fx-background-color: #ff000050");
+        this.stopGamePane.setStyle("-fx-background-color: #555555a0");
         this.stopGamePane.setTranslateZ(2*-GameView.zOffset());
         StackPane pausepane = new StackPane();
         pausepane.setMinHeight(40);
         pausepane.setMinWidth(10);
         pausepane.setMaxHeight(20);
-        pausepane.setMaxWidth(150);
+        pausepane.setMaxWidth(100);
 
         Text pauseText = new Text();
         pauseText.setText("Pause");
