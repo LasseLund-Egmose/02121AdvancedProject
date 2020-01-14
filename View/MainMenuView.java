@@ -27,7 +27,8 @@ public class MainMenuView extends AbstractView {
     protected VBox containSlider;
     protected GridPane grid;
     protected Text information;
-    protected String[] loadNames = new String[]{"SimpDam","RegDam","AIDam","IntDam"};
+    protected String[] loadNames = new String[]{"SimpDam","TwoPlayer","SingelPlayer","FlexibleKing"};
+    protected static String selectedButton = null;
     protected ObjectDB[] gameStates = new ObjectDB[4];
 
 
@@ -113,32 +114,31 @@ public class MainMenuView extends AbstractView {
             Main.setView((Main.gameView));
         });
 
-        //regular checkers
-        ToggleButton twoPlayer = constructButton("Two player dam",grid,toggleGroup);
-        twoPlayer.setOnMouseClicked(e ->{
-            this.selectedController = controller.RegularCheckersController;
-            changetext();
-        });
-        
-        ToggleButton vsAI = constructButton("Single player dam",grid,toggleGroup);
-        vsAI.setOnMouseClicked( e ->{
-            System.out.println("Not made yet");
-            changetext();
-        });
-
-        ToggleButton international = constructButton("International dam",grid,toggleGroup);
-        international.setOnMouseClicked( e ->{
-            System.out.println("Not made yet");
-            changetext();
-        });
-
         //simpel checkers
-        ToggleButton SimpDam = constructButton("Simpdam",grid,toggleGroup);
+        ToggleButton SimpDam = constructButton(loadNames[0],grid,toggleGroup);
         SimpDam.setOnMouseClicked( e ->{
             this.selectedController = controller.SimpDamController;
             changetext();
         });
 
+        //regular checkers
+        ToggleButton twoPlayer = constructButton(loadNames[1],grid,toggleGroup);
+        twoPlayer.setOnMouseClicked(e ->{
+            this.selectedController = controller.RegularCheckersController;
+            changetext();
+        });
+        
+        ToggleButton vsAI = constructButton(loadNames[2],grid,toggleGroup);
+        vsAI.setOnMouseClicked( e ->{
+            System.out.println("Not made yet");
+            changetext();
+        });
+
+        ToggleButton international = constructButton(loadNames[3],grid,toggleGroup);
+        international.setOnMouseClicked( e ->{
+            System.out.println("Not made yet");
+            changetext();
+        });
 
 
         //loader buttons:
@@ -204,10 +204,12 @@ public class MainMenuView extends AbstractView {
                 "-fx-border-color: #DAA520; -fx-border-width: 5px;");
         button.selectedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
+                MainMenuView.selectedButton=name;
                 button.setStyle("-fx-background-color: Green; -fx-cursor: hand;" +
                         " -fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: #DAA520;" +
                         "-fx-border-color: #DAA520; -fx-border-width: 5px;");
             } else {
+                MainMenuView.selectedButton=null;
                 button.setStyle("-fx-background-image: url(/assets/dark_wood.jpg); -fx-cursor: hand;" +
                         " -fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: #DAA520;" +
                         "-fx-border-color: #DAA520; -fx-border-width: 5px;");
@@ -219,7 +221,7 @@ public class MainMenuView extends AbstractView {
                 this.playButton.setVisible(true);
                 this.containSlider.setVisible(true);
             }
-            if(name.equals("Simpdam") || name.equals("New Game")) {
+            if(name.equals(loadNames[0]) || name.equals("New Game")) {
                 this.dimensionSlider.setMin(3);
 
             } else {
@@ -254,19 +256,21 @@ public class MainMenuView extends AbstractView {
     }
 
     protected void changetext() {
-        if (this.selectedController == controller.SimpDamController) { //Simpel Checkers
+        if (MainMenuView.selectedButton == null) {
+            this.information.setText("You don´t wanna play with me?? OwO");
+        } else if (MainMenuView.selectedButton.equals(this.loadNames[0])) { //Simpel Checkers
             this.information.setText("This is the simplest version of checker. In this version each player has exactly " +
                     "one piece each, starting at opposite corners of the board. However, in this version every " +
                     "checker piece acts as a king piece, meaning it is not locked to only moving forward.");
-        } else if (this.selectedController == controller.RegularCheckersController) { //RegularCheckers
+        } else if (MainMenuView.selectedButton.equals(this.loadNames[1])) { //RegularCheckers
             this.information.setText("This is the normal version of checkers. For two players." +
                     " Every player has pieces on the three first rows of the board on their own respective side. " +
                     "All piece can only move forward, unless they become king pieces " +
                     "(reach the end of the opposing players side).");
-        } else if (this.selectedController == controller.RegularCheckersController) { //AI
+        } else if (MainMenuView.selectedButton.equals(this.loadNames[2])) { //AI
             this.information.setText("This is the Single player version of checkers, where you play against an AI. " +
                     "The rules are the same as for regular checkers.");
-        } else { //International checkers
+        } else if (MainMenuView.selectedButton.equals(this.loadNames[3])) { //International checkers
             this.information.setText("This is the international version of checkers. For two players. " +
                     "This version has the international rules " +
                     "meaning you can move the pieces an arbitrary amount of spaces. ");
