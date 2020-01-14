@@ -3,7 +3,7 @@ package CPU;
 import CPU.Strategy.AbstractStrategy;
 import CPU.Strategy.CanJumpMoreStrategy;
 import CPU.Strategy.DefensiveStrategy;
-import CPU.Strategy.OffensiveStrategy;
+import CPU.Strategy.RandomStrategy;
 import Controller.CPURegularCheckersController;
 import Enum.MoveType;
 import Model.CheckerPiece;
@@ -28,7 +28,7 @@ public class CPU {
 
         this.strategies.add(this.jumpMoreStrategy); // Handle multi-jumps from last turn first (and continue with other strategies if null)
         this.strategies.add(new DefensiveStrategy(this.controller)); // Make a defensive move first if possible
-        this.strategies.add(new OffensiveStrategy(this.controller)); // Else make an offensive move
+        this.strategies.add(new RandomStrategy(this.controller)); // Else make an offensive move
     }
 
     public void takeTurn() {

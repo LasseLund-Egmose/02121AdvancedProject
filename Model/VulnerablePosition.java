@@ -1,23 +1,30 @@
 package Model;
 
-import Model.CheckerPiece;
-
 public class VulnerablePosition {
 
-    protected CheckerPiece opponentPiece;
+    protected Move opponentMove;
     protected CheckerPiece piece;
+    protected int riskLevel = 0;
 
-    public VulnerablePosition(CheckerPiece piece, CheckerPiece opponentPiece) {
+    public VulnerablePosition(CheckerPiece piece, Move opponentPiece) {
         this.piece = piece;
-        this.opponentPiece = opponentPiece;
+        this.opponentMove = opponentPiece;
     }
 
-    public CheckerPiece getOpponentPiece() {
-        return this.opponentPiece;
+    public Move getOpponentMove() {
+        return this.opponentMove;
     }
 
     public CheckerPiece getPiece() {
         return this.piece;
+    }
+
+    public int getRiskLevel() {
+        return this.riskLevel;
+    }
+
+    public void setRiskLevel(int riskLevel) {
+        this.riskLevel = riskLevel;
     }
 
 }

@@ -1,9 +1,12 @@
 package Controller;
 
 import CPU.CPU;
+import Enum.Team;
 import Model.CheckerPiece;
 import View.GameView;
 import javafx.scene.layout.GridPane;
+
+import java.awt.*;
 
 public class CPURegularCheckersController extends RegularCheckersController {
 
@@ -48,6 +51,8 @@ public class CPURegularCheckersController extends RegularCheckersController {
 
     public void setupPieces() {
         super.setupPieces();
+
+        this.setupPieceRow(3, Team.BLACK);
 
         this.cpu.initStrategies();
     }

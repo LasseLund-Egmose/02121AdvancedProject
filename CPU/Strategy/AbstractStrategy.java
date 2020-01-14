@@ -15,10 +15,6 @@ abstract public class AbstractStrategy {
     protected HashMap<CheckerPiece, ArrayList<Move>> allLegalMoves;
     protected CPURegularCheckersController controller;
 
-    public AbstractStrategy(CPURegularCheckersController controller) {
-        this.controller = controller;
-    }
-
     protected void updateAllLegalMoves() {
         this.allLegalMoves = new HashMap<>();
 
@@ -33,6 +29,10 @@ abstract public class AbstractStrategy {
                 this.allLegalMoves.put(piece, legalMovesForPiece);
             }
         }
+    }
+
+    public AbstractStrategy(CPURegularCheckersController controller) {
+        this.controller = controller;
     }
 
 }

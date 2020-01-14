@@ -7,9 +7,9 @@ import Model.Move;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class OffensiveStrategy extends AbstractStrategy {
+public class RandomStrategy extends AbstractStrategy {
 
-    public OffensiveStrategy(CPURegularCheckersController controller) {
+    public RandomStrategy(CPURegularCheckersController controller) {
         super(controller);
     }
 

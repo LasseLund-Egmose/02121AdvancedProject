@@ -13,15 +13,6 @@ import java.util.HashMap;
 
 public class RegularCheckersController extends AbstractController {
 
-    protected boolean fieldShouldNotBeConsidered(CheckerPiece piece, Point position) {
-        if(piece.getIsKing()) {
-            return false;
-        }
-
-        return (piece.getTeam() == Team.WHITE && position.getY() < piece.getPosition().getY()) ||
-            (piece.getTeam() == Team.BLACK && position.getY() > piece.getPosition().getY());
-    }
-
     protected boolean onPieceMove(CheckerPiece movedPiece, boolean didJump) {
         Team pieceTeam = movedPiece.getTeam();
         Point piecePosition = movedPiece.getPosition();
@@ -153,6 +144,19 @@ public class RegularCheckersController extends AbstractController {
         return this.forcedJumpMoves.size() > 0;
     }
 
+    public boolean fieldShouldNotBeConsidered(CheckerPiece piece, Point position) {
+        return this.fieldShouldNotBeConsidered(piece, piece.getPosition(), position);
+    }
+
+    public boolean fieldShouldNotBeConsidered(CheckerPiece piece, Point alternativeFromPosition, Point position) {
+        if(piece.getIsKing()) {
+            return false;
+        }
+
+        return (piece.getTeam() == Team.WHITE && position.getY() < alternativeFromPosition.getY()) ||
+            (piece.getTeam() == Team.BLACK && position.getY() > alternativeFromPosition.getY());
+    }
+
     public void setupPieceRow(int row, Team t) {
         for (int j = (row + 1) % 2; j < this.dimension; j += 2) {
             this.setupPiece(new Point(j + 1, row + 1), t);
@@ -165,6 +169,7 @@ public class RegularCheckersController extends AbstractController {
         }
 
         for (int i = this.dimension - 1; i > this.dimension - 4; i--) {
+            if(i == 6) {continue;}
             this.setupPieceRow(i, Team.BLACK);
         }
     }

@@ -93,11 +93,6 @@ abstract public class AbstractController {
         }
     }
 
-    // Should a piece be allowed to move to the given position? - Default yes
-    protected boolean fieldShouldNotBeConsidered(CheckerPiece piece, Point position) {
-        return false;
-    }
-
     // Highlight fields a selected piece can move to
     protected void highlightEligibleFields(CheckerPiece piece) {
         ArrayList<Move> legalMoves = this.getLegalMovesForPiece(piece);
@@ -275,6 +270,11 @@ abstract public class AbstractController {
             // Finish turn
             this.finishTurn();
         }
+    }
+
+    // Should a piece be allowed to move to the given position? - Default yes
+    public boolean fieldShouldNotBeConsidered(CheckerPiece piece, Point position) {
+        return false;
     }
 
     public HashMap<Team, Integer> getActiveCount() {
