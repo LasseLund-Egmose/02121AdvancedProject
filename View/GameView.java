@@ -205,9 +205,13 @@ public class GameView extends AbstractView {
         Button saveButton = new Button("Save game");
         saveButton.setStyle("-fx-background-color: transparent; -fx-cursor: hand; -fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: #DAA520;");
         saveButton.setOnMouseClicked(e -> {
-            this.root.getChildren().remove(stopGamePane);
-            dialog.close();
-            this.controller.startTime();
+            ObjectDB saveGame = new ObjectDB();
+            saveGame.setActiveCount(controller.getActiveCount());
+            saveGame.setCheckerPieces(controller.getCheckerPieces());
+            saveGame.setFields(controller.getFields());
+            saveGame.setSettings(this.settings);
+            saveGame.setWhiteTurn(controller.isWhiteTurn());
+            saveGame.saveState(MainMenuView.selectedButton);
         });
 
         Button quitButton = new Button("Quit game");
