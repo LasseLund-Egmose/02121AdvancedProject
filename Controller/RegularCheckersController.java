@@ -78,7 +78,7 @@ public class RegularCheckersController extends AbstractController {
     }
 
     // Check if any jump moves can be made and if yes, force the player to select one
-    protected void onTurnStart() {
+    public void onTurnStart() {
         boolean teamHasMoves = false;
 
         for(CheckerPiece piece : this.checkerPieces) {

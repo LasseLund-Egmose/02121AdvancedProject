@@ -260,7 +260,7 @@ abstract public class AbstractController {
 
     protected void onSelectedPieceClick() {}
 
-    protected void onTurnStart() {}
+    public void onTurnStart() {}
 
     // Called every time a piece is moved
     protected boolean onPieceMove(CheckerPiece movedPiece, boolean didJump) {
