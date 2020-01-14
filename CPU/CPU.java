@@ -3,13 +3,16 @@ package CPU;
 import CPU.Strategy.AbstractStrategy;
 import CPU.Strategy.CanJumpMoreStrategy;
 import CPU.Strategy.DefensiveStrategy;
-import CPU.Strategy.RandomStrategy;
+import CPU.Strategy.OffensiveStrategy;
 import Controller.CPURegularCheckersController;
 import Enum.MoveType;
-import Model.CheckerPiece;
 import Model.Move;
+import javafx.animation.PauseTransition;
+import javafx.util.Duration;
 
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class CPU {
 
@@ -18,6 +21,26 @@ public class CPU {
     protected CPURegularCheckersController controller;
     protected CanJumpMoreStrategy jumpMoreStrategy;
     protected ArrayList<AbstractStrategy> strategies = new ArrayList<>();
+
+    public void takeRestOfTurn(Move nextMove) {
+        System.out.println("Move...");
+
+        if(nextMove.getMoveType() == MoveType.JUMP) {
+            this.controller.doJumpMove(nextMove.getToField(), nextMove.getJumpedField());
+
+            if(this.controller.canJumpMore(nextMove.getPiece(), false)) {
+                this.jumpMoreStrategy.setState(true, this.controller.getForcedJumpMoves());
+
+                // Restart turn and do jump with currently selected piece
+                this.takeTurn();
+            }
+        } else {
+            this.controller.doRegularMove(nextMove.getToField(), false);
+        }
+
+        this.jumpMoreStrategy.setState(false);
+        this.controller.getView().normalizePane(nextMove.getToField());
+    }
 
     public CPU(CPURegularCheckersController controller) {
         this.controller = controller;
@@ -28,7 +51,7 @@ public class CPU {
 
         this.strategies.add(this.jumpMoreStrategy); // Handle multi-jumps from last turn first (and continue with other strategies if null)
         this.strategies.add(new DefensiveStrategy(this.controller)); // Make a defensive move first if possible
-        this.strategies.add(new RandomStrategy(this.controller)); // Else make an offensive move
+        this.strategies.add(new OffensiveStrategy(this.controller)); // Else make an offensive move
     }
 
     public void takeTurn() {
@@ -41,30 +64,14 @@ public class CPU {
 
             System.out.println("Caught by: " + strategy.getClass().getSimpleName());
 
-            CheckerPiece movedPiece = nextMove.getPiece();
-            this.controller.setSelectedPieceCPU(movedPiece);
+            this.controller.setSelectedPieceCPU(nextMove.getPiece());
             this.controller.getView().highlightPane(nextMove.getToField());
 
-            // TODO: Do some kind of sleep here
-
-            if(nextMove.getMoveType() == MoveType.JUMP) {
-                this.controller.doJumpMove(nextMove.getToField(), nextMove.getJumpedField());
-
-                if(this.controller.canJumpMore(movedPiece, false)) {
-                    this.jumpMoreStrategy.setState(true, this.controller.getForcedJumpMoves());
-
-                    // Restart turn and do jump with currently selected piece
-                    this.takeTurn();
-                }
-            } else {
-                this.controller.doRegularMove(nextMove.getToField(), false);
-            }
-
-            this.jumpMoreStrategy.setState(false);
-            this.controller.getView().normalizePane(nextMove.getToField());
+            PauseTransition pause = new PauseTransition(Duration.seconds(1));
+            pause.setOnFinished(event -> this.takeRestOfTurn(nextMove));
+            pause.play();
 
             break;
         }
     }
-
 }

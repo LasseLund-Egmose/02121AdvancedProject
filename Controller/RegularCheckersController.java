@@ -169,7 +169,6 @@ public class RegularCheckersController extends AbstractController {
         }
 
         for (int i = this.dimension - 1; i > this.dimension - 4; i--) {
-            if(i == 6) {continue;}
             this.setupPieceRow(i, Team.BLACK);
         }
     }

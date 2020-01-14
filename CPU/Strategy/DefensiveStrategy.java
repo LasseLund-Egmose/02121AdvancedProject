@@ -15,32 +15,28 @@ public class DefensiveStrategy extends AbstractStrategy {
 
     protected Move findFixingMove(VulnerablePosition vulnerability) {
         Move coveringBehindMove = this.findFixingMoveByCoveringBehind(vulnerability);
-        Move movingToSideMove = this.findFixingMoveByMovingToSide(vulnerability);
+        Move movingAwayMove = this.findFixingMoveByMovingAway(vulnerability);
 
-        return coveringBehindMove != null ? coveringBehindMove : movingToSideMove;
+        return coveringBehindMove != null ? coveringBehindMove : movingAwayMove;
     }
 
     protected Move findFixingMoveByCoveringBehind(VulnerablePosition vulnerability) {
         Point positionToCover = vulnerability.getOpponentMove().getToField().getPosition();
-        System.out.println("Position to cover: " + positionToCover);
 
         // Can we move a piece there?
-        for(ArrayList<Move> legalMoveArray : this.allLegalMoves.values()) {
-            for(Move legalMove : legalMoveArray) {
-                if(legalMove.getMoveType() == MoveType.JUMP || !legalMove.getToField().getPosition().equals(positionToCover)) {
-                    continue;
-                }
-
-                System.out.println("Cover behind - From: " + legalMove.getPiece().getPosition() + ". To: " + legalMove.getToField().getPosition());
-
-                return legalMove;
+        for(Move legalMove : this.allLegalMoves) {
+            if(legalMove.getMoveType() == MoveType.JUMP || !legalMove.getToField().getPosition().equals(positionToCover)) {
+                continue;
             }
+
+            return legalMove;
         }
 
         return null;
     }
 
-    protected Move findFixingMoveByMovingToSide(VulnerablePosition vulnerability) {
+    // TODO
+    protected Move findFixingMoveByMovingAway(VulnerablePosition vulnerability) {
         return null;
     }
 
@@ -84,30 +80,6 @@ public class DefensiveStrategy extends AbstractStrategy {
         }
 
         return vulnerabilities;
-    }
-
-    protected ArrayList<Move> jumpsFromPosition(CheckerPiece piece, Field fromField) {
-        ArrayList<Move> jumps = new ArrayList<>();
-
-        for(Field jumpedField : this.controller.getSurroundingFields(fromField)) {
-            CheckerPiece attachedPiece = jumpedField.getAttachedPiece();
-            if(attachedPiece == null || attachedPiece.getTeam() == piece.getTeam()) {
-                continue;
-            }
-
-            if(!this.controller.fieldShouldNotBeConsidered(attachedPiece, fromField.getPosition(), jumpedField.getPosition())) {
-                continue;
-            }
-
-            Field oppositeField = this.controller.getOppositeDiagonalField(jumpedField, fromField);
-            if(oppositeField == null || oppositeField.getAttachedPiece() != null) {
-                continue;
-            }
-
-            jumps.add(new Move(piece, oppositeField, jumpedField));
-        }
-
-        return jumps;
     }
 
     protected int riskAssessment(Move opponentMove) {
