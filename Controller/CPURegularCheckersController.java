@@ -24,11 +24,7 @@ public class CPURegularCheckersController extends RegularCheckersController {
             return false;
         }
 
-        try {
-            this.cpu.takeTurn();
-        } catch (InterruptedException e) {
-            System.out.println("Exception occurred: " + e.getMessage());
-        }
+        this.cpu.takeTurn();
 
         return false;
     }

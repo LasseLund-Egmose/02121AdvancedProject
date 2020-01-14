@@ -345,7 +345,8 @@ abstract public class AbstractController {
 
         Point otherDiagonalPosition = new Point(mainFieldPosition.x + diff.x, mainFieldPosition.y + diff.y);
 
-        return this.fields.get(otherDiagonalPosition.x).get(otherDiagonalPosition.y);
+        return this.isPositionValid(otherDiagonalPosition) ?
+            this.fields.get(otherDiagonalPosition.x).get(otherDiagonalPosition.y) : null;
     }
 
     public HashMap<Field, Field> getPossibleJumpMoves() {

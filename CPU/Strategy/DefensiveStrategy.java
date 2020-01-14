@@ -26,7 +26,7 @@ public class DefensiveStrategy extends AbstractStrategy {
 
             Field oppositeDiagonalField = this.controller.getOppositeDiagonalField(pieceField, f);
 
-            if(oppositeDiagonalField.getAttachedPiece() == null) {
+            if(oppositeDiagonalField != null && oppositeDiagonalField.getAttachedPiece() == null) {
                 vulnerablePosition.add(new VulnerablePosition(piece, fieldPiece));
             }
         }
@@ -42,7 +42,11 @@ public class DefensiveStrategy extends AbstractStrategy {
                 continue;
             }
 
-            vulnerabilities.put(piece, this.getDangerousOpponents(piece));
+            ArrayList<VulnerablePosition> dangerousOpponents = this.getDangerousOpponents(piece);
+
+            if(dangerousOpponents.size() > 0) {
+                vulnerabilities.put(piece, this.getDangerousOpponents(piece));
+            }
         }
 
         return vulnerabilities;
@@ -54,6 +58,8 @@ public class DefensiveStrategy extends AbstractStrategy {
 
     public Move getMoveOrNull() {
         this.updateAllLegalMoves();
+
+        System.out.println("Defensive: " + this.getVulnerabilities());
 
         return null;
     }

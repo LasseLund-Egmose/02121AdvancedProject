@@ -31,13 +31,15 @@ public class CPU {
         this.strategies.add(new OffensiveStrategy(this.controller)); // Else make an offensive move
     }
 
-    public void takeTurn() throws InterruptedException {
+    public void takeTurn() {
         for(AbstractStrategy strategy : this.strategies) {
             Move nextMove = strategy.getMoveOrNull();
 
             if(nextMove == null) {
                 continue;
             }
+
+            System.out.println("Caught by: " + strategy.getClass().getSimpleName());
 
             CheckerPiece movedPiece = nextMove.getPiece();
             this.controller.setSelectedPieceCPU(movedPiece);
@@ -49,15 +51,16 @@ public class CPU {
                 this.controller.doJumpMove(nextMove.getToField(), nextMove.getJumpedField());
 
                 if(this.controller.canJumpMore(movedPiece, false)) {
-                    System.out.println("Black can jump more - restart turn");
+                    this.jumpMoreStrategy.setState(true, this.controller.getForcedJumpMoves());
 
-                    this.jumpMoreStrategy.setLastJump(nextMove);
-                    this.takeTurn(); // Restart turn and do jump with currently selected piece
+                    // Restart turn and do jump with currently selected piece
+                    this.takeTurn();
                 }
             } else {
                 this.controller.doRegularMove(nextMove.getToField(), false);
             }
 
+            this.jumpMoreStrategy.setState(false);
             this.controller.getView().normalizePane(nextMove.getToField());
 
             break;
