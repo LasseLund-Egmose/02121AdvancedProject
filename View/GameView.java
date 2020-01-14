@@ -195,7 +195,9 @@ public class GameView extends AbstractView {
         root.setStyle("-fx-border-color: #DAA520; -fx-border-width: 5px; -fx-background-color: antiquewhite;");
 
         Button resumeButton = new Button("Resume game");
-        resumeButton.setStyle("-fx-background-color: transparent; -fx-cursor: hand; -fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: #DAA520;");
+        resumeButton.setStyle("-fx-background-image: url(/assets/dark_wood.jpg); -fx-cursor: hand;" +
+                " -fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: #DAA520;" +
+                "-fx-border-color: #DAA520; -fx-border-width: 5px;");
         resumeButton.setOnMouseClicked(e -> {
             this.root.getChildren().remove(stopGamePane);
             dialog.close();
@@ -203,7 +205,9 @@ public class GameView extends AbstractView {
         });
 
         Button saveButton = new Button("Save game");
-        saveButton.setStyle("-fx-background-color: transparent; -fx-cursor: hand; -fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: #DAA520;");
+        saveButton.setStyle("-fx-background-image: url(/assets/dark_wood.jpg); -fx-cursor: hand;" +
+                " -fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: #DAA520;" +
+                "-fx-border-color: #DAA520; -fx-border-width: 5px;");
         saveButton.setOnMouseClicked(e -> {
             ObjectDB saveGame = new ObjectDB();
             saveGame.setActiveCount(controller.getActiveCount());
@@ -218,7 +222,9 @@ public class GameView extends AbstractView {
         });
 
         Button quitButton = new Button("Quit game");
-        quitButton.setStyle("-fx-background-color: transparent; -fx-cursor: hand; -fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: #DAA520;");
+        quitButton.setStyle("-fx-background-image: url(/assets/dark_wood.jpg); -fx-cursor: hand;" +
+                " -fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: #DAA520;" +
+                "-fx-border-color: #DAA520; -fx-border-width: 5px;");
         quitButton.setOnMouseClicked(e -> {
             Main.setView(Main.mainMenuView);
             dialog.close();
@@ -230,6 +236,8 @@ public class GameView extends AbstractView {
         });
 
         VBox pauseMenuVBox = new VBox();
+        pauseMenuVBox.setSpacing(40);
+        pauseMenuVBox.setAlignment(Pos.CENTER);
 
         pauseMenuVBox.getChildren().addAll(resumeButton, saveButton, quitButton);
         root.getChildren().add(pauseMenuVBox);
