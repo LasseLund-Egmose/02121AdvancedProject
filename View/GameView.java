@@ -265,6 +265,12 @@ public class GameView extends AbstractView {
         pane.setStyle(GameView.BACKGROUND_FIELD + " -fx-border-color: green; -fx-border-width: " + borderWidth + ";");
     }
 
+    // Add highlight to black field (for CPU move)
+    public void highlightPaneCPU(StackPane pane) {
+        int borderWidth = this.getFieldSize() < 20 ? 2 : 5;
+        pane.setStyle(GameView.BACKGROUND_FIELD + " -fx-border-color: blue; -fx-border-width: " + borderWidth + ";");
+    }
+
     // Title
     public String getTitle() {
         return "Game";

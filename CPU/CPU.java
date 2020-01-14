@@ -6,6 +6,7 @@ import CPU.Strategy.DefensiveStrategy;
 import CPU.Strategy.OffensiveStrategy;
 import Controller.CPURegularCheckersController;
 import Enum.MoveType;
+import Model.CheckerPiece;
 import Model.Move;
 import javafx.animation.PauseTransition;
 import javafx.util.Duration;
@@ -23,7 +24,6 @@ public class CPU {
     protected ArrayList<AbstractStrategy> strategies = new ArrayList<>();
 
     public void takeRestOfTurn(Move nextMove) {
-        System.out.println("Move...");
 
         if(nextMove.getMoveType() == MoveType.JUMP) {
             this.controller.doJumpMove(nextMove.getToField(), nextMove.getJumpedField());
@@ -39,6 +39,8 @@ public class CPU {
         }
 
         this.jumpMoreStrategy.setState(false);
+
+        nextMove.getPiece().assertHighlight(false);
         this.controller.getView().normalizePane(nextMove.getToField());
     }
 
@@ -64,8 +66,12 @@ public class CPU {
 
             System.out.println("Caught by: " + strategy.getClass().getSimpleName());
 
-            this.controller.setSelectedPieceCPU(nextMove.getPiece());
-            this.controller.getView().highlightPane(nextMove.getToField());
+            CheckerPiece piece = nextMove.getPiece();
+
+            this.controller.setSelectedPieceCPU(piece);
+
+            piece.assertHighlightCPU(true);
+            this.controller.getView().highlightPaneCPU(nextMove.getToField());
 
             PauseTransition pause = new PauseTransition(Duration.seconds(1));
             pause.setOnFinished(event -> this.takeRestOfTurn(nextMove));
