@@ -11,10 +11,10 @@ import java.util.Random;
 public class OffensiveStrategy extends AbstractStrategy {
 
     protected ArrayList<Move> assessedMoves = new ArrayList<>();
-    protected int highestGain = Integer.MIN_VALUE;
+    protected int highestGain;
 
     protected int jumpMoveGainAssessment(Move move) {
-        int gain = 1;
+        int gain = 2;
 
         ArrayList<Move> jumpMoves = this.jumpsFromPosition(move.getPiece(), move.getToField());
 
@@ -32,31 +32,24 @@ public class OffensiveStrategy extends AbstractStrategy {
 
     protected int regularMoveGainAssessment(Move move) {
         int gain = 0;
-
         Field field = move.getToField();
-        System.out.println("Move - From: " + move.getPiece().getPosition() + ", To: " + move.getToField().getPosition());
 
         for(Field diagonalField : this.controller.getSurroundingFields(field)) {
-            System.out.println("Surrounding field: " + diagonalField.getPosition());
-
             CheckerPiece surroundingPiece = diagonalField.getAttachedPieceSecure();
 
             if(surroundingPiece == null || surroundingPiece.getTeam() == move.getPiece().getTeam()) {
                 continue;
             }
 
-            Field reverseDiagonalField = this.controller.getOppositeDiagonalField(field, diagonalField);
-
-            if(reverseDiagonalField != null && reverseDiagonalField.getAttachedPieceSecure() == null) {
-                System.out.println("Reverse diagonal field: " + reverseDiagonalField.getPosition());
+            // Piece exists and is on opponent's team
+            Field opponentsFieldAfterPossibleJump = this.controller.getOppositeDiagonalField(field, diagonalField);
+            if(opponentsFieldAfterPossibleJump != null && opponentsFieldAfterPossibleJump.getAttachedPieceSecure() == null) {
+                // Can be jumped afterwards - this move is not advised
                 return -1;
             }
 
-            Field fieldBehindOpponentNextTurn = this.controller.getOppositeDiagonalField(diagonalField, field);
-            if(fieldBehindOpponentNextTurn != null && fieldBehindOpponentNextTurn.getAttachedPieceSecure() == null) {
-                System.out.println("Field behind: " + fieldBehindOpponentNextTurn.getPosition());
-                gain = 1;
-            }
+            // The more jumps available next turn at new position (risk free because of above), the better
+            gain += this.jumpsFromPosition(move.getPiece(), move.getToField()).size();
         }
 
         return gain;
@@ -77,6 +70,8 @@ public class OffensiveStrategy extends AbstractStrategy {
 
     public Move getMoveOrNull() {
         this.assessedMoves.clear();
+        this.highestGain = Integer.MIN_VALUE;
+
         this.updateAllLegalMoves();
 
         if(this.allLegalMoves.size() == 0) {
@@ -91,11 +86,18 @@ public class OffensiveStrategy extends AbstractStrategy {
                 this.highestGain = gain;
             }
 
-            this.assessedMoves.add(possibleMove);
+            if(gain == this.highestGain) {
+                this.assessedMoves.add(possibleMove);
+            }
         }
 
-        System.out.println("Random - Gain: " + this.highestGain);
+        Move selectedMove = this.returnRandom(this.assessedMoves);
+        if(selectedMove != null) {
+            return selectedMove;
+        }
 
-        return this.returnRandom(this.assessedMoves);
+        System.out.println("CPU: Cannot find suitable move! Returning random move.");
+
+        return this.returnRandom(this.allLegalMoves);
     }
 }
