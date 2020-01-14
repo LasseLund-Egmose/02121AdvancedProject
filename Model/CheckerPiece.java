@@ -97,17 +97,17 @@ public class CheckerPiece implements Serializable {
     }
 
     // Make sure piece is either highlighted or not
-    public void assertHighlight(boolean shouldHighlight) {
+    public void assertHighlight(boolean shouldHighlight, Color color) {
         if(!this.canHighlight) {
             return;
         }
 
         if (shouldHighlight) {
             if(this.kingCylinder != null) {
-                this.kingCylinder.setMaterial(new PhongMaterial(Color.LIMEGREEN));
+                this.kingCylinder.setMaterial(new PhongMaterial(color));
             }
 
-            this.cylinder.setMaterial(new PhongMaterial(Color.LIMEGREEN));
+            this.cylinder.setMaterial(new PhongMaterial(color));
             return;
         }
 
@@ -116,6 +116,14 @@ public class CheckerPiece implements Serializable {
         }
 
         this.cylinder.setMaterial(this.getMaterial());
+    }
+
+    public void assertHighlight(boolean shouldHighlight) {
+        this.assertHighlight(shouldHighlight, Color.LIMEGREEN);
+    }
+
+    public void assertHighlightCPU(boolean shouldHighlight) {
+        this.assertHighlight(shouldHighlight, Color.BLUE);
     }
 
     // Detach and afterwards attach piece to given pane (black field)

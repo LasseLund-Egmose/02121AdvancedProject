@@ -44,7 +44,7 @@ abstract public class AbstractStrategy {
         this.allLegalMoves = new ArrayList<>();
 
         for(CheckerPiece piece : this.controller.getCheckerPieces()) {
-            if(piece.getTeam() == Team.WHITE) {
+            if(!piece.isActive() || piece.getTeam() == Team.WHITE) {
                 continue;
             }
 

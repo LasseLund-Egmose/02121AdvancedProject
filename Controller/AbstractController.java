@@ -397,6 +397,7 @@ abstract public class AbstractController {
         return this.forcedJumpMoves;
     }
 
+    // TODO: Fix this - it's not working properly
     public ArrayList<Move> getLegalMovesForPiece(CheckerPiece piece) {
         ArrayList<Move> legalMoves = new ArrayList<>();
 
@@ -447,14 +448,6 @@ abstract public class AbstractController {
 
         return this.isPositionValid(otherDiagonalPosition) ?
             this.fields.get(otherDiagonalPosition.x).get(otherDiagonalPosition.y) : null;
-    }
-
-    public HashMap<Field, Field> getPossibleJumpMoves() {
-        return this.possibleJumpMoves;
-    }
-
-    public ArrayList<Field> getPossibleRegularMoves() {
-        return this.possibleRegularMoves;
     }
 
     // Get selected piece
