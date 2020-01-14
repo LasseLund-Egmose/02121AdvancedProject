@@ -2,6 +2,7 @@ package View;
 
 import Boot.Main;
 import Controller.AbstractController;
+import Controller.CPURegularCheckersController;
 import Controller.RegularCheckersController;
 import Controller.SimpDamController;
 import Enum.Setting;

@@ -1,5 +1,7 @@
 package Controller;
 
+import Model.Move;
+import Enum.MoveType;
 import Enum.Team;
 import Model.CheckerPiece;
 import Model.Field;
@@ -123,52 +125,18 @@ abstract public class AbstractController {
     abstract public void setupPieces();
 
     // Check if a team has won
-    protected void checkForWin() {
+    protected boolean checkForWin() {
         if (this.activeCount.get(Team.BLACK) == 0) {
             this.view.displayWin(Team.WHITE);
+            return true;
         }
 
         if (this.activeCount.get(Team.WHITE) == 0) {
             this.view.displayWin(Team.BLACK);
+            return true;
         }
-    }
 
-    // Handle a jump move
-    protected void doJumpMove(Field toField, Field jumpedField) {
-        // Detach (remove) jumped Model.CheckerPiece
-        jumpedField.getAttachedPiece().detach(this.activeCount);
-
-        // Handle rest of move as a regular move
-        this.doRegularMove(toField, true);
-    }
-
-    // Handle a regular move
-    protected void doRegularMove(Field toField, boolean didJump) {
-        //play on move sound
-        playOnMoveSound();
-
-        // Attach selected piece to chosen field
-        this.getSelectedPiece().attachToField(toField, this.activeCount);
-
-        // Remove highlight fields
-        this.normalizeFields();
-
-        // Reset highlight-related properties
-        this.possibleJumpMoves.clear();
-        this.possibleRegularMoves.clear();
-
-        // Finish turn if onPieceMove returns true
-        if(this.onPieceMove(this.selectedPiece, didJump)) {
-            // Reset forced jump moves
-            this.forcedJumpMoves.clear();
-
-            // Reset selected field
-            this.selectedPiece.assertHighlight(false);
-            this.selectedPiece = null;
-
-            // Finish turn
-            this.finishTurn();
-        }
+        return false;
     }
 
     protected void playOnMoveSound() {
@@ -206,49 +174,36 @@ abstract public class AbstractController {
 
     // Check if game is over, toggle isWhiteTurn and setup turn for other team
     protected void finishTurn() {
+        System.out.println((this.isWhiteTurn ? "White" : "Black") + " turn finished");
+
         this.isWhiteTurn = !this.isWhiteTurn;
         this.pieceHighlightLocked = false;
 
-        checkForWin();
-
-        this.view.setupDisplayTurn(this.isWhiteTurn);
-        this.onTurnStart();
-
-        this.view.rotate();
-    }
-
-    // Should a piece be allowed to move to the given position? - Default yes
-    protected boolean fieldShouldNotBeConsidered(CheckerPiece piece, Point position) {
-        return false;
+        // Is game won or can we play on?
+        if(!checkForWin()) {
+            this.view.setupDisplayTurn(this.isWhiteTurn);
+            if (this.onTurnStart()) {
+                this.view.rotate();
+            }
+        }
     }
 
     // Highlight fields a selected piece can move to
     protected void highlightEligibleFields(CheckerPiece piece) {
-        // Iterate surrounding diagonal fields of given piece
-        for (Point p : this.surroundingFields(piece.getPosition())) {
-            if(this.fieldShouldNotBeConsidered(piece, p)) {
+        ArrayList<Move> legalMoves = this.getLegalMovesForPiece(piece);
+
+        for(Move move : legalMoves) {
+            Field toField = move.getToField();
+
+            if(move.getMoveType() == MoveType.JUMP) {
+                this.possibleJumpMoves.put(toField, move.getJumpedField());
+                this.view.highlightPane(toField);
                 continue;
             }
 
-            // Get pane of current field
-            Field field = this.fields.get(p.x).get(p.y);
-
-            // Is this position occupied - and is it possible to jump it?
-            if (field.getChildren().size() > 0) {
-                Object eligibleJumpMove = this.eligibleJumpMoveOrNull(piece, p);
-
-                // Check if jump move is eligible - per eligibleJumpMoveOrNull
-                if (eligibleJumpMove instanceof Field) {
-                    // Handle jump move if not null (e.g. instance of Field)
-                    Field eligibleJumpMovePane = (Field) eligibleJumpMove;
-
-                    this.possibleJumpMoves.put(eligibleJumpMovePane, field);
-                    this.view.highlightPane(eligibleJumpMovePane);
-                }
-            } else if (this.forcedJumpMoves.size() == 0) { // Else allow a regular move if a player isn't forced to do a jump
-                this.possibleRegularMoves.add(field);
-                this.view.highlightPane(field);
-            }
+            // Regular move
+            this.possibleRegularMoves.add(toField);
+            this.view.highlightPane(toField);
         }
     }
 
@@ -294,7 +249,10 @@ abstract public class AbstractController {
 
     protected void onSelectedPieceClick() {}
 
-    public void onTurnStart() {}
+    // Returns boolean whether or not board should rotate
+    public boolean onTurnStart() {
+        return true;
+    }
 
     // Called every time a piece is moved
     protected boolean onPieceMove(CheckerPiece movedPiece, boolean didJump) {
@@ -392,12 +350,47 @@ abstract public class AbstractController {
         setupSounds();
     }
 
-    public ArrayList<CheckerPiece> getCheckerPieces() {
-        return checkerPieces;
+    // Handle a jump move
+    public void doJumpMove(Field toField, Field jumpedField) {
+        // Detach (remove) jumped Model.CheckerPiece
+        jumpedField.getAttachedPiece().detach(this.activeCount);
+
+        // Handle rest of move as a regular move
+        this.doRegularMove(toField, true);
     }
 
-    public HashMap<Integer, HashMap<Integer, Field>> getFields() {
-        return fields;
+    // Handle a regular move
+    public void doRegularMove(Field toField, boolean didJump) {
+        //play on move sound
+        playOnMoveSound();
+
+        // Attach selected piece to chosen field
+        this.getSelectedPiece().attachToField(toField, this.activeCount);
+
+        // Remove highlight fields
+        this.normalizeFields();
+
+        // Reset highlight-related properties
+        this.possibleJumpMoves.clear();
+        this.possibleRegularMoves.clear();
+
+        // Finish turn if onPieceMove returns true
+        if(this.onPieceMove(this.selectedPiece, didJump)) {
+            // Reset forced jump moves
+            this.forcedJumpMoves.clear();
+
+            // Reset selected field
+            this.selectedPiece.assertHighlight(false);
+            this.selectedPiece = null;
+
+            // Finish turn
+            this.finishTurn();
+        }
+    }
+
+    // Should a piece be allowed to move to the given position? - Default yes
+    public boolean fieldShouldNotBeConsidered(CheckerPiece piece, Point position) {
+        return false;
     }
 
     public HashMap<Team, Integer> getActiveCount() {
@@ -408,9 +401,107 @@ abstract public class AbstractController {
         return isWhiteTurn;
     }
 
+    public ArrayList<CheckerPiece> getCheckerPieces() {
+        return this.checkerPieces;
+    }
+
+    public HashMap<Integer, HashMap<Integer, Field>> getFields() {
+        return this.fields;
+    }
+
+    public ArrayList<CheckerPiece> getForcedJumpMoves() {
+        return this.forcedJumpMoves;
+    }
+
+    public ArrayList<Move> getLegalMovesForPiece(CheckerPiece piece) {
+        ArrayList<Move> legalMoves = new ArrayList<>();
+
+        if(!piece.isActive()) {
+            return legalMoves;
+        }
+
+        // Iterate surrounding diagonal fields of given piece
+        for (Point p : this.surroundingFields(piece.getPosition())) {
+            if(this.fieldShouldNotBeConsidered(piece, p)) {
+                continue;
+            }
+
+            // Get pane of current field
+            Field field = this.fields.get(p.x).get(p.y);
+
+            // Is this position occupied - and is it possible to jump it?
+            if (field.getChildren().size() > 0) {
+                Object eligibleJumpMove = this.eligibleJumpMoveOrNull(piece, p);
+
+                // Check if jump move is eligible - per eligibleJumpMoveOrNull
+                if (eligibleJumpMove instanceof Field) {
+                    // Handle jump move if not null (e.g. instance of Field)
+                    Field eligibleJumpMovePane = (Field) eligibleJumpMove;
+
+                    // Add new move to legalMoves
+                    legalMoves.add(new Move(piece, eligibleJumpMovePane, field));
+                }
+            } else if (this.forcedJumpMoves.size() == 0) {
+                // Else allow a regular move if a player isn't forced to do a jump
+                legalMoves.add(new Move(piece, field));
+            }
+        }
+
+        return legalMoves;
+    }
+
+    public Field getOppositeDiagonalField(Field mainField, Field diagonalField) {
+        Point mainFieldPosition = mainField.getPosition();
+        Point diagonalFieldPosition = diagonalField.getPosition();
+
+        Point diff = new Point(
+            mainFieldPosition.x - diagonalFieldPosition.x,
+            mainFieldPosition.y - diagonalFieldPosition.y
+        );
+
+        Point otherDiagonalPosition = new Point(mainFieldPosition.x + diff.x, mainFieldPosition.y + diff.y);
+
+        return this.isPositionValid(otherDiagonalPosition) ?
+            this.fields.get(otherDiagonalPosition.x).get(otherDiagonalPosition.y) : null;
+    }
+
+    public HashMap<Field, Field> getPossibleJumpMoves() {
+        return this.possibleJumpMoves;
+    }
+
+    public ArrayList<Field> getPossibleRegularMoves() {
+        return this.possibleRegularMoves;
+    }
+
     // Get selected piece
     public CheckerPiece getSelectedPiece() {
         return this.selectedPiece;
+    }
+
+    public ArrayList<Field> getSurroundingFields(Field f) {
+        ArrayList<Field> fields = new ArrayList<>();
+        ArrayList<Point> points = this.surroundingFields(f.getPosition());
+
+        for(Point p : points) {
+            fields.add(this.fields.get(p.x).get(p.y));
+        }
+
+        return fields;
+    }
+
+    public GameView getView() {
+        return this.view;
+    }
+
+    // Remove highlights from highlighted fields
+    public void normalizeFields() {
+        ArrayList<Field> allHighlightedPanes = new ArrayList<>();
+        allHighlightedPanes.addAll(this.possibleJumpMoves.keySet());
+        allHighlightedPanes.addAll(this.possibleRegularMoves);
+
+        for (Field field : allHighlightedPanes) {
+            this.view.normalizePane(field);
+        }
     }
 
     // Set selected piece
@@ -430,7 +521,7 @@ abstract public class AbstractController {
         }
 
         // Select piece if turn matches the piece's team
-        if (this.selectedPiece != piece && isWhiteTurn == (piece.getTeam() == Team.WHITE)) {
+        if (this.selectedPiece != piece && this.isWhiteTurn == (piece.getTeam() == Team.WHITE)) {
             this.selectedPiece = piece;
             this.selectedPiece.assertHighlight(true);
 

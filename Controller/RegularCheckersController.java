@@ -13,51 +13,6 @@ import java.util.HashMap;
 
 public class RegularCheckersController extends AbstractController {
 
-    protected boolean canJumpMore(CheckerPiece piece) {
-        this.forcedJumpMoves.clear();
-
-        ArrayList<Point> surrounding = this.surroundingFields(piece.getPosition());
-        for(Point surroundingField : surrounding) {
-            if(this.fieldShouldNotBeConsidered(piece, surroundingField)) {
-                continue;
-            }
-
-            Field field = this.fields.get(surroundingField.x).get(surroundingField.y);
-
-            if(field.getChildren().size() == 0) {
-                continue;
-            }
-
-            Object eligibleJumpMove = this.eligibleJumpMoveOrNull(piece, surroundingField);
-
-            // Check if jump move is eligible - per eligibleJumpMoveOrNull
-            if (eligibleJumpMove instanceof Field) {
-                Field eligibleJumpMoveField = (Field) eligibleJumpMove;
-
-                if(eligibleJumpMoveField.getAttachedPiece() == null) {
-                    this.pieceHighlightLocked = true;
-
-                    piece.setCanHighlight(true);
-
-                    this.forcedJumpMoves.add(piece);
-                    this.possibleJumpMoves.put(eligibleJumpMoveField, field);
-                    this.view.highlightPane(eligibleJumpMoveField);
-                }
-            }
-        }
-
-        return this.forcedJumpMoves.size() > 0;
-    }
-
-    protected boolean fieldShouldNotBeConsidered(CheckerPiece piece, Point position) {
-        if(piece.getIsKing()) {
-            return false;
-        }
-
-        return (piece.getTeam() == Team.WHITE && position.getY() < piece.getPosition().getY()) ||
-            (piece.getTeam() == Team.BLACK && position.getY() > piece.getPosition().getY());
-    }
-
     protected boolean onPieceMove(CheckerPiece movedPiece, boolean didJump) {
         Team pieceTeam = movedPiece.getTeam();
         Point piecePosition = movedPiece.getPosition();
@@ -74,11 +29,11 @@ public class RegularCheckersController extends AbstractController {
             piece.setCanHighlight(false);
         }
 
-        return !didJump || !this.canJumpMore(movedPiece);
+        return !didJump || !this.canJumpMore(movedPiece, true);
     }
 
     // Check if any jump moves can be made and if yes, force the player to select one
-    public void onTurnStart() {
+    public boolean onTurnStart() {
         boolean teamHasMoves = false;
 
         for(CheckerPiece piece : this.checkerPieces) {
@@ -130,6 +85,8 @@ public class RegularCheckersController extends AbstractController {
                 piece.setCanHighlight(true);
             }
         }
+
+        return super.onTurnStart();
     }
 
     public RegularCheckersController(GameView view, int dimension, GridPane grid) {
@@ -146,6 +103,58 @@ public class RegularCheckersController extends AbstractController {
             HashMap<Team, Integer> activeCount
     ) {
         super(view, dimension, grid, checkerPieces, fields, isWhiteTurn, activeCount);
+    }
+
+    public boolean canJumpMore(CheckerPiece piece, boolean shouldHighlight) {
+        this.forcedJumpMoves.clear();
+
+        ArrayList<Point> surrounding = this.surroundingFields(piece.getPosition());
+        for(Point surroundingField : surrounding) {
+            if(this.fieldShouldNotBeConsidered(piece, surroundingField)) {
+                continue;
+            }
+
+            Field field = this.fields.get(surroundingField.x).get(surroundingField.y);
+
+            if(field.getChildren().size() == 0) {
+                continue;
+            }
+
+            Object eligibleJumpMove = this.eligibleJumpMoveOrNull(piece, surroundingField);
+
+            // Check if jump move is eligible - per eligibleJumpMoveOrNull
+            if (eligibleJumpMove instanceof Field) {
+                Field eligibleJumpMoveField = (Field) eligibleJumpMove;
+
+                if(eligibleJumpMoveField.getAttachedPiece() == null) {
+                    this.pieceHighlightLocked = true;
+
+                    piece.setCanHighlight(true);
+
+                    this.forcedJumpMoves.add(piece);
+                    this.possibleJumpMoves.put(eligibleJumpMoveField, field);
+
+                    if(shouldHighlight) {
+                        this.view.highlightPane(eligibleJumpMoveField);
+                    }
+                }
+            }
+        }
+
+        return this.forcedJumpMoves.size() > 0;
+    }
+
+    public boolean fieldShouldNotBeConsidered(CheckerPiece piece, Point position) {
+        return this.fieldShouldNotBeConsidered(piece, piece.getPosition(), position);
+    }
+
+    public boolean fieldShouldNotBeConsidered(CheckerPiece piece, Point alternativeFromPosition, Point position) {
+        if(piece.getIsKing()) {
+            return false;
+        }
+
+        return (piece.getTeam() == Team.WHITE && position.getY() < alternativeFromPosition.getY()) ||
+            (piece.getTeam() == Team.BLACK && position.getY() > alternativeFromPosition.getY());
     }
 
     public void setupPieceRow(int row, Team t) {
