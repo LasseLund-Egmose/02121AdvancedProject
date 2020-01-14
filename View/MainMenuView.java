@@ -254,6 +254,7 @@ public class MainMenuView extends AbstractView {
 
         button.setOnMouseClicked( e -> {
             Main.setGameView(state);
+            MainMenuView.selectedButton = fileName;
         });
 
 
