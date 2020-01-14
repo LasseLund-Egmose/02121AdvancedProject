@@ -12,12 +12,9 @@ import javafx.animation.PauseTransition;
 import javafx.util.Duration;
 
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
 
+// TODO: Needs comments
 public class CPU {
-
-    final protected static int SLEEP_TIME = 1000;
 
     protected CPURegularCheckersController controller;
     protected CanJumpMoreStrategy jumpMoreStrategy;
@@ -40,7 +37,7 @@ public class CPU {
 
         this.jumpMoreStrategy.setState(false);
 
-        nextMove.getPiece().assertHighlight(false);
+        nextMove.getPiece().setHighlight(false);
         this.controller.getView().normalizePane(nextMove.getToField());
     }
 
@@ -70,7 +67,7 @@ public class CPU {
 
             this.controller.setSelectedPieceCPU(piece);
 
-            piece.assertHighlightCPU(true);
+            piece.setHighlightCPU(true);
             this.controller.getView().highlightPaneCPU(nextMove.getToField());
 
             PauseTransition pause = new PauseTransition(Duration.seconds(1));

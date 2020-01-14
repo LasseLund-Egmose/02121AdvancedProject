@@ -12,6 +12,7 @@ import javafx.scene.layout.GridPane;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+// TODO: Needs comments
 public class CPURegularCheckersController extends RegularCheckersController {
 
     // CPU plays as Team.BLACK

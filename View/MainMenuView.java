@@ -8,12 +8,12 @@ import Controller.SimpDamController;
 import Enum.Setting;
 import Model.Settings;
 import Persistence.ObjectDB;
+
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
-import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 

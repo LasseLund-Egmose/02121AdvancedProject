@@ -11,6 +11,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+// TODO: Needs comments
 public class RegularCheckersController extends AbstractController {
 
     protected boolean onPieceMove(CheckerPiece movedPiece, boolean didJump) {

@@ -8,15 +8,21 @@ public class Move {
     protected CheckerPiece piece;
     protected Field toField;
 
+    // Regular move constructor
     public Move(CheckerPiece piece, Field toField) {
         this.piece = piece;
         this.toField = toField;
     }
 
+    // Jump move constructor
     public Move(CheckerPiece piece, Field toField, Field jumpedField) {
         this(piece, toField);
         this.jumpedField = jumpedField;
     }
+
+    /*
+     * Getters
+     */
 
     public Field getJumpedField() {
         return this.jumpedField;
@@ -33,4 +39,8 @@ public class Move {
     public Field getToField() {
         return this.toField;
     }
+
+    /*
+     * End getters
+     */
 }

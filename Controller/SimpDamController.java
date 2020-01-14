@@ -13,12 +13,12 @@ import java.util.HashMap;
 
 public class SimpDamController extends AbstractController {
 
-    protected int minFieldSize=3; //minimum field size
-
+    // Short constructor
     public SimpDamController(GameView view, int dimension, GridPane grid) {
         super(view, dimension, grid);
     }
 
+    // Long constructor
     public SimpDamController(
             GameView view,
             int dimension,

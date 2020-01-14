@@ -8,24 +8,19 @@ import Model.Field;
 import View.GameView;
 
 import javafx.animation.Animation;
-import javafx.animation.Animation.Status;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.EventHandler;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.media.AudioClip;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
 
 import java.awt.*;
 import java.io.File;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
-import static javafx.animation.Animation.Status.STOPPED;
-
+// TODO: Needs cleanup and comments
 abstract public class AbstractController {
 
     protected ArrayList<CheckerPiece> checkerPieces = new ArrayList<>(); // A list of all pieces
@@ -312,7 +307,8 @@ abstract public class AbstractController {
 
         this.activeCount.put(Team.BLACK, 0);
         this.activeCount.put(Team.WHITE, 0);
-        setupSounds();
+
+        this.setupSounds();
     }
 
 
@@ -325,15 +321,12 @@ abstract public class AbstractController {
             boolean isWhiteTurn,
             HashMap<Team, Integer> activeCount
     ) {
-        this.view = view;
-        this.dimension = dimension;
-        this.grid = grid;
+        this(view, dimension, grid);
+
         this.checkerPieces = checkerPieces;
         this.fields = fields;
         this.isWhiteTurn = isWhiteTurn;
         this.activeCount = activeCount;
-        this.moveClickEventHandler = mouseEvent -> this.onFieldClick(mouseEvent.getSource());
-        setupSounds();
     }
 
     // Handle a jump move
@@ -366,7 +359,7 @@ abstract public class AbstractController {
             this.forcedJumpMoves.clear();
 
             // Reset selected field
-            this.selectedPiece.assertHighlight(false);
+            this.selectedPiece.setHighlight(false);
             this.selectedPiece = null;
 
             // Finish turn
@@ -503,13 +496,13 @@ abstract public class AbstractController {
         // Remove highlight from currently selected piece
         if (this.selectedPiece != null) {
             this.normalizeFields();
-            this.selectedPiece.assertHighlight(false);
+            this.selectedPiece.setHighlight(false);
         }
 
         // Select piece if turn matches the piece's team
         if (this.selectedPiece != piece && this.isWhiteTurn == (piece.getTeam() == Team.WHITE)) {
             this.selectedPiece = piece;
-            this.selectedPiece.assertHighlight(true);
+            this.selectedPiece.setHighlight(true);
 
             // Highlight fields around selected piece
             this.highlightEligibleFields(this.selectedPiece);

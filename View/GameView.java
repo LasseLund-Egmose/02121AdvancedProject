@@ -2,26 +2,18 @@ package View;
 
 import Boot.Main;
 import Controller.AbstractController;
-import Controller.CPURegularCheckersController;
-import Controller.RegularCheckersController;
-import Controller.SimpDamController;
 import Enum.Setting;
 import Enum.Team;
 import Model.CheckerPiece;
 import Model.Field;
 import Model.Settings;
-
 import Persistence.ObjectDB;
+
 import javafx.animation.RotateTransition;
-import javafx.event.EventHandler;
-import javafx.geometry.HPos;
 import javafx.geometry.Pos;
-import javafx.geometry.VPos;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Labeled;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.image.Image;
@@ -31,14 +23,10 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 
 import java.awt.*;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.HashMap;
-import java.util.concurrent.TimeUnit;
 
 public class GameView extends AbstractView {
 
@@ -162,8 +150,8 @@ public class GameView extends AbstractView {
 
         //total game time
         StackPane timepane = new StackPane();
-        timepane.setMinSize(GameView.POPUP_SIZE, GameView.POPUP_SIZE/1.6); //design choice
-        timepane.setMaxSize(GameView.POPUP_SIZE, GameView.POPUP_SIZE/1.6); //design choice
+        timepane.setMinSize(GameView.POPUP_SIZE, GameView.POPUP_SIZE / 1.6); //design choice
+        timepane.setMaxSize(GameView.POPUP_SIZE, GameView.POPUP_SIZE / 1.6); //design choice
 
         Text timetext = new Text();
         timetext.setText("Game length: " + AbstractController.formatTime(AbstractController.totalTime));
@@ -260,6 +248,11 @@ public class GameView extends AbstractView {
         return ((double) GameView.BOARD_SIZE) / this.dimension;
     }
 
+    // Title
+    public String getTitle() {
+        return "Game";
+    }
+
     // Add highlight to black field
     public void highlightPane(StackPane pane) {
         int borderWidth = this.getFieldSize() < 20 ? 2 : 5;
@@ -270,11 +263,6 @@ public class GameView extends AbstractView {
     public void highlightPaneCPU(StackPane pane) {
         int borderWidth = this.getFieldSize() < 20 ? 2 : 5;
         pane.setStyle(GameView.BACKGROUND_FIELD + " -fx-border-color: blue; -fx-border-width: " + borderWidth + ";");
-    }
-
-    // Title
-    public String getTitle() {
-        return "Game";
     }
 
     // Remove highlight from black field
@@ -292,6 +280,17 @@ public class GameView extends AbstractView {
         this.displayTurn.setText(isWhiteTurn ? "White's turn" : "Black's turn");
     }
 
+    public void setupContainer(StackPane container) {
+        container.setMinHeight(80);
+        container.setMinWidth(20);
+        container.setMaxHeight(20);
+        container.setMaxWidth(300);
+        //container.setStyle("-fx-border-color: gray; -fx-border-width: 4;");
+        container.setStyle("-fx-background-image: url(/assets/dark_wood.jpg); -fx-text-fill: #DAA520;" +
+                "-fx-border-color: #DAA520; -fx-border-width: 5px;");
+        container.setTranslateZ(-GameView.zOffset());
+    }
+
     // Setup one black field
     public void setupField(StackPane field, Point position) {
         field.setStyle(GameView.BACKGROUND_FIELD);
@@ -302,17 +301,6 @@ public class GameView extends AbstractView {
 
         // Bring field background to front
         field.setTranslateZ(0.01);
-    }
-
-    public void setupContainer(StackPane container) {
-        container.setMinHeight(80);
-        container.setMinWidth(20);
-        container.setMaxHeight(20);
-        container.setMaxWidth(300);
-        //container.setStyle("-fx-border-color: gray; -fx-border-width: 4;");
-        container.setStyle("-fx-background-image: url(/assets/dark_wood.jpg); -fx-text-fill: #DAA520;" +
-                "-fx-border-color: #DAA520; -fx-border-width: 5px;");
-        container.setTranslateZ(-GameView.zOffset());
     }
 
     // Setup scene
@@ -369,7 +357,9 @@ public class GameView extends AbstractView {
         this.controller.countDownTimer();
 
         // Rotate surfacePane if it's blacks turn
-        if (!db.isWhiteTurn()) { this.surfacePaneRotation.play(); }
+        if (!db.isWhiteTurn()) {
+            this.surfacePaneRotation.play();
+        }
 
         // Start the turn
         this.controller.onTurnStart();
@@ -436,7 +426,7 @@ public class GameView extends AbstractView {
         this.stopGamePane.setMinSize(GameView.WIDTH, GameView.HEIGHT);
         this.stopGamePane.setMaxSize(GameView.WIDTH, GameView.HEIGHT);
         this.stopGamePane.setStyle("-fx-background-color: #555555a0");
-        this.stopGamePane.setTranslateZ(2*-GameView.zOffset());
+        this.stopGamePane.setTranslateZ(2 * -GameView.zOffset());
         StackPane pausepane = new StackPane();
         pausepane.setMinHeight(40);
         pausepane.setMinWidth(10);
@@ -450,7 +440,7 @@ public class GameView extends AbstractView {
         pausepane.getChildren().add(pauseText);
 
         pausepane.setStyle("-fx-background-image: url(/assets/dark_wood.jpg);  -fx-cursor: hand");
-        pausepane.setOnMouseClicked( e ->{
+        pausepane.setOnMouseClicked(e -> {
             root.getChildren().add(this.stopGamePane);
             displayPauseScreen();
         });

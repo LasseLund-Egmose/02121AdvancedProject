@@ -7,8 +7,8 @@ import Model.Field;
 import Model.Move;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
+// TODO: Needs comments
 abstract public class AbstractStrategy {
 
     abstract public Move getMoveOrNull();

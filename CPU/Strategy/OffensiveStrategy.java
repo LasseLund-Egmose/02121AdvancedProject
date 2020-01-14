@@ -8,6 +8,7 @@ import Model.Move;
 import java.util.ArrayList;
 import java.util.Random;
 
+// TODO: Needs comments
 public class OffensiveStrategy extends AbstractStrategy {
 
     protected ArrayList<Move> assessedMoves = new ArrayList<>();

@@ -9,6 +9,7 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+// TODO: Needs cleanup and comments
 public class Main extends Application {
 
     protected static Stage primaryStage;

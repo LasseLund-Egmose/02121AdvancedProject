@@ -11,6 +11,7 @@ import Model.Field;
 import java.awt.*;
 import java.util.*;
 
+// TODO: Needs comments
 public class DefensiveStrategy extends AbstractStrategy {
 
     protected Move findFixingMove(VulnerablePosition vulnerability) {

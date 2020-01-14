@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class ObjectDB implements Serializable {
+
     private static final long serialVersionUID = 5864896800675704551L;
 
     protected ArrayList<CheckerPiece> checkerPieces = new ArrayList<>(); // A list of all pieces
@@ -196,4 +197,5 @@ public class ObjectDB implements Serializable {
             return null;
         }
     }
+
 }

@@ -28,76 +28,8 @@ public class CheckerPiece implements Serializable {
     protected double size; // Size of one field
     protected Team team; // Team of this piece
 
-    protected void setupCylinder(boolean isKing) {
-        double radius = (this.size * 2) / 5;
-        double height = radius / 1.5;
-
-        Cylinder cylinder = new Cylinder(radius, height);
-
-        cylinder.setMaterial(this.getMaterial());
-        cylinder.setRotationAxis(Rotate.X_AXIS);
-        cylinder.setRotate(90);
-
-        if(isKing) {
-            cylinder.setTranslateZ(height + height / 2 + 2);
-            this.kingCylinder = cylinder;
-        } else {
-            cylinder.setTranslateZ(height / 2);
-            this.cylinder = cylinder;
-        }
-    }
-
-    protected void setupMaterial() {
-        this.material = new PhongMaterial();
-        this.material.setDiffuseMap(
-            new Image(getClass().getResourceAsStream(
-                team == Team.BLACK ? "/assets/piece_black.jpg" : "/assets/piece_white.jpg"
-            ))
-        );
-    }
-
-    // Setup pane, shape and material
-    public void setupPiece() {
-        if(this.material == null) {
-            this.setupMaterial();
-        }
-
-        if(this.cylinder == null) {
-            this.setupCylinder(false);
-        }
-
-        if(this.isKing && this.kingCylinder == null) {
-            this.setupCylinder(true);
-        }
-
-        this.cylinderContainer.getChildren().clear();
-
-        if(this.isKing) {
-            this.cylinderContainer.getChildren().addAll(this.cylinder, this.kingCylinder);
-            return;
-        }
-
-        this.cylinderContainer.getChildren().add(this.cylinder);
-    }
-
-    // Construct
-    public CheckerPiece(double size, Team team) {
-        this.size = size;
-        this.team = team;
-
-        this.setupPiece();
-    }
-
-    public CheckerPiece(boolean isActive, boolean isKing, double size, Team team, boolean canHighlight) {
-        this.isActive = isActive;
-        this.isKing = isKing;
-        this.size = size;
-        this.team = team;
-        this.canHighlight = canHighlight;
-    }
-
     // Make sure piece is either highlighted or not
-    public void assertHighlight(boolean shouldHighlight, Color color) {
+    protected void setHighlight(boolean shouldHighlight, Color color) {
         if(!this.canHighlight) {
             return;
         }
@@ -118,12 +50,51 @@ public class CheckerPiece implements Serializable {
         this.cylinder.setMaterial(this.getMaterial());
     }
 
-    public void assertHighlight(boolean shouldHighlight) {
-        this.assertHighlight(shouldHighlight, Color.LIMEGREEN);
+    // Setup cylinder shape(s)
+    protected void setupCylinder(boolean isKing) {
+        double radius = (this.size * 2) / 5;
+        double height = radius / 1.5;
+
+        Cylinder cylinder = new Cylinder(radius, height);
+
+        cylinder.setMaterial(this.getMaterial());
+        cylinder.setRotationAxis(Rotate.X_AXIS);
+        cylinder.setRotate(90);
+
+        if(isKing) {
+            cylinder.setTranslateZ(height + height / 2 + 2);
+            this.kingCylinder = cylinder;
+        } else {
+            cylinder.setTranslateZ(height / 2);
+            this.cylinder = cylinder;
+        }
     }
 
-    public void assertHighlightCPU(boolean shouldHighlight) {
-        this.assertHighlight(shouldHighlight, Color.BLUE);
+    // Setup texture material
+    protected void setupMaterial() {
+        this.material = new PhongMaterial();
+        this.material.setDiffuseMap(
+            new Image(getClass().getResourceAsStream(
+                team == Team.BLACK ? "/assets/piece_black.jpg" : "/assets/piece_white.jpg"
+            ))
+        );
+    }
+
+    // Short constructor
+    public CheckerPiece(double size, Team team) {
+        this.size = size;
+        this.team = team;
+
+        this.setupPiece();
+    }
+
+    // Long constructor
+    public CheckerPiece(boolean isActive, boolean isKing, double size, Team team, boolean canHighlight) {
+        this(size, team);
+
+        this.canHighlight = canHighlight;
+        this.isActive = isActive;
+        this.isKing = isKing;
     }
 
     // Detach and afterwards attach piece to given pane (black field)
@@ -165,6 +136,9 @@ public class CheckerPiece implements Serializable {
         this.isActive = false;
     }
 
+    /*
+     *  Getters
+     */
     public boolean getIsKing() {
         return this.isKing;
     }
@@ -204,12 +178,11 @@ public class CheckerPiece implements Serializable {
     public boolean getIsActive() {
         return this.isActive;
     }
+    /*
+     *  End getters
+     */
 
-    // Setup click event on piece
-    public void setupEvent(AbstractController controller) {
-        this.cylinderContainer.setOnMouseClicked(e -> controller.setSelectedPiece(this));
-    }
-
+    // Set whether or not this piece can be highlighted (if not, it should be grayed out)
     public void setCanHighlight(boolean canHighlight) {
         this.canHighlight = canHighlight;
 
@@ -229,17 +202,59 @@ public class CheckerPiece implements Serializable {
         this.cylinder.setMaterial(this.getMaterial());
     }
 
+    // Set or remove shape parent (used when saving/loaded to remove JavaFx refs)
+    public void setCylinderContainer(StackPane cylinderContainer) {
+        this.cylinderContainer = cylinderContainer;
+    }
+
+    // Set highlighted for player
+    public void setHighlight(boolean shouldHighlight) {
+        this.setHighlight(shouldHighlight, Color.web("green"));
+    }
+
+    // Set highlighted for CPU
+    public void setHighlightCPU(boolean shouldHighlight) {
+        this.setHighlight(shouldHighlight, Color.web("blue"));
+    }
+
+    // Set wheter or not this is a king
     public void setKing() {
         this.isKing = true;
 
         this.setupPiece();
     }
 
-    public void setCylinderContainer(StackPane cylinderContainer) {
-        this.cylinderContainer = cylinderContainer;
-    }
-
+    // Set the parent (field) of this piece
     public void setParent(Field parent) {
         this.parent = parent;
+    }
+
+    // Setup click event on piece
+    public void setupEvent(AbstractController controller) {
+        this.cylinderContainer.setOnMouseClicked(e -> controller.setSelectedPiece(this));
+    }
+
+    // Setup pane, shape and material
+    public void setupPiece() {
+        if(this.material == null) {
+            this.setupMaterial();
+        }
+
+        if(this.cylinder == null) {
+            this.setupCylinder(false);
+        }
+
+        if(this.isKing && this.kingCylinder == null) {
+            this.setupCylinder(true);
+        }
+
+        this.cylinderContainer.getChildren().clear();
+
+        if(this.isKing) {
+            this.cylinderContainer.getChildren().addAll(this.cylinder, this.kingCylinder);
+            return;
+        }
+
+        this.cylinderContainer.getChildren().add(this.cylinder);
     }
 }

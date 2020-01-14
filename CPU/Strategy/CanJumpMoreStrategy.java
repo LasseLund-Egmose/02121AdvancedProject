@@ -7,6 +7,7 @@ import Model.Move;
 
 import java.util.ArrayList;
 
+// TODO: Needs comments
 public class CanJumpMoreStrategy extends AbstractStrategy {
 
     protected ArrayList<CheckerPiece> forcedJumpMoves;

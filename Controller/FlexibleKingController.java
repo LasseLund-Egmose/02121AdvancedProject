@@ -10,6 +10,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+// TODO: Needs cleanup and comments
 public class FlexibleKingController extends RegularCheckersController {
 
     protected ArrayList<Point> surroundingFields(Point p) {
