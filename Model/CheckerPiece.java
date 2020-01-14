@@ -88,11 +88,12 @@ public class CheckerPiece implements Serializable {
         this.setupPiece();
     }
 
-    public CheckerPiece(boolean isActive, boolean isKing, double size, Team team) {
+    public CheckerPiece(boolean isActive, boolean isKing, double size, Team team, boolean canHighlight) {
         this.isActive = isActive;
         this.isKing = isKing;
         this.size = size;
         this.team = team;
+        this.canHighlight = canHighlight;
     }
 
     // Make sure piece is either highlighted or not
@@ -187,6 +188,8 @@ public class CheckerPiece implements Serializable {
     public boolean isActive() {
         return this.isActive;
     }
+
+    public boolean getCanHighlight() { return canHighlight; }
 
     // Setup click event on piece
     public void setupEvent(AbstractController controller) {

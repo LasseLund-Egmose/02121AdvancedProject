@@ -7,13 +7,24 @@ import Model.CheckerPiece;
 import Model.Field;
 import View.GameView;
 
+import javafx.animation.Animation;
+import javafx.animation.Animation.Status;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.event.EventHandler;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.media.AudioClip;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.util.Duration;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.io.File;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static javafx.animation.Animation.Status.STOPPED;
 
 abstract public class AbstractController {
 
@@ -35,6 +46,80 @@ abstract public class AbstractController {
     protected GameView view; // Reference to view instance
     protected int minFieldSize=8; //minimum field size
     protected int maxFieldSize=100; //maximum field size
+    protected Timeline timeline = new Timeline();
+    public static int timeWhite = 300;
+    public static int timeBlack = 300;
+    public static int totalTime = 0;
+    protected ArrayList<AudioClip> soundArrayList = new ArrayList<>();
+    protected String[] soundNames = new String[]{"chipsCollide1.wav", "chipsCollide2.wav", "chipsCollide3.wav", "chipsCollide4.wav"};
+    protected Random randomSound = new Random();
+
+    public GameView getView(GameView view){
+        return view;
+    }
+
+    public static void setTotalTime() {
+        totalTime = 0;
+    }
+
+    public static void setTime() {
+        timeWhite = 300;
+        timeBlack = 300;
+    }
+
+    public static void setTimeWhite(int timeWhite) {
+        AbstractController.timeWhite = timeWhite;
+    }
+
+    public static void setTimeBlack(int timeBlack) {
+        AbstractController.timeBlack = timeBlack;
+    }
+
+    public static void setTotalTime(int totalTime) {
+        AbstractController.totalTime = totalTime;
+    }
+
+    public void pauseTime() {
+        timeline.pause();
+    }
+
+    public void startTime() {
+        timeline.play();
+    }
+
+    public void countDownTimer() {
+        this.timeline = new Timeline(new KeyFrame(Duration.seconds(1), ev -> {
+            if (isWhiteTurn) {
+                GameView.displayWhiteTimeLeft.setText("White time left: " + formatTime(timeWhite--));
+                totalTime++;
+                if (timeWhite <= -2) {
+                    timeline.stop();
+                    this.view.displayWin(Team.BLACK);
+                }
+            } else {
+                GameView.displayBlackTimeLeft.setText("Black time left: " + formatTime(timeBlack--));
+                totalTime++;
+                if (timeBlack <= -2) {
+                    timeline.stop();
+                    this.view.displayWin(Team.WHITE);
+                }
+            }
+        }));
+        timeline.setCycleCount(Animation.INDEFINITE);
+        timeline.play();
+    }
+
+    public static String formatTime(int timeSeconds) {
+            int minutes = timeSeconds / 60;
+            int seconds = timeSeconds % 60;
+            String formattedTime = "";
+            if (seconds < 10) {
+                formattedTime = minutes + ":" +  "0" + seconds;
+            } else {
+                formattedTime = minutes + ":" + seconds;
+            }
+            return formattedTime;
+    }
 
     // Setup a piece in each corner
     abstract public void setupPieces();
@@ -52,6 +137,45 @@ abstract public class AbstractController {
         }
 
         return false;
+    }
+
+    // Handle a regular move
+    protected void doRegularMove(Field toField, boolean didJump) {
+        //play on move sound
+        playOnMoveSound();
+
+        // Attach selected piece to chosen field
+        this.getSelectedPiece().attachToField(toField, this.activeCount);
+
+        // Remove highlight fields
+        this.normalizeFields();
+
+        // Reset highlight-related properties
+        this.possibleJumpMoves.clear();
+        this.possibleRegularMoves.clear();
+
+        // Finish turn if onPieceMove returns true
+        if(this.onPieceMove(this.selectedPiece, didJump)) {
+            // Reset forced jump moves
+            this.forcedJumpMoves.clear();
+
+            // Reset selected field
+            this.selectedPiece.assertHighlight(false);
+            this.selectedPiece = null;
+
+            // Finish turn
+            this.finishTurn();
+        }
+    }
+
+    protected void playOnMoveSound() {
+        this.soundArrayList.get(randomSound.nextInt(soundArrayList.size())).play();
+    }
+
+    protected void setupSounds() {
+        for(String name: soundNames) {
+            soundArrayList.add(new AudioClip(new File("./src/assets/" + name).toURI().toString()));
+        }
     }
 
     // Check if a jump move is eligible (e.g. no piece behind jumped piece)
@@ -141,7 +265,7 @@ abstract public class AbstractController {
     protected void onSelectedPieceClick() {}
 
     // Returns boolean whether or not board should rotate
-    protected boolean onTurnStart() {
+    public boolean onTurnStart() {
         return true;
     }
 
@@ -215,6 +339,8 @@ abstract public class AbstractController {
 
         this.activeCount.put(Team.BLACK, 0);
         this.activeCount.put(Team.WHITE, 0);
+        countDownTimer();
+        setupSounds();
     }
 
 
@@ -235,6 +361,8 @@ abstract public class AbstractController {
         this.isWhiteTurn = isWhiteTurn;
         this.activeCount = activeCount;
         this.moveClickEventHandler = mouseEvent -> this.onFieldClick(mouseEvent.getSource());
+        countDownTimer();
+        setupSounds();
     }
 
     // Handle a jump move
@@ -426,4 +554,6 @@ abstract public class AbstractController {
             }
         }
     }
+
+    public int getMinFieldSize(){ return  this.minFieldSize;}
 }

@@ -4,6 +4,7 @@ import Boot.Main;
 import Controller.AbstractController;
 import Controller.CPURegularCheckersController;
 import Controller.RegularCheckersController;
+import Controller.SimpDamController;
 import Enum.Setting;
 import Enum.Team;
 import Model.CheckerPiece;
@@ -12,10 +13,14 @@ import Model.Settings;
 
 import Persistence.ObjectDB;
 import javafx.animation.RotateTransition;
+import javafx.event.EventHandler;
+import javafx.geometry.HPos;
 import javafx.geometry.Pos;
+import javafx.geometry.VPos;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Labeled;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -26,10 +31,14 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 
 import java.awt.*;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 
 public class GameView extends AbstractView {
 
@@ -48,10 +57,14 @@ public class GameView extends AbstractView {
     protected AbstractController controller; // GameControllers.Controller instance
     protected int dimension = 8; // Board dimension
     protected Text displayTurn; // Text element displaying turn
+    public static Text displayWhiteTimeLeft;
+    public static Text displayBlackTimeLeft;
     protected GridPane grid;
     protected Pane surfacePane;
     protected RotateTransition surfacePaneRotation; // Transition rotating board after each turn
     protected Settings settings;
+    protected StackPane stopGamePane = new StackPane();
+    protected StackPane root = new StackPane();
 
     // Calculate how far away elements should be moved to avoid colliding with background
     // Using the Pythagorean theorem and the law of sines
@@ -147,12 +160,94 @@ public class GameView extends AbstractView {
         text.setText(winningTeam == Team.BLACK ? "Black won" : "White won");
         text.setStyle("-fx-font: 70px Arial");
 
+        //total game time
+        StackPane timepane = new StackPane();
+        timepane.setMinSize(GameView.POPUP_SIZE, GameView.POPUP_SIZE/1.6); //design choice
+        timepane.setMaxSize(GameView.POPUP_SIZE, GameView.POPUP_SIZE/1.6); //design choice
+
+        Text timetext = new Text();
+        timetext.setText("Game length: " + AbstractController.formatTime(AbstractController.totalTime));
+        timetext.setStyle("-fx-font: 30px Arial");
+
         StackPane.setAlignment(text, Pos.CENTER);
         StackPane.setAlignment(pane, Pos.CENTER);
         StackPane.setAlignment(button, Pos.BOTTOM_CENTER);
+        StackPane.setAlignment(timepane, Pos.BOTTOM_CENTER);
+        StackPane.setAlignment(timetext, Pos.CENTER);
 
-        pane.getChildren().addAll(text, button);
+        pane.getChildren().addAll(text, timepane, button); //add button last to have it on top
+        timepane.getChildren().add(timetext);
         root.getChildren().add(pane);
+
+        Scene scene = new Scene(root, GameView.WIDTH, GameView.HEIGHT);
+        dialog.setScene(scene);
+        dialog.show();
+    }
+
+    public void displayPauseScreen() {
+        this.controller.pauseTime();
+
+        Stage dialog = new Stage();
+        dialog.setTitle("Game paused");
+
+        StackPane root = new StackPane();
+        root.setMinSize(GameView.WIDTH, GameView.HEIGHT);
+        root.setMaxSize(GameView.WIDTH, GameView.HEIGHT);
+        root.setStyle("-fx-border-color: #DAA520; -fx-border-width: 5px; -fx-background-color: antiquewhite;");
+
+        Button resumeButton = new Button("Resume game");
+        resumeButton.setStyle("-fx-background-image: url(/assets/dark_wood.jpg); -fx-cursor: hand;" +
+                " -fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: #DAA520;" +
+                "-fx-border-color: #DAA520; -fx-border-width: 5px;");
+        resumeButton.setOnMouseClicked(e -> {
+            this.root.getChildren().remove(stopGamePane);
+            dialog.close();
+            this.controller.startTime();
+        });
+
+        Button saveButton = new Button("Save game");
+        saveButton.setStyle("-fx-background-image: url(/assets/dark_wood.jpg); -fx-cursor: hand;" +
+                " -fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: #DAA520;" +
+                "-fx-border-color: #DAA520; -fx-border-width: 5px;");
+        saveButton.setOnMouseClicked(e -> {
+            ObjectDB saveGame = new ObjectDB();
+            saveGame.setActiveCount(controller.getActiveCount());
+            saveGame.setCheckerPieces(controller.getCheckerPieces());
+            saveGame.setFields(controller.getFields());
+            saveGame.setDimension((int) Settings.get(Setting.Dimension));
+            saveGame.setWhiteTurn(controller.isWhiteTurn());
+            saveGame.setTimeWhite(AbstractController.timeWhite);
+            saveGame.setTimeBlack(AbstractController.timeBlack);
+            saveGame.setTotalTime(AbstractController.totalTime);
+            if (saveGame.saveState(MainMenuView.selectedButton)) {
+                saveButton.setText("Game Saved!");
+            } else {
+                saveButton.setText("Couldn't Save Game");
+            }
+        });
+
+        Button quitButton = new Button("Quit game");
+        quitButton.setStyle("-fx-background-image: url(/assets/dark_wood.jpg); -fx-cursor: hand;" +
+                " -fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: #DAA520;" +
+                "-fx-border-color: #DAA520; -fx-border-width: 5px;");
+        quitButton.setOnMouseClicked(e -> {
+            Main.setView(Main.mainMenuView);
+            dialog.close();
+        });
+
+        dialog.setOnCloseRequest(event -> {
+            this.root.getChildren().remove(stopGamePane);
+            this.controller.startTime();
+        });
+
+        VBox pauseMenuVBox = new VBox();
+        pauseMenuVBox.setSpacing(40);
+        pauseMenuVBox.setAlignment(Pos.CENTER);
+
+        pauseMenuVBox.getChildren().addAll(resumeButton, saveButton, quitButton);
+        root.getChildren().add(pauseMenuVBox);
+
+        StackPane.setAlignment(pauseMenuVBox, Pos.CENTER);
 
         Scene scene = new Scene(root, GameView.WIDTH, GameView.HEIGHT);
         dialog.setScene(scene);
@@ -202,81 +297,78 @@ public class GameView extends AbstractView {
         field.setTranslateZ(0.01);
     }
 
+    public void setupContainer(StackPane container) {
+        container.setMinHeight(80);
+        container.setMinWidth(20);
+        container.setMaxHeight(20);
+        container.setMaxWidth(300);
+        //container.setStyle("-fx-border-color: gray; -fx-border-width: 4;");
+        container.setStyle("-fx-background-image: url(/assets/dark_wood.jpg); -fx-text-fill: #DAA520;" +
+                "-fx-border-color: #DAA520; -fx-border-width: 5px;");
+        container.setTranslateZ(-GameView.zOffset());
+    }
+
     // Setup scene
     public Scene setupScene() {
-        this.dimension = (int) Settings.get(Setting.Dimension);
 
-        // Setup root pane
-        StackPane root = new StackPane();
-        root.setMinSize(GameView.WIDTH, GameView.HEIGHT);
-        root.setMaxSize(GameView.WIDTH, GameView.HEIGHT);
-
-        // Setup turn text and its container
-        this.displayTurn = new Text();
-        this.displayTurn.setStyle("-fx-font: 50 Arial;");
-        this.displayTurn.setFill(Color.BLACK);
-        this.setupDisplayTurn(true);
-
-        StackPane displayTurnContainer = new StackPane();
-        displayTurnContainer.setMinHeight(80);
-        displayTurnContainer.setMinWidth(20);
-        displayTurnContainer.setMaxHeight(20);
-        displayTurnContainer.setMaxWidth(300);
-        displayTurnContainer.setStyle("-fx-border-color: gray; -fx-border-width: 4;");
-        displayTurnContainer.getChildren().add(this.displayTurn);
-        displayTurnContainer.setTranslateZ(-GameView.zOffset());
-
-        // Setup background and move it behind the board
-        Rectangle background = new Rectangle(GameView.WIDTH * 2, GameView.HEIGHT * 2);
-        background.setFill(Color.web("antiquewhite"));
-
-        // Setup container for board and rotate it according to BOARD_TILT
-        StackPane boardContainer = new StackPane();
-        boardContainer.setPrefSize(GameView.WIDTH, GameView.HEIGHT);
-        boardContainer.setRotationAxis(Rotate.X_AXIS);
-        boardContainer.setRotate(-GameView.BOARD_TILT);
-        boardContainer.setPickOnBounds(false);
-        boardContainer.setStyle("-fx-effect: null;");
-        boardContainer.setTranslateZ(-GameView.zOffset());
-
-        // Setup board surface and add it to board container
-        this.setupSurface();
-        boardContainer.getChildren().add(this.surfacePane);
-
-        // Add aforementioned elements to root
-        root.getChildren().addAll(background, boardContainer, displayTurnContainer);
-
-        // Pass through click events and disable shadows for root
-        root.setPickOnBounds(false);
-        root.setStyle("-fx-effect: null;");
-
-        // Set alignments for elements
-        StackPane.setAlignment(background, Pos.CENTER);
-        StackPane.setAlignment(displayTurnContainer, Pos.TOP_CENTER);
-        StackPane.setAlignment(this.surfacePane, Pos.CENTER);
-        StackPane.setAlignment(this.displayTurn, Pos.CENTER);
+        Scene scene = makeScene(true);
 
         // Setup controller
-        //this.controller = new RegularCheckersController(this, this.dimension, this.grid);
         this.controller = (AbstractController) Settings.get(Setting.Controller);
 
         // Setup black fields (with click events) and game pieces
         this.controller.setupFields();
         this.controller.setupPieces();
 
-        // Setup scene (with depthBuffer to avoid z-fighting and unexpected behaviour) and apply it
-        Scene scene = new Scene(root, GameView.WIDTH, GameView.HEIGHT, true, null);
-
-        // Setup camera for scene
-        PerspectiveCamera pc = new PerspectiveCamera();
-        pc.setTranslateZ(-GameView.zOffset());
-        scene.setCamera(pc);
+        //reset time values
+        AbstractController.setTotalTime();
+        AbstractController.setTime();
 
         return scene;
     }
 
     // Setup scene from saved game
     public Scene setupScene(ObjectDB db) {
+
+        Scene scene = makeScene(db.isWhiteTurn());
+
+        // Setup controller
+        this.controller = new RegularCheckersController(this, this.dimension, this.grid, db.getCheckerPieces(), db.getFields(), db.isWhiteTurn(), db.getActiveCount());
+
+        // Loop over all the fields in the fields hashmap
+        for (HashMap.Entry<Integer, HashMap<Integer, Field>> x : db.getFields().entrySet()) {
+            for (HashMap.Entry<Integer, Field> y : x.getValue().entrySet()) {
+                // Setup black fields (with click events)
+                this.controller.setupField(y.getValue());
+            }
+        }
+
+        for (CheckerPiece piece : db.getCheckerPieces()) {
+            // Initialize each checker piece with loaded state
+            if (piece.getParent() != null) {
+                piece.setupPiece();
+                piece.setupEvent(this.controller);
+                piece.attachToField(piece.getParent(), db.getActiveCount());
+                piece.setCanHighlight(piece.getCanHighlight());
+            }
+        }
+
+        AbstractController.setTotalTime(db.getTotalTime());
+        AbstractController.setTimeWhite(db.getTimeWhite());
+        AbstractController.setTimeBlack(db.getTimeBlack());
+        this.controller.countDownTimer();
+
+        // Rotate surfacePane if it's blacks turn
+        if (!db.isWhiteTurn()) { this.surfacePaneRotation.play(); }
+
+        // Start the turn
+        this.controller.onTurnStart();
+
+        return scene;
+    }
+
+    protected Scene makeScene(boolean isWhiteTurn) {
+
         this.dimension = (int) Settings.get(Setting.Dimension);
 
         // Setup root pane
@@ -284,46 +376,34 @@ public class GameView extends AbstractView {
         root.setMinSize(GameView.WIDTH, GameView.HEIGHT);
         root.setMaxSize(GameView.WIDTH, GameView.HEIGHT);
 
-
-
-        Text saveGame = new Text("Save");
-        saveGame.setStyle("-fx-font: 50 Arial;");
-
-        StackPane saveGameContainer = new StackPane();
-        saveGameContainer.setMinHeight(80);
-        saveGameContainer.setMinWidth(20);
-        saveGameContainer.setMaxHeight(20);
-        saveGameContainer.setMaxWidth(300);
-        saveGameContainer.setStyle("-fx-border-color: gray; -fx-border-width: 4;");
-        saveGameContainer.getChildren().add(saveGame);
-        saveGameContainer.setTranslateZ(-GameView.zOffset());
-        saveGameContainer.setTranslateX(300);
-        saveGameContainer.setTranslateY(-300);
-
-        saveGameContainer.addEventFilter(MouseEvent.MOUSE_PRESSED, e -> {
-            ObjectDB newDB = new ObjectDB();
-            newDB.setActiveCount(controller.getActiveCount());
-            newDB.setCheckerPieces(controller.getCheckerPieces());
-            newDB.setFields(controller.getFields());
-            newDB.setSettings(this.settings);
-            newDB.setWhiteTurn(controller.isWhiteTurn());
-            newDB.saveState("NormalGame");
-        });
-
         // Setup turn text and its container
         this.displayTurn = new Text();
         this.displayTurn.setStyle("-fx-font: 50 Arial;");
-        this.displayTurn.setFill(Color.BLACK);
-        this.setupDisplayTurn(db.isWhiteTurn());
+        this.displayTurn.setFill(Color.GOLDENROD);
+        this.setupDisplayTurn(isWhiteTurn);
 
         StackPane displayTurnContainer = new StackPane();
-        displayTurnContainer.setMinHeight(80);
-        displayTurnContainer.setMinWidth(20);
-        displayTurnContainer.setMaxHeight(20);
-        displayTurnContainer.setMaxWidth(300);
-        displayTurnContainer.setStyle("-fx-border-color: gray; -fx-border-width: 4;");
+        setupContainer(displayTurnContainer);
         displayTurnContainer.getChildren().add(this.displayTurn);
-        displayTurnContainer.setTranslateZ(-GameView.zOffset());
+
+        //Setup time text and the containers
+        displayWhiteTimeLeft = new Text();
+        displayWhiteTimeLeft.setStyle("-fx-font: 30 Arial;");
+        displayWhiteTimeLeft.setFill(Color.DARKGOLDENROD);
+        displayWhiteTimeLeft.setText("White time left: " + AbstractController.formatTime(AbstractController.timeWhite--));
+
+        StackPane displayWhiteTimeContainer = new StackPane();
+        setupContainer(displayWhiteTimeContainer);
+        displayWhiteTimeContainer.getChildren().add(displayWhiteTimeLeft);
+
+        displayBlackTimeLeft = new Text();
+        displayBlackTimeLeft.setStyle("-fx-font: 30 Arial;");
+        displayBlackTimeLeft.setFill(Color.DARKGOLDENROD);
+        displayBlackTimeLeft.setText("Black time left: " + AbstractController.formatTime(AbstractController.timeBlack--));
+
+        StackPane displayBlackTimeContainer = new StackPane();
+        setupContainer(displayBlackTimeContainer);
+        displayBlackTimeContainer.getChildren().add(displayBlackTimeLeft);
 
         // Setup background and move it behind the board
         Rectangle background = new Rectangle(GameView.WIDTH * 2, GameView.HEIGHT * 2);
@@ -342,8 +422,31 @@ public class GameView extends AbstractView {
         this.setupSurface();
         boardContainer.getChildren().add(this.surfacePane);
 
+        //setup pause button
+        this.stopGamePane.setMinSize(GameView.WIDTH, GameView.HEIGHT);
+        this.stopGamePane.setMaxSize(GameView.WIDTH, GameView.HEIGHT);
+        this.stopGamePane.setStyle("-fx-background-color: #555555a0");
+        this.stopGamePane.setTranslateZ(2*-GameView.zOffset());
+        StackPane pausepane = new StackPane();
+        pausepane.setMinHeight(40);
+        pausepane.setMinWidth(10);
+        pausepane.setMaxHeight(20);
+        pausepane.setMaxWidth(100);
+
+        Text pauseText = new Text();
+        pauseText.setText("Pause");
+        pauseText.setStyle("-fx-font: 20 Arial;");
+        pauseText.setFill(Color.DARKGOLDENROD);
+        pausepane.getChildren().add(pauseText);
+
+        pausepane.setStyle("-fx-background-image: url(/assets/dark_wood.jpg);  -fx-cursor: hand");
+        pausepane.setOnMouseClicked( e ->{
+            root.getChildren().add(this.stopGamePane);
+            displayPauseScreen();
+        });
+
         // Add aforementioned elements to root
-        root.getChildren().addAll(background, boardContainer, displayTurnContainer, saveGameContainer);
+        root.getChildren().addAll(background, boardContainer, displayTurnContainer, displayWhiteTimeContainer, displayBlackTimeContainer, pausepane);
 
         // Pass through click events and disable shadows for root
         root.setPickOnBounds(false);
@@ -352,33 +455,12 @@ public class GameView extends AbstractView {
         // Set alignments for elements
         StackPane.setAlignment(background, Pos.CENTER);
         StackPane.setAlignment(displayTurnContainer, Pos.TOP_CENTER);
+        StackPane.setAlignment(displayWhiteTimeContainer, Pos.TOP_LEFT);
+        StackPane.setAlignment(displayBlackTimeContainer, Pos.TOP_RIGHT);
         StackPane.setAlignment(this.surfacePane, Pos.CENTER);
         StackPane.setAlignment(this.displayTurn, Pos.CENTER);
-
-        // Setup controller
-        this.controller = new RegularCheckersController(this, this.dimension, this.grid, db.getCheckerPieces(), db.getFields(), db.isWhiteTurn(), db.getActiveCount());
-
-        // Setup black fields (with click events) and game pieces
-        //this.controller.setupFields();
-        //this.controller.setupPieces();
-
-        // Loop over all the fields in the fields hashmap
-        for (HashMap.Entry<Integer, HashMap<Integer, Field>> x : db.getFields().entrySet()) {
-            for (HashMap.Entry<Integer, Field> y : x.getValue().entrySet()) {
-                this.controller.setupField(y.getValue());
-            }
-        }
-
-        for (CheckerPiece piece : db.getCheckerPieces()) {
-            if (piece.getParent() != null) {
-                piece.setupPiece();
-                piece.setupEvent(this.controller);
-                piece.attachToField(piece.getParent(), db.getActiveCount());
-
-            }
-        }
-
-        if (!db.isWhiteTurn()) { this.surfacePaneRotation.play(); }
+        StackPane.setAlignment(pausepane, Pos.BOTTOM_CENTER);
+        StackPane.setAlignment(pausepane, Pos.TOP_CENTER);
 
         // Setup scene (with depthBuffer to avoid z-fighting and unexpected behaviour) and apply it
         Scene scene = new Scene(root, GameView.WIDTH, GameView.HEIGHT, true, null);
@@ -387,6 +469,8 @@ public class GameView extends AbstractView {
         PerspectiveCamera pc = new PerspectiveCamera();
         pc.setTranslateZ(-GameView.zOffset());
         scene.setCamera(pc);
+
+        this.root = root;
 
         return scene;
     }
