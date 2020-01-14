@@ -428,7 +428,7 @@ abstract public class AbstractController {
                     // Add new move to legalMoves
                     legalMoves.add(new Move(piece, eligibleJumpMovePane, field));
                 }
-            } else if (this.forcedJumpMoves.size() == 0) {
+            } else if (attachedCheckerPiece == null && this.forcedJumpMoves.size() == 0) {
                 // Else allow a regular move if a player isn't forced to do a jump
                 legalMoves.add(new Move(piece, field));
             }
