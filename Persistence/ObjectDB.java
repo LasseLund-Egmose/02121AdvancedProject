@@ -74,7 +74,7 @@ public class ObjectDB implements Serializable {
 
         for (CheckerPiece piece : this.checkerPieces) {
             // Create new checker piece
-            CheckerPiece p = new CheckerPiece(piece.isActive(), piece.getIsKing(), piece.getSize(), piece.getTeam());
+            CheckerPiece p = new CheckerPiece(piece.isActive(), piece.getIsKing(), piece.getSize(), piece.getTeam(), piece.getCanHighlight());
 
             if (piece.getParent() != null) {
                 // Get position of parent
