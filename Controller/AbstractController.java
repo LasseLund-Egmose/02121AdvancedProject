@@ -19,10 +19,7 @@ import javafx.util.Duration;
 
 import java.awt.*;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static javafx.animation.Animation.Status.STOPPED;
@@ -51,8 +48,9 @@ abstract public class AbstractController {
     public static int timeWhite = 300;
     public static int timeBlack = 300;
     public static int totalTime = 0;
-    protected String path = "./src/assets/chipsCollide4.wav";
-    protected AudioClip audioclip = new AudioClip(new File(path).toURI().toString());
+    protected ArrayList<AudioClip> soundArrayList = new ArrayList<>();
+    protected String[] soundNames = new String[]{"chipsCollide1.wav", "chipsCollide2.wav", "chipsCollide3.wav", "chipsCollide4.wav"};
+    protected Random randomSound = new Random();
 
     public GameView getView(GameView view){
         return view;
@@ -174,7 +172,13 @@ abstract public class AbstractController {
     }
 
     protected void playOnMoveSound() {
-        this.audioclip.play();
+        this.soundArrayList.get(randomSound.nextInt(soundArrayList.size())).play();
+    }
+
+    protected void setupSounds() {
+        for(String name: soundNames) {
+            soundArrayList.add(new AudioClip(new File("./src/assets/" + name).toURI().toString()));
+        }
     }
 
     // Check if a jump move is eligible (e.g. no piece behind jumped piece)
@@ -360,6 +364,7 @@ abstract public class AbstractController {
         this.activeCount.put(Team.BLACK, 0);
         this.activeCount.put(Team.WHITE, 0);
         countDownTimer();
+        setupSounds();
     }
 
 
@@ -380,6 +385,8 @@ abstract public class AbstractController {
         this.isWhiteTurn = isWhiteTurn;
         this.activeCount = activeCount;
         this.moveClickEventHandler = mouseEvent -> this.onFieldClick(mouseEvent.getSource());
+        countDownTimer();
+        setupSounds();
     }
 
     public ArrayList<CheckerPiece> getCheckerPieces() {
