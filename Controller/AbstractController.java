@@ -67,6 +67,18 @@ abstract public class AbstractController {
         timeBlack = 300;
     }
 
+    public static void setTimeWhite(int timeWhite) {
+        AbstractController.timeWhite = timeWhite;
+    }
+
+    public static void setTimeBlack(int timeBlack) {
+        AbstractController.timeBlack = timeBlack;
+    }
+
+    public static void setTotalTime(int totalTime) {
+        AbstractController.totalTime = totalTime;
+    }
+
     public void pauseTime() {
         timeline.pause();
     }

@@ -209,8 +209,11 @@ public class GameView extends AbstractView {
             saveGame.setActiveCount(controller.getActiveCount());
             saveGame.setCheckerPieces(controller.getCheckerPieces());
             saveGame.setFields(controller.getFields());
-            saveGame.setSettings(this.settings);
+            saveGame.setDimension((int) Settings.get(Setting.Dimension));
             saveGame.setWhiteTurn(controller.isWhiteTurn());
+            saveGame.setTimeWhite(AbstractController.timeWhite);
+            saveGame.setTimeBlack(AbstractController.timeBlack);
+            saveGame.setTotalTime(AbstractController.totalTime);
             saveGame.saveState(MainMenuView.selectedButton);
         });
 
@@ -304,6 +307,10 @@ public class GameView extends AbstractView {
         this.controller.setupFields();
         this.controller.setupPieces();
 
+        //reset time values
+        AbstractController.setTotalTime();
+        AbstractController.setTime();
+
         return scene;
     }
 
@@ -333,6 +340,11 @@ public class GameView extends AbstractView {
             }
         }
 
+        AbstractController.setTotalTime(db.getTotalTime());
+        AbstractController.setTimeWhite(db.getTimeWhite());
+        AbstractController.setTimeBlack(db.getTimeBlack());
+        this.controller.countDownTimer();
+
         // Rotate surfacePane if it's blacks turn
         if (!db.isWhiteTurn()) { this.surfacePaneRotation.play(); }
 
@@ -360,10 +372,6 @@ public class GameView extends AbstractView {
         StackPane displayTurnContainer = new StackPane();
         setupContainer(displayTurnContainer);
         displayTurnContainer.getChildren().add(this.displayTurn);
-
-        //reset time values
-        AbstractController.setTotalTime();
-        AbstractController.setTime();
 
         //Setup time text and the containers
         displayWhiteTimeLeft = new Text();

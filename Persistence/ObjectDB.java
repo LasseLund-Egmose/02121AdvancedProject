@@ -7,6 +7,8 @@ import Model.Field;
 import Model.Settings;
 import javafx.scene.layout.StackPane;
 
+import Enum.Setting;
+
 import java.awt.*;
 import java.io.*;
 import java.util.ArrayList;
@@ -20,8 +22,12 @@ public class ObjectDB implements Serializable {
 
     protected HashMap<Team, Integer> activeCount = new HashMap<>(); // A map (Team -> int) of number of active pieces on each team
 
-    protected Settings settings; // Dimension of board
+    protected int dimension;
     protected boolean isWhiteTurn = true; // Keep track of turn
+
+    protected int timeWhite;
+    protected int timeBlack;
+    protected int totalTime;
 
     // SETTERS
     public void setActiveCount(HashMap<Team, Integer> activeCount) {
@@ -36,12 +42,24 @@ public class ObjectDB implements Serializable {
         this.fields = fields;
     }
 
-    public void setSettings(Settings settings) {
-        this.settings = settings;
-    }
-
     public void setWhiteTurn(boolean whiteTurn) {
         isWhiteTurn = whiteTurn;
+    }
+
+    public void setTimeWhite(int timeWhite) {
+        this.timeWhite = timeWhite;
+    }
+
+    public void setTimeBlack(int timeBlack) {
+        this.timeBlack = timeBlack;
+    }
+
+    public void setTotalTime(int totalTime) {
+        this.totalTime = totalTime;
+    }
+
+    public void setDimension(int dimension) {
+        this.dimension = dimension;
     }
 
     // GETTERS
@@ -57,14 +75,25 @@ public class ObjectDB implements Serializable {
         return fields;
     }
 
-    public Settings getSettings() {
-        return settings;
-    }
-
     public boolean isWhiteTurn() {
         return isWhiteTurn;
     }
 
+    public int getTimeWhite() {
+        return timeWhite;
+    }
+
+    public int getTimeBlack() {
+        return timeBlack;
+    }
+
+    public int getTotalTime() {
+        return totalTime;
+    }
+
+    public int getDimension() {
+        return dimension;
+    }
 
     // Serialize and save state to a file
     public void saveState(String filename) {
@@ -147,6 +176,8 @@ public class ObjectDB implements Serializable {
                 piece.setCylinderContainer(new StackPane());
                 piece.setupPiece();
             }
+
+            Settings.set(Setting.Dimension, db.getDimension());
 
             // return the db instance
             return db;
