@@ -219,6 +219,7 @@ public class GameView extends AbstractView {
             saveGame.setTimeWhite(AbstractController.timeWhite);
             saveGame.setTimeBlack(AbstractController.timeBlack);
             saveGame.setTotalTime(AbstractController.totalTime);
+            saveGame.setSelectedButton(MainMenuView.selectedButton);
             if (saveGame.saveState(MainMenuView.selectedButton)) {
                 saveButton.setText("Game Saved!");
             } else {
@@ -345,7 +346,7 @@ public class GameView extends AbstractView {
         Scene scene = makeScene(db.isWhiteTurn());
 
         // Setup controller
-        this.controller = new RegularCheckersController(this, this.dimension, this.grid, db.getCheckerPieces(), db.getFields(), db.isWhiteTurn(), db.getActiveCount());
+        this.controller = (AbstractController) Settings.get(Setting.Controller);
 
         // Loop over all the fields in the fields hashmap
         for (HashMap.Entry<Integer, HashMap<Integer, Field>> x : db.getFields().entrySet()) {

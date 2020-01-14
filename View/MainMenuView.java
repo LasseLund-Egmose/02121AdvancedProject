@@ -262,8 +262,23 @@ public class MainMenuView extends AbstractView {
         }
 
         button.setOnMouseClicked( e -> {
-            Main.setGameView(state);
             MainMenuView.selectedButton = fileName;
+
+            if (state.getSelectedButton().equals(this.loadNames[0])) {
+                Settings.set(Setting.Controller,
+                        new SimpDamController(Main.gameView,(int) Settings.get(Setting.Dimension),Main.gameView.grid, state.getCheckerPieces(), state.getFields(), state.isWhiteTurn(), state.getActiveCount()));
+            } else if (state.getSelectedButton().equals(this.loadNames[1])) {
+                Settings.set(Setting.Controller, new RegularCheckersController(Main.gameView, (int) Settings.get(Setting.Dimension), Main.gameView.grid, state.getCheckerPieces(), state.getFields(), state.isWhiteTurn(), state.getActiveCount()));
+            } else if (state.getSelectedButton().equals(this.loadNames[2])) {
+                Settings.set(Setting.Controller, new CPURegularCheckersController(Main.gameView,
+                        (int) Settings.get(Setting.Dimension),Main.gameView.grid, state.getCheckerPieces(), state.getFields(), state.isWhiteTurn(), state.getActiveCount()));
+            } else if (state.getSelectedButton().equals(this.loadNames[3])) {
+                Settings.set(Setting.Controller, new FlexibleKingController(Main.gameView,
+                        (int) Settings.get(Setting.Dimension),Main.gameView.grid, state.getCheckerPieces(), state.getFields(), state.isWhiteTurn(), state.getActiveCount()));
+            }
+
+            Main.setGameView(state);
+
         });
 
 
