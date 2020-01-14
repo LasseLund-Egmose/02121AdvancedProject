@@ -45,20 +45,35 @@ abstract public class AbstractController {
     protected boolean pieceHighlightLocked = false; // Should highlight be locked to one piece? Happens when jumping multiple pieces in one turn
     protected CheckerPiece selectedPiece = null; // Keep track of selected piece
     protected GameView view; // Reference to view instance
+    protected int minFieldSize=8; //minimum field size
+    protected int maxFieldSize=100; //maximum field size
     protected Timeline timeline = new Timeline();
     public static int timeWhite = 300;
     public static int timeBlack = 300;
     public static int totalTime = 0;
-    protected static final String path = "./src/assets/chipsCollide4.wav";
+    protected String path = "./src/assets/chipsCollide4.wav";
     protected AudioClip audioclip = new AudioClip(new File(path).toURI().toString());
-    protected int minFieldSize=8; //minimum field size
-    protected int maxFieldSize=100; //maximum field size
 
     public GameView getView(GameView view){
         return view;
     }
 
-    public
+    public static void setTotalTime() {
+        totalTime = 0;
+    }
+
+    public static void setTime() {
+        timeWhite = 300;
+        timeBlack = 300;
+    }
+
+    public void pauseTime() {
+        timeline.pause();
+    }
+
+    public void startTime() {
+        timeline.play();
+    }
 
     public void countDownTimer() {
         this.timeline = new Timeline(new KeyFrame(Duration.seconds(1), ev -> {
@@ -67,14 +82,14 @@ abstract public class AbstractController {
                 totalTime++;
                 if (timeWhite <= -2) {
                     timeline.stop();
-                    this.view.displayWin("Black won");
+                    this.view.displayWin(Team.BLACK);
                 }
             } else {
                 GameView.displayBlackTimeLeft.setText("Black time left: " + formatTime(timeBlack--));
                 totalTime++;
                 if (timeBlack <= -2) {
                     timeline.stop();
-                    this.view.displayWin("White won");
+                    this.view.displayWin(Team.WHITE);
                 }
             }
         }));

@@ -3,6 +3,7 @@ package View;
 import Boot.Main;
 import Controller.AbstractController;
 import Controller.RegularCheckersController;
+import Controller.SimpDamController;
 import Enum.Setting;
 import Enum.Team;
 import Model.CheckerPiece;
@@ -11,6 +12,7 @@ import Model.Settings;
 
 import Persistence.ObjectDB;
 import javafx.animation.RotateTransition;
+import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
@@ -26,6 +28,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 
 import java.awt.*;
@@ -56,6 +59,8 @@ public class GameView extends AbstractView {
     protected Pane surfacePane;
     protected RotateTransition surfacePaneRotation; // Transition rotating board after each turn
     protected Settings settings;
+    protected StackPane stopGamePane = new StackPane();
+    protected StackPane root = new StackPane();
 
     // Calculate how far away elements should be moved to avoid colliding with background
     // Using the Pythagorean theorem and the law of sines
@@ -175,6 +180,35 @@ public class GameView extends AbstractView {
         dialog.show();
     }
 
+    public void displayPauseScreen() {
+        this.controller.pauseTime();
+
+        Stage dialog = new Stage();
+        dialog.setTitle("Game paused");
+
+        StackPane root = new StackPane();
+
+        Button button = new Button("Close");
+        button.setStyle("-fx-background-color: transparent; -fx-cursor: hand; -fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: #DAA520;");
+        button.setOnMouseClicked(e -> {
+            this.root.getChildren().remove(stopGamePane);
+            dialog.close();
+            this.controller.startTime();
+        });
+
+        dialog.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent event) {
+                GameView.this.root.getChildren().remove(stopGamePane);
+                GameView.this.controller.startTime();
+            }
+        });
+        root.getChildren().add(button);
+        Scene scene = new Scene(root, GameView.WIDTH, GameView.HEIGHT);
+        dialog.setScene(scene);
+        dialog.show();
+    }
+
     // Get size (in pixels) of one field in board
     public double getFieldSize() {
         return ((double) GameView.BOARD_SIZE) / this.dimension;
@@ -248,6 +282,10 @@ public class GameView extends AbstractView {
         setupContainer(displayTurnContainer);
         displayTurnContainer.getChildren().add(this.displayTurn);
 
+        //reset time values
+        AbstractController.setTotalTime();
+        AbstractController.setTime();
+
         //Setup time text and the containers
         displayWhiteTimeLeft = new Text();
         displayWhiteTimeLeft.setStyle("-fx-font: 30 Arial;");
@@ -284,8 +322,31 @@ public class GameView extends AbstractView {
         this.setupSurface();
         boardContainer.getChildren().add(this.surfacePane);
 
+        //setup pause button
+        this.stopGamePane.setMinSize(GameView.WIDTH, GameView.HEIGHT);
+        this.stopGamePane.setMaxSize(GameView.WIDTH, GameView.HEIGHT);
+        this.stopGamePane.setStyle("-fx-background-color: #ff000050");
+        this.stopGamePane.setTranslateZ(2*-GameView.zOffset());
+        StackPane pausepane = new StackPane();
+        pausepane.setMinHeight(40);
+        pausepane.setMinWidth(10);
+        pausepane.setMaxHeight(20);
+        pausepane.setMaxWidth(150);
+
+        Text pauseText = new Text();
+        pauseText.setText("Pause");
+        pauseText.setStyle("-fx-font: 20 Arial;");
+        pauseText.setFill(Color.DARKGOLDENROD);
+        pausepane.getChildren().add(pauseText);
+        
+        pausepane.setStyle("-fx-background-image: url(/assets/dark_wood.jpg);  -fx-cursor: hand");
+        pausepane.setOnMouseClicked( e ->{
+            root.getChildren().add(this.stopGamePane);
+            displayPauseScreen();
+        });
+
         // Add aforementioned elements to root
-        root.getChildren().addAll(background, boardContainer, displayTurnContainer, displayWhiteTimeContainer, displayBlackTimeContainer);
+        root.getChildren().addAll(background, boardContainer, displayTurnContainer, displayWhiteTimeContainer, displayBlackTimeContainer, pausepane);
 
         // Pass through click events and disable shadows for root
         root.setPickOnBounds(false);
@@ -298,6 +359,8 @@ public class GameView extends AbstractView {
         StackPane.setAlignment(displayBlackTimeContainer, Pos.TOP_RIGHT);
         StackPane.setAlignment(this.surfacePane, Pos.CENTER);
         StackPane.setAlignment(this.displayTurn, Pos.CENTER);
+        StackPane.setAlignment(pausepane, Pos.BOTTOM_CENTER);
+        StackPane.setAlignment(pausepane, Pos.TOP_CENTER);
 
         // Setup controller
         this.controller = (AbstractController) Settings.get(Setting.Controller);
@@ -305,6 +368,8 @@ public class GameView extends AbstractView {
         // Setup black fields (with click events) and game pieces
         this.controller.setupFields();
         this.controller.setupPieces();
+
+        this.root = root;
 
         // Setup scene (with depthBuffer to avoid z-fighting and unexpected behaviour) and apply it
         Scene scene = new Scene(root, GameView.WIDTH, GameView.HEIGHT, true, null);
