@@ -263,6 +263,9 @@ abstract public class AbstractController {
         allHighlightedPanes.addAll(this.possibleJumpMoves.keySet());
         allHighlightedPanes.addAll(this.possibleRegularMoves);
 
+        this.possibleJumpMoves.clear();
+        this.possibleRegularMoves.clear();
+
         for (Field field : allHighlightedPanes) {
             this.view.normalizePane(field);
         }
