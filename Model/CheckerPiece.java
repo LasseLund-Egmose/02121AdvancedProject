@@ -17,6 +17,8 @@ import java.util.HashMap;
 
 public class CheckerPiece implements Serializable {
 
+    private static final long serialVersionUID = 4460854533891541153L;
+
     protected boolean canHighlight = true; // Can this piece be highlighted?
     protected Cylinder cylinder = null; // Cylinder shape
     protected StackPane cylinderContainer = new StackPane(); // Cylinder container

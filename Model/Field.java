@@ -7,6 +7,8 @@ import java.io.Serializable;
 
 public class Field extends StackPane implements Serializable {
 
+    private static final long serialVersionUID = -696440499944099891L;
+
     protected CheckerPiece attachedPiece = null; // The CheckerPiece attached to this field (or null if none)
     protected Point position; // The grid position of this field (does not change throughout game)
 

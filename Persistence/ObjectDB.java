@@ -16,8 +16,8 @@ import java.util.HashMap;
 
 public class ObjectDB implements Serializable {
 
-    private static final long serialVersionUID = 5864896800675704551L;
-
+    private static final long serialVersionUID = -7307863873494379286L;
+    
     protected ArrayList<CheckerPiece> checkerPieces = new ArrayList<>(); // A list of all pieces
     protected HashMap<Integer, HashMap<Integer, Field>> fields = new HashMap<>(); // A map (x -> y -> pane) of all fields
 
