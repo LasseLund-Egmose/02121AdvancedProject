@@ -90,11 +90,11 @@ public class CheckerPiece implements Serializable {
 
     // Long constructor
     public CheckerPiece(boolean isActive, boolean isKing, double size, Team team, boolean canHighlight) {
-        this(size, team);
-
-        this.canHighlight = canHighlight;
         this.isActive = isActive;
         this.isKing = isKing;
+        this.size = size;
+        this.team = team;
+        this.canHighlight = canHighlight;
     }
 
     // Detach and afterwards attach piece to given pane (black field)
