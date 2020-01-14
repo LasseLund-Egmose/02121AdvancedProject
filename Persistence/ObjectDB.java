@@ -29,6 +29,8 @@ public class ObjectDB implements Serializable {
     protected int timeBlack;
     protected int totalTime;
 
+    protected String selectedButton;
+
     // SETTERS
     public void setActiveCount(HashMap<Team, Integer> activeCount) {
         this.activeCount = activeCount;
@@ -62,6 +64,10 @@ public class ObjectDB implements Serializable {
         this.dimension = dimension;
     }
 
+    public void setSelectedButton(String selectedButton) {
+        this.selectedButton = selectedButton;
+    }
+
     // GETTERS
     public HashMap<Team, Integer> getActiveCount() {
         return activeCount;
@@ -93,6 +99,10 @@ public class ObjectDB implements Serializable {
 
     public int getDimension() {
         return dimension;
+    }
+
+    public String getSelectedButton() {
+        return selectedButton;
     }
 
     // Serialize and save state to a file
