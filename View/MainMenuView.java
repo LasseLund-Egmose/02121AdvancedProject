@@ -17,19 +17,20 @@ import javafx.scene.text.TextFlow;
 
 public class MainMenuView extends AbstractView {
 
-    protected enum controller {
-        SimpDamController,
+    protected enum Controller {
+        CPURegularCheckersController,
+        FlexibleKingController,
         RegularCheckersController,
-        FlexibleKingController
+        SimpDamController,
     }
 
-    protected controller selectedController = controller.SimpDamController;
+    protected Controller selectedController = Controller.SimpDamController;
     protected ToggleButton playButton;
     protected Slider dimensionSlider;
     protected VBox containSlider;
     protected GridPane grid;
     protected Text information;
-    protected String[] loadNames = new String[]{"SimpDam","TwoPlayer","SingelPlayer","FlexibleKing"};
+    protected String[] loadNames = new String[]{"SimpDam","TwoPlayer","SinglePlayer","FlexibleKing"};
     protected static String selectedButton = null;
     protected ObjectDB[] gameStates = new ObjectDB[4];
 
@@ -111,6 +112,9 @@ public class MainMenuView extends AbstractView {
             } else if (MainMenuView.selectedButton.equals(this.loadNames[1])) {
                 Settings.set(Setting.Controller, new RegularCheckersController(Main.gameView,
                         (int) Settings.get(Setting.Dimension),Main.gameView.grid));
+            } else if (MainMenuView.selectedButton.equals(this.loadNames[2])) {
+                Settings.set(Setting.Controller, new CPURegularCheckersController(Main.gameView,
+                        (int) Settings.get(Setting.Dimension),Main.gameView.grid));
             }
             Main.setView((Main.gameView));
         });
@@ -118,21 +122,21 @@ public class MainMenuView extends AbstractView {
         //simpel checkers
         ToggleButton SimpDam = constructButton(loadNames[0],grid,toggleGroup);
         SimpDam.setOnMouseClicked( e ->{
-            this.selectedController = controller.SimpDamController;
+            this.selectedController = Controller.SimpDamController;
             changetext();
         });
 
         //regular checkers
         ToggleButton twoPlayer = constructButton(loadNames[1],grid,toggleGroup);
         twoPlayer.setOnMouseClicked(e ->{
-            this.selectedController = controller.RegularCheckersController;
+            this.selectedController = Controller.RegularCheckersController;
             changetext();
         });
         
         ToggleButton vsAI = constructButton(loadNames[2],grid,toggleGroup);
         vsAI.setOnMouseClicked( e ->{
-            Settings.set(Setting.Controller, new CPURegularCheckersController(Main.gameView,(int)Settings.get(Setting.Dimension),Main.gameView.grid));
-            Main.setView(Main.gameView);
+            this.selectedController = Controller.CPURegularCheckersController;
+            changetext();
         });
 
         ToggleButton international = constructButton(loadNames[3],grid,toggleGroup);
@@ -165,7 +169,7 @@ public class MainMenuView extends AbstractView {
                     double value = Double.parseDouble(newValue);
                     dimensionSlider.setValue(value);
                 } catch ( Exception e) {
-                    if (this.selectedController == controller.SimpDamController) {
+                    if (this.selectedController == Controller.SimpDamController) {
                         dimensionSlider.setValue(3);
                     } else {
                         dimensionSlider.setValue(8);

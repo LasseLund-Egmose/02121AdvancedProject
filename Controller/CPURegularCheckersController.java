@@ -18,7 +18,7 @@ public class CPURegularCheckersController extends RegularCheckersController {
         this.cpu = new CPU(this);
     }
 
-    protected boolean onTurnStart() {
+    public boolean onTurnStart() {
         super.onTurnStart();
 
         if(this.isWhiteTurn) {

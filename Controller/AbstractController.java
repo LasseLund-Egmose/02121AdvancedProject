@@ -139,35 +139,6 @@ abstract public class AbstractController {
         return false;
     }
 
-    // Handle a regular move
-    protected void doRegularMove(Field toField, boolean didJump) {
-        //play on move sound
-        playOnMoveSound();
-
-        // Attach selected piece to chosen field
-        this.getSelectedPiece().attachToField(toField, this.activeCount);
-
-        // Remove highlight fields
-        this.normalizeFields();
-
-        // Reset highlight-related properties
-        this.possibleJumpMoves.clear();
-        this.possibleRegularMoves.clear();
-
-        // Finish turn if onPieceMove returns true
-        if(this.onPieceMove(this.selectedPiece, didJump)) {
-            // Reset forced jump moves
-            this.forcedJumpMoves.clear();
-
-            // Reset selected field
-            this.selectedPiece.assertHighlight(false);
-            this.selectedPiece = null;
-
-            // Finish turn
-            this.finishTurn();
-        }
-    }
-
     protected void playOnMoveSound() {
         this.soundArrayList.get(randomSound.nextInt(soundArrayList.size())).play();
     }
@@ -376,6 +347,9 @@ abstract public class AbstractController {
 
     // Handle a regular move
     public void doRegularMove(Field toField, boolean didJump) {
+        //play on move sound
+        playOnMoveSound();
+
         // Attach selected piece to chosen field
         this.getSelectedPiece().attachToField(toField, this.activeCount);
 
