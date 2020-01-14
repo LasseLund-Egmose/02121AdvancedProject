@@ -2,6 +2,7 @@ package View;
 
 import Boot.Main;
 import Controller.CPURegularCheckersController;
+import Controller.FlexibleKingController;
 import Controller.RegularCheckersController;
 import Controller.SimpDamController;
 import Enum.Setting;
@@ -114,6 +115,9 @@ public class MainMenuView extends AbstractView {
                         (int) Settings.get(Setting.Dimension),Main.gameView.grid));
             } else if (MainMenuView.selectedButton.equals(this.loadNames[2])) {
                 Settings.set(Setting.Controller, new CPURegularCheckersController(Main.gameView,
+                        (int) Settings.get(Setting.Dimension),Main.gameView.grid));
+            } else if (MainMenuView.selectedButton.equals(this.loadNames[3])) {
+                Settings.set(Setting.Controller, new FlexibleKingController(Main.gameView,
                         (int) Settings.get(Setting.Dimension),Main.gameView.grid));
             }
             Main.setView((Main.gameView));
@@ -286,7 +290,7 @@ public class MainMenuView extends AbstractView {
         } else if (MainMenuView.selectedButton.equals(this.loadNames[3])) { //International checkers
             this.information.setText("This is the international version of checkers. For two players. " +
                     "This version has the international rules " +
-                    "meaning you can move the pieces an arbitrary amount of spaces. ");
+                    "meaning you can move the king pieces an arbitrary amount of spaces. ");
         }
     }
 

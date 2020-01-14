@@ -212,6 +212,20 @@ abstract public class AbstractController {
         return p.x >= 1 && p.y >= 1 && p.x <= this.dimension && p.y <= this.dimension;
     }
 
+    // Remove highlights from highlighted fields
+    protected void normalizeFields() {
+        ArrayList<Field> allHighlightedPanes = new ArrayList<>();
+        allHighlightedPanes.addAll(this.possibleJumpMoves.keySet());
+        allHighlightedPanes.addAll(this.possibleRegularMoves);
+
+        this.possibleJumpMoves.clear();
+        this.possibleRegularMoves.clear();
+
+        for (Field field : allHighlightedPanes) {
+            this.view.normalizePane(field);
+        }
+    }
+
     // Handle click on black field
     protected void onFieldClick(Object clickedElement) {
         // Check if Field is clicked and a selectedPiece is chosen
