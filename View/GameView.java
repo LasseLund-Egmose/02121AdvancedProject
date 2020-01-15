@@ -451,7 +451,7 @@ public class GameView extends AbstractView {
         controller.setTotalTime();
         controller.setTime();
 
-        Scene scene = makeScene(true);
+        Scene scene = this.makeScene(true);
 
         // Setup black fields (with click events), game pieces and start game
         this.controller.setupFields();
