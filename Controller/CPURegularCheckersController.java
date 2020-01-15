@@ -1,28 +1,24 @@
 package Controller;
 
-import Enum.Team;
-
 import CPU.CPU;
+import Enum.Team;
 import Model.CheckerPiece;
 import Model.Field;
 import View.GameView;
 
-import javafx.animation.Animation;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.scene.layout.GridPane;
-import javafx.util.Duration;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
-// TODO: Needs comments
 public class CPURegularCheckersController extends RegularCheckersController {
 
     // CPU plays as Team.BLACK
 
     protected CPU cpu;
 
+    // Make sure turn isn't finished automatically after moving CPU piece
+    // controller.finishTurn is called manually in CPU class when finished
     protected boolean onPieceMove(CheckerPiece movedPiece, boolean didJump) {
         return super.onPieceMove(movedPiece, didJump, !this.isWhiteTurn);
     }
@@ -47,6 +43,7 @@ public class CPURegularCheckersController extends RegularCheckersController {
         this.cpu.initStrategies();
     }
 
+    // Setup CPU-specific countdown timer
     public void countDownTimer() {
         // Do not display CPU time left as it is not relevant
         GameView.displayBlackTimeLeft.setText("CPU");
@@ -55,6 +52,7 @@ public class CPURegularCheckersController extends RegularCheckersController {
         super.countDownTimer(false);
     }
 
+    // Hook into onTurnStart and take turn with CPU if black turn
     public boolean onTurnStart() {
         super.onTurnStart();
 
@@ -67,8 +65,8 @@ public class CPURegularCheckersController extends RegularCheckersController {
         return false;
     }
 
+    // Do not allow player to move black pieces
     public void setSelectedPiece(CheckerPiece piece) {
-        // Do not allow moving black pieces
         if(!this.isWhiteTurn) {
             return;
         }
@@ -76,6 +74,7 @@ public class CPURegularCheckersController extends RegularCheckersController {
         super.setSelectedPiece(piece);
     }
 
+    // Set selected piece without restrictions
     public void setSelectedPieceCPU(CheckerPiece piece) {
         if(this.isWhiteTurn) {
             return;
@@ -84,6 +83,7 @@ public class CPURegularCheckersController extends RegularCheckersController {
         this.selectedPiece = piece;
     }
 
+    // Hook into setupPieces and init CPU strategies afterwards
     public void setupPieces() {
         super.setupPieces();
 

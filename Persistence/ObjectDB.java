@@ -13,6 +13,8 @@ import java.util.HashMap;
 
 public class ObjectDB implements Serializable {
 
+    // TODO: Description of method of saving game
+
     private static final long serialVersionUID = -7307863873494379286L;
 
     protected ArrayList<CheckerPiece> checkerPieces = new ArrayList<>(); // A list of all pieces

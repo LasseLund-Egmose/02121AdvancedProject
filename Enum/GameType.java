@@ -1,5 +1,6 @@
 package Enum;
 
+// Available game types
 public enum GameType {
     SimpDam,
     SinglePlayer,

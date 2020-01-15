@@ -181,8 +181,9 @@ public class CheckerPiece implements Serializable {
     public boolean getIsActive() {
         return this.isActive;
     }
+
     /*
-     *  End getters
+     * Setters
      */
 
     // Set whether or not this piece can be highlighted (if not, it should be grayed out)
@@ -220,7 +221,7 @@ public class CheckerPiece implements Serializable {
         this.setHighlight(shouldHighlight, Color.web("blue"));
     }
 
-    // Set wheter or not this is a king
+    // Set whether or not this is a king
     public void setKing() {
         this.isKing = true;
 

@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 public class StyleCollection {
 
-    protected ArrayList<StyleProp> props = new ArrayList<>();
+    protected ArrayList<StyleProp> props = new ArrayList<>(); // A list of styles to be applied to given Node
 
     /*
      * Pre-made styles

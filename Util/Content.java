@@ -1,6 +1,6 @@
 package Util;
 
-public class Content {
+public class Content { // This class contains all text displayed within the application
 
     /*
      * Misc

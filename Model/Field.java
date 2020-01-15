@@ -27,7 +27,7 @@ public class Field extends StackPane implements Serializable {
      * Getters and setters
      */
 
-    // return attached piece if it's active
+    // Return attached piece if it's active
     public CheckerPiece getAttachedPieceSecure() {
         if(this.attachedPiece == null) {
             return null;

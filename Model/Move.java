@@ -4,7 +4,7 @@ import Enum.MoveType;
 
 public class Move {
 
-    protected Field jumpedField = null;
+    protected Field jumpedField = null; // Not set if regular move
     protected CheckerPiece piece;
     protected Field toField;
 

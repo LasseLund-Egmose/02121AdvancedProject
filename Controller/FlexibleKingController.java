@@ -4,6 +4,7 @@ import Enum.Team;
 import Model.CheckerPiece;
 import Model.Field;
 import View.GameView;
+
 import javafx.scene.layout.GridPane;
 
 import java.awt.*;

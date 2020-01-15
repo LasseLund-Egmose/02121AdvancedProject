@@ -66,8 +66,8 @@ public class StyleProp {
         return new StyleProp("text-fill", value);
     }
 
-    protected String property;
-    protected String value;
+    protected String property; // Style property (e.g. background-color)
+    protected String value; // Style value (e.g. blue)
 
     public StyleProp(String property, String value) {
         this.property = property;
@@ -82,6 +82,7 @@ public class StyleProp {
         return this.value;
     }
 
+    // Return JavaFx CSS representation of StyleProp
     public String toString() {
         return "-fx-" + this.property + ":" + this.value + ";";
     }

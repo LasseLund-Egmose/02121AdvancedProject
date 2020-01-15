@@ -11,9 +11,15 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-// TODO: Needs comments
 public class RegularCheckersController extends AbstractController {
 
+    // Shortcut to below (without CPU support)
+    protected boolean onPieceMove(CheckerPiece movedPiece, boolean didJump) {
+        return this.onPieceMove(movedPiece, didJump, false);
+    }
+
+    // Set kings if applicable and return whether or not the turn shall finish (if player can't jump further)
+    // If isCPU is true, the jump check and possible turn finish will not occur (handled inside CPU instead)
     protected boolean onPieceMove(CheckerPiece movedPiece, boolean didJump, boolean isCPU) {
         Team pieceTeam = movedPiece.getTeam();
         Point piecePosition = movedPiece.getPosition();
@@ -38,19 +44,17 @@ public class RegularCheckersController extends AbstractController {
         return !didJump || !this.canJumpMore(movedPiece, true);
     }
 
-    protected boolean onPieceMove(CheckerPiece movedPiece, boolean didJump) {
-        return this.onPieceMove(movedPiece, didJump, false);
-    }
-
     // Check if any jump moves can be made and if yes, force the player to select one
     public boolean onTurnStart() {
         boolean teamHasMoves = false;
 
+        // Iterate over all pieces
         for(CheckerPiece piece : this.checkerPieces) {
             if(!piece.isActive()) {
                 continue;
             }
 
+            // Check if piece is on the team with the current turn
             if(this.isWhiteTurn && piece.getTeam() == Team.BLACK || !this.isWhiteTurn && piece.getTeam() == Team.WHITE) {
                 piece.setCanHighlight(true);
                 continue;
@@ -58,6 +62,7 @@ public class RegularCheckersController extends AbstractController {
 
             boolean pieceHasJumps = false;
 
+            // Check if this piece can jump anywhere
             for (Point p : this.surroundingPoints(piece.getPosition())) {
                 if(this.fieldShouldNotBeConsidered(piece, p)) {
                     continue;
@@ -83,6 +88,7 @@ public class RegularCheckersController extends AbstractController {
                 }
             }
 
+            // Highlight if piece has jumps
             piece.setCanHighlight(pieceHasJumps);
         }
 
@@ -91,7 +97,7 @@ public class RegularCheckersController extends AbstractController {
             this.view.displayWin(this.isWhiteTurn ? Team.BLACK : Team.WHITE);
         }
 
-        // Make all pieces highlightable if there is no forced jump moves
+        // Make all pieces highlightable if there is no (forced) jump moves available
         if(this.forcedJumpMoves.size() == 0) {
             for(CheckerPiece piece : this.checkerPieces) {
                 piece.setCanHighlight(true);
@@ -157,10 +163,12 @@ public class RegularCheckersController extends AbstractController {
         return this.forcedJumpMoves.size() > 0;
     }
 
+    // Shortcut to below
     public boolean fieldShouldNotBeConsidered(CheckerPiece piece, Point position) {
         return this.fieldShouldNotBeConsidered(piece, piece.getPosition(), position);
     }
 
+    // Should we consider a given field when checking if a player can move to some fields?
     public boolean fieldShouldNotBeConsidered(CheckerPiece piece, Point alternativeFromPosition, Point position) {
         if(piece.getIsKing()) {
             return false;

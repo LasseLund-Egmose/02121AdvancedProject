@@ -3,12 +3,10 @@ package Controller;
 import Enum.MoveType;
 import Enum.Setting;
 import Enum.Team;
-
 import Model.CheckerPiece;
 import Model.Field;
 import Model.Move;
 import Model.Settings;
-
 import View.GameView;
 
 import javafx.animation.Animation;
