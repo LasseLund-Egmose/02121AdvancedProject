@@ -58,7 +58,7 @@ abstract public class AbstractController {
     } //used each new game to reset the time
 
     public void setTime() { //resets the time for each team
-        timeWhite = timeBlack = (int) Settings.get(Setting.Time);
+        timeWhite = timeBlack = Settings.getInt(Setting.Time);
     }
 
     //reset time from a loaded state, same for the next 2 methods
@@ -308,14 +308,15 @@ abstract public class AbstractController {
     }
 
     // Construct controller
-    public AbstractController(GameView view, int dimension, GridPane grid) {
-        this.dimension = dimension;
+    public AbstractController(GameView view, GridPane grid) {
         this.grid = grid;
         this.moveClickEventHandler = mouseEvent -> this.onFieldClick(mouseEvent.getSource());
         this.view = view;
 
         this.activeCount.put(Team.BLACK, 0);
         this.activeCount.put(Team.WHITE, 0);
+
+        this.dimension = Settings.getInt(Setting.Dimension);
 
         this.setupSounds();
         this.setTime();
@@ -324,7 +325,6 @@ abstract public class AbstractController {
 
     public AbstractController(
             GameView view,
-            int dimension,
             GridPane grid,
             ArrayList<CheckerPiece> checkerPieces,
             HashMap<Integer, HashMap<Integer, Field>> fields,
@@ -332,7 +332,6 @@ abstract public class AbstractController {
             HashMap<Team, Integer> activeCount
     ) {
         this.view = view;
-        this.dimension = dimension;
         this.grid = grid;
         this.checkerPieces = checkerPieces;
         this.fields = fields;

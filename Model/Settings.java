@@ -11,19 +11,27 @@ public class Settings {
     protected static HashMap<Setting, Object> settings = new HashMap<>(); // Key -> Value map of game settings
 
     /*
-     * Getters and setters
+     * Static getters and setters
      */
 
     public static Object get(Setting key) {
         return Settings.settings.getOrDefault(key, null);
     }
 
-    public AbstractController getController() {
-        return this.controller;
+    public static int getInt(Setting key) {
+        return ((Number) Settings.settings.get(key)).intValue();
     }
 
     public static void set(Setting key, Object value) {
         Settings.settings.put(key, value);
+    }
+
+    /*
+     * Getters and setters
+     */
+
+    public AbstractController getController() {
+        return this.controller;
     }
 
     public void setController(AbstractController controller) {

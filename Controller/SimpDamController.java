@@ -15,21 +15,20 @@ public class SimpDamController extends AbstractController {
 
 
     // Short constructor
-    public SimpDamController(GameView view, int dimension, GridPane grid) {
-        super(view, dimension, grid);
+    public SimpDamController(GameView view, GridPane grid) {
+        super(view, grid);
     }
 
     // Long constructor
     public SimpDamController(
             GameView view,
-            int dimension,
             GridPane grid,
             ArrayList<CheckerPiece> checkerPieces,
             HashMap<Integer, HashMap<Integer, Field>> fields,
             boolean isWhiteTurn,
             HashMap<Team, Integer> activeCount
     ) {
-        super(view, dimension, grid, checkerPieces, fields, isWhiteTurn, activeCount);
+        super(view, grid, checkerPieces, fields, isWhiteTurn, activeCount);
     }
 
     // Setup black fields - override to invert board so a black field is located bottom left and top right

@@ -13,6 +13,63 @@ public class StyleCollection {
 
     protected ArrayList<StyleProp> props = new ArrayList<>();
 
+    /*
+     * Pre-made styles
+     */
+
+    public static void buttonStyle(Node applyTo) {
+        StyleCollection.build(
+                applyTo,
+                StyleProp.BACKGROUND_IMAGE("url(/assets/dark_wood.jpg)"),
+                StyleProp.BORDER_COLOR("#DAA520"),
+                StyleProp.BORDER_WIDTH("5px"),
+                StyleProp.CURSOR("hand"),
+                StyleProp.FONT_SIZE("30px"),
+                StyleProp.FONT_WEIGHT("bold"),
+                StyleProp.TEXT_FILL("#DAA520")
+        );
+    }
+
+    public static void buttonStyleLight(Node applyTo) {
+        StyleCollection.build(
+                applyTo,
+                StyleProp.BACKGROUND_IMAGE("url(/assets/grid.png)"),
+                StyleProp.BORDER_COLOR("#7d6425"),
+                StyleProp.BORDER_WIDTH("5px"),
+                StyleProp.CURSOR("hand"),
+                StyleProp.FONT_SIZE("18px"),
+                StyleProp.FONT_WEIGHT("bold"),
+                StyleProp.TEXT_FILL("#7d6425")
+        );
+    }
+
+    public static void labelStyle(Node applyTo) {
+        StyleCollection.modifyProps(
+                applyTo,
+                StyleProp.BACKGROUND_IMAGE("url(/assets/dark_wood.jpg)"),
+                StyleProp.BORDER_COLOR("#DAA520"),
+                StyleProp.BORDER_WIDTH("5px"),
+                StyleProp.FONT_SIZE("15px"),
+                StyleProp.FONT_WEIGHT("bold"),
+                StyleProp.PADDING("5 5 5 5"),
+                StyleProp.TEXT_FILL("#DAA520")
+        );
+    }
+
+    public static void mainMenuContainer(Node applyTo) {
+        StyleCollection.build(
+                applyTo,
+                StyleProp.BORDER_IMAGE_SOURCE("url(/assets/dark_wood.jpg)"),
+                StyleProp.BORDER_IMAGE_SLICE("10"),
+                StyleProp.BORDER_IMAGE_WIDTH("10"),
+                StyleProp.PADDING("10 10 10 10")
+        );
+    }
+
+    /*
+     * Static helper methods
+     */
+
     public static void build(Node applyTo, StyleProp... props) {
         StyleCollection instance = new StyleCollection(props);
         instance.applyTo(applyTo);
@@ -74,19 +131,6 @@ public class StyleCollection {
         return this.props.stream()
             .map(StyleProp::toString)
             .collect(spaceCollector);
-    }
-
-    public static void buttonStyle(Node applyTo) {
-        StyleCollection.build(
-                applyTo,
-                StyleProp.BACKGROUND_IMAGE("url(/assets/dark_wood.jpg)"),
-                StyleProp.CURSOR("hand"),
-                StyleProp.FONT_SIZE("30px"),
-                StyleProp.FONT_WEIGHT("bold"),
-                StyleProp.TEXT_FILL("#DAA520"),
-                StyleProp.BORDER_COLOR("#DAA520"),
-                StyleProp.BORDER_WIDTH("5px")
-        );
     }
 
 }

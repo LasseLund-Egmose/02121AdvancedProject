@@ -14,6 +14,18 @@ public class StyleProp {
         return new StyleProp("border-color", value);
     }
 
+    public static StyleProp BORDER_IMAGE_SLICE(String value) {
+        return new StyleProp("border-image-slice", value);
+    }
+
+    public static StyleProp BORDER_IMAGE_SOURCE(String value) {
+        return new StyleProp("border-image-source", value);
+    }
+
+    public static StyleProp BORDER_IMAGE_WIDTH(String value) {
+        return new StyleProp("border-image-width", value);
+    }
+
     public static StyleProp BORDER_WIDTH(String value) {
         return new StyleProp("border-width", value);
     }
@@ -44,6 +56,10 @@ public class StyleProp {
 
     public static StyleProp OPACITY(String value) {
         return new StyleProp("opacity", value);
+    }
+
+    public static StyleProp PADDING(String value) {
+        return new StyleProp("padding", value);
     }
 
     public static StyleProp TEXT_FILL(String value) {

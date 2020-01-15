@@ -258,7 +258,7 @@ public class GameView extends AbstractView {
             saveGame.setActiveCount(controller.getActiveCount());
             saveGame.setCheckerPieces(controller.getCheckerPieces());
             saveGame.setFields(controller.getFields());
-            saveGame.setDimension((int) Settings.get(Setting.Dimension));
+            saveGame.setDimension(Settings.getInt(Setting.Dimension));
             saveGame.setWhiteTurn(controller.isWhiteTurn());
             saveGame.setTimeWhite(controller.timeWhite);
             saveGame.setTimeBlack(controller.timeBlack);
@@ -469,7 +469,7 @@ public class GameView extends AbstractView {
 
     protected Scene makeScene(boolean isWhiteTurn) {
 
-        this.dimension = (int) Settings.get(Setting.Dimension);
+        this.dimension = Settings.getInt(Setting.Dimension);
 
         // Setup root pane
         StackPane root = new StackPane();

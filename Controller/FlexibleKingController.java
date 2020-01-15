@@ -46,20 +46,19 @@ public class FlexibleKingController extends RegularCheckersController {
         return eligiblePoints;
     }
 
-    public FlexibleKingController(GameView view, int dimension, GridPane grid) {
-        super(view, dimension, grid);
+    public FlexibleKingController(GameView view, GridPane grid) {
+        super(view, grid);
     }
 
     public FlexibleKingController(
             GameView view,
-            int dimension,
             GridPane grid,
             ArrayList<CheckerPiece> checkerPieces,
             HashMap<Integer, HashMap<Integer, Field>> fields,
             boolean isWhiteTurn,
             HashMap<Team, Integer> activeCount
     ) {
-        super(view, dimension, grid, checkerPieces, fields, isWhiteTurn, activeCount);
+        super(view, grid, checkerPieces, fields, isWhiteTurn, activeCount);
     }
 
 }
