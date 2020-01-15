@@ -1,19 +1,23 @@
 package View;
 
 import Boot.Main;
+
 import Controller.AbstractController;
+
 import Enum.Setting;
 import Enum.Team;
 
 import Model.CheckerPiece;
 import Model.Field;
 import Model.Settings;
+
 import Persistence.ObjectDB;
+
+import Util.StyleCollection;
+import Util.StyleProp;
 
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
-import Util.StyleCollection;
-import Util.StyleProp;
 import javafx.animation.RotateTransition;
 import javafx.animation.Timeline;
 import javafx.geometry.Pos;
@@ -27,6 +31,8 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
@@ -53,22 +59,31 @@ public class GameView extends AbstractView {
     // Assets and background styling
     protected static final String ASSET_GRID = "/assets/grid.png";
 
-    // Pause button
-    protected boolean isPauseButtonActive = true;
-    protected StackPane pausePane;
+    // Root element
+    protected StackPane root = new StackPane();
 
-    protected AbstractController controller; // GameControllers.Controller instance
+    // GameControllers.Controller instance
+    protected AbstractController controller;
+
+    // Timeline for handling baground music
+    protected Timeline musicTimeline;
+
+    // Board
     protected int dimension = 8; // Board dimension
-    protected Text displayTurn; // Text element displaying turn
-    public static Text displayWhiteTimeLeft;
-    public static Text displayBlackTimeLeft;
     protected GridPane grid;
     protected Pane surfacePane;
     protected RotateTransition surfacePaneRotation; // Transition rotating board after each turn
-    protected Timeline timeline;
-    protected Settings settings;
+
+    // Graphical elements
+    protected Text displayTurn; // Text element displaying turn
+    public static Text displayWhiteTimeLeft;
+    public static Text displayBlackTimeLeft;
+
+    // Pause game
+    protected boolean isPauseButtonActive = true;
+    protected StackPane pausePane;
     protected StackPane stopGamePane = new StackPane();
-    protected StackPane root = new StackPane();
+
 
     // Calculate how far away elements should be moved to avoid colliding with background
     // Using the Pythagorean theorem and the law of sines
@@ -239,18 +254,22 @@ public class GameView extends AbstractView {
         StyleCollection.buttonStyle(resumeButton);
 
         resumeButton.setOnMouseClicked(e -> {
-            this.timeline.play();
+            this.musicTimeline.play();
             this.root.getChildren().remove(stopGamePane);
             dialog.close();
             this.controller.startTime();
         });
 
-        //calls on instance of ObjectDB to save every variable as is in the current gamestate
+        //calls on instance of ObjectDB to save the current game state
         Button saveButton = new Button("Save game");
         StyleCollection.buttonStyle(saveButton);
 
         saveButton.setOnMouseClicked(e -> {
+
+            // New ObjectDB instance
             ObjectDB saveGame = new ObjectDB();
+
+            // Add variables
             saveGame.setActiveCount(controller.getActiveCount());
             saveGame.setCheckerPieces(controller.getCheckerPieces());
             saveGame.setFields(controller.getFields());
@@ -261,6 +280,7 @@ public class GameView extends AbstractView {
             saveGame.setTotalTime(controller.totalTime);
             saveGame.setSelectedGameType(MainMenuView.selectedGameType);
 
+            // Save, check if it's succesful and display message accordingly
             if (saveGame.saveState(MainMenuView.selectedGameType.name())) {
                 saveButton.setText("Game Saved!");
             } else {
@@ -277,12 +297,14 @@ public class GameView extends AbstractView {
             dialog.close();
         });
 
-        //return to game if the pausewindow is closed
+        //return to game if the pause window is closed
         dialog.setOnCloseRequest(event -> {
             this.root.getChildren().remove(stopGamePane);
             this.controller.startTime();
         });
 
+
+        // Create VBox and add it to root
         VBox pauseMenuVBox = new VBox();
         pauseMenuVBox.setSpacing(40);
         pauseMenuVBox.setAlignment(Pos.CENTER);
@@ -297,8 +319,11 @@ public class GameView extends AbstractView {
         dialog.show();
     }
 
+    // Update isPauseButtonActive value
     public void setPauseButtonActive(boolean pauseButtonActive) {
         this.isPauseButtonActive = pauseButtonActive;
+
+        // Visualise when button is inactive
         StyleCollection.build(
                 this.pausePane,
                 StyleProp.BACKGROUND_IMAGE("url(/assets/dark_wood.jpg)"),
@@ -358,11 +383,15 @@ public class GameView extends AbstractView {
         container.setMinHeight(80);
         container.setMinWidth(20);
         container.setMaxHeight(20);
-        container.setMaxWidth(300);
-        //container.setStyle("-fx-border-color: gray; -fx-border-width: 4;");
-        container.setStyle("-fx-background-image: url(/assets/dark_wood.jpg); -fx-text-fill: #DAA520;" +
-                "-fx-border-color: #DAA520; -fx-border-width: 5px;");
+        container.setMaxWidth(300);;
         container.setTranslateZ(-GameView.zOffset());
+        StyleCollection.build(
+                container,
+                StyleProp.BACKGROUND_IMAGE("url(/assets/dark_wood.jpg)"),
+                StyleProp.BORDER_COLOR("#DAA520"),
+                StyleProp.BORDER_WIDTH("5px"),
+                StyleProp.TEXT_FILL("#DAA520")
+        );
     }
 
     // Setup one black field
@@ -380,18 +409,34 @@ public class GameView extends AbstractView {
         field.setTranslateZ(0.01);
     }
 
+    // Setup background music
     protected void setupMusic() {
+
+        // Load and play music file
         String path = "/assets/hey.mp3";
         Media media = new Media(this.getClass().getResource(path).toExternalForm());
         MediaPlayer mediaPlayer = new MediaPlayer(media);
         mediaPlayer.play();
 
-        this.timeline = new Timeline(new KeyFrame(Duration.seconds(0.5), ev -> {
+        this.musicTimeline = new Timeline(new KeyFrame(Duration.seconds(0.5), ev -> {
             mediaPlayer.seek(Duration.ZERO);
             mediaPlayer.play();
         }));
-        this.timeline.setCycleCount(Animation.INDEFINITE);
-        this.timeline.play();
+        this.musicTimeline.setCycleCount(Animation.INDEFINITE);
+        this.musicTimeline.play();
+    }
+
+    protected Text timeLeftText(String prefix, int time) {
+        Text timeLeft = new Text();
+        timeLeft.setText(prefix + AbstractController.formatTime(time));
+
+        StyleCollection.build(
+                timeLeft,
+                StyleProp.FONT("28 Arial"),
+                StyleProp.FILL("#B8860B")
+        );
+
+        return timeLeft;
     }
 
     // Setup scene
@@ -487,28 +532,14 @@ public class GameView extends AbstractView {
         displayTurnContainer.getChildren().add(this.displayTurn);
 
         //Setup white time text and its container
-        displayWhiteTimeLeft = new Text();
-        displayWhiteTimeLeft.setText("White time left: " + AbstractController.formatTime(controller.timeWhite--));
-
-        StyleCollection.build(
-            displayWhiteTimeLeft,
-            StyleProp.FONT("28 Arial"),
-            StyleProp.FILL("#B8860B")
-        );
+        GameView.displayWhiteTimeLeft = this.timeLeftText("White time left: ", controller.timeWhite--);
 
         StackPane displayWhiteTimeContainer = new StackPane();
         setupContainer(displayWhiteTimeContainer);
         displayWhiteTimeContainer.getChildren().add(displayWhiteTimeLeft);
 
         //Setup black time text and its container
-        displayBlackTimeLeft = new Text();
-        displayBlackTimeLeft.setText("Black time left: " + AbstractController.formatTime(controller.timeBlack--));
-
-        StyleCollection.build(
-            displayBlackTimeLeft,
-            StyleProp.FONT("28 Arial"),
-            StyleProp.FILL("#B8860B")
-        );
+        GameView.displayBlackTimeLeft = this.timeLeftText("Black time left: ", controller.timeBlack--);
 
         StackPane displayBlackTimeContainer = new StackPane();
         setupContainer(displayBlackTimeContainer);
@@ -569,7 +600,7 @@ public class GameView extends AbstractView {
 
         this.pausePane.setOnMouseClicked(e -> {
             if (this.isPauseButtonActive) {
-                this.timeline.pause();
+                this.musicTimeline.pause();
                 root.getChildren().add(this.stopGamePane);
                 displayPauseScreen();
             }
