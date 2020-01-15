@@ -76,4 +76,17 @@ public class StyleCollection {
             .collect(spaceCollector);
     }
 
+    public static void buttonStyle(Node applyTo) {
+        StyleCollection.build(
+                applyTo,
+                StyleProp.BACKGROUND_IMAGE("url(/assets/dark_wood.jpg)"),
+                StyleProp.CURSOR("hand"),
+                StyleProp.FONT_SIZE("30px"),
+                StyleProp.FONT_WEIGHT("bold"),
+                StyleProp.TEXT_FILL("#DAA520"),
+                StyleProp.BORDER_COLOR("#DAA520"),
+                StyleProp.BORDER_WIDTH("5px")
+        );
+    }
+
 }
