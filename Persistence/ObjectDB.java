@@ -26,11 +26,9 @@ public class ObjectDB implements Serializable {
     protected boolean isWhiteTurn; // Keep track of turn
 
     // Time
-    protected int timeWhite;
     protected int timeBlack;
+    protected int timeWhite;
     protected int totalTime;
-
-    protected GameType selectedGameType;
 
     /*
      * Setters
@@ -67,10 +65,6 @@ public class ObjectDB implements Serializable {
         this.dimension = dimension;
     }
 
-    public void setSelectedGameType(GameType setSelectedGameType) {
-        this.selectedGameType = setSelectedGameType;
-    }
-
     /*
      * Getters
      */
@@ -104,10 +98,6 @@ public class ObjectDB implements Serializable {
 
     public int getDimension() {
         return this.dimension;
-    }
-
-    public GameType getSelectedGameType() {
-        return this.selectedGameType;
     }
 
     // Serialize and save state to a file

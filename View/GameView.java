@@ -357,7 +357,6 @@ public class GameView extends AbstractView {
             saveGame.setTimeWhite(controller.timeWhite);
             saveGame.setTimeBlack(controller.timeBlack);
             saveGame.setTotalTime(controller.totalTime);
-            saveGame.setSelectedGameType(MainMenuView.selectedGameType);
 
             // Save, check if it's succesful and display message accordingly
             if (saveGame.saveState(MainMenuView.selectedGameType.name())) {
