@@ -104,9 +104,9 @@ public class MainMenuView extends AbstractView {
         informationContainer.setPadding(new Insets(10));
 
         TextFlow textFlow = new TextFlow();
-        textFlow.setMaxSize(200, 50);
-        textFlow.setMinSize(200, 50);
-        this.information = new Text("Solong and thanks for all the fish! biotch");
+        textFlow.setMaxSize(200,50);
+        textFlow.setMinSize(200,50);
+        this.information = new Text("Solong and thanks for all the fish!");
         textFlow.getChildren().add(this.information);
         informationContainer.getChildren().add(textFlow);
 
@@ -151,16 +151,17 @@ public class MainMenuView extends AbstractView {
             Main.setView((Main.gameView));
         });
 
-        // Game type buttons
-        ToggleButton simpDamBtn = constructGameButton(GameType.SimpDam, toggleGroup);
-        ToggleButton twoPlayerBtn = constructGameButton(GameType.TwoPlayer, toggleGroup);
-        ToggleButton singlePlayerBtn = constructGameButton(GameType.SinglePlayer, toggleGroup);
-        ToggleButton flexibleKingBtn = constructGameButton(GameType.FlexibleKingTwoPlayer, toggleGroup);
-
 
         //loader buttons:
         GameType[] gameTypes = GameType.values();
         for (int i = 0; i < gameTypes.length; i++) {
+            GameType g = gameTypes[i];
+
+            // Create game button
+            ToggleButton gameButton = constructGameButton(g, toggleGroup);
+            GridPane.setConstraints(gameButton, 0, i);
+
+            // Create load game button
             this.constructLoadButton(gameTypes[i], i);
         }
 
@@ -175,11 +176,7 @@ public class MainMenuView extends AbstractView {
                 double value = Double.parseDouble(newValue);
                 dimensionSlider.setValue(value);
             } catch (Exception e) {
-                if (MainMenuView.selectedGameType == GameType.SimpDam) {
-                    dimensionSlider.setValue(3);
-                } else {
-                    dimensionSlider.setValue(8);
-                }
+                dimensionSlider.setValue(MainMenuView.selectedGameType == GameType.SimpDam ? 3 : 8);
             }
         });
 
@@ -188,22 +185,15 @@ public class MainMenuView extends AbstractView {
                 " -fx-background-image: url(/assets/dark_wood.jpg); -fx-border-color: #DAA520; -fx-border-width: 5px;");
         dimensionOfField.setAlignment(Pos.CENTER);
 
-        //Get the children for the slaugther!
         grid.getChildren().addAll(dimensionSlider);
         containSlider.getChildren().addAll(dimensionOfField, showSlider, dimensionSlider);
         root.getChildren().addAll(grid, informationContainer, containSlider);
 
-        //align the root
+        // Set grid constraints
         GridPane.setConstraints(grid, 0, 0);
         GridPane.setConstraints(informationContainer, 1, 0);
         GridPane.setConstraints(containSlider, 0, 1);
-
-        //align the grid
-        GridPane.setConstraints(simpDamBtn, 0, 0);
-        GridPane.setConstraints(twoPlayerBtn, 0, 1);
-        GridPane.setConstraints(singlePlayerBtn, 0, 2);
-        GridPane.setConstraints(flexibleKingBtn, 0, 3);
-        GridPane.setConstraints(playButton, 0, 5);
+        GridPane.setConstraints(playButton, 0, GameType.values().length);
 
 
         return new Scene(root, GameView.WIDTH, GameView.HEIGHT, true, null);
@@ -279,7 +269,7 @@ public class MainMenuView extends AbstractView {
         button.setOnMouseClicked(e -> {
             MainMenuView.selectedGameType = gameType;
 
-            int dimension = (int) Settings.get(Setting.Dimension);
+            int dimension = Settings.getInt(Setting.Dimension);
 
             AbstractController controller;
             switch (state.getSelectedGameType()) {

@@ -42,12 +42,12 @@ abstract public class AbstractController {
     protected int minFieldSize=8; //minimum field size
     protected int maxFieldSize=100; //maximum field size
     protected Timeline timeline = new Timeline();
-    public static int timeWhite = 300;
-    public static int timeBlack = 300;
-    public static int totalTime = 0;
-    protected ArrayList<AudioClip> soundArrayList = new ArrayList<>();
-    protected String[] soundNames = new String[]{"chipsCollide1.wav", "chipsCollide2.wav", "chipsCollide3.wav", "chipsCollide4.wav"};
-    protected Random randomSound = new Random();
+    public static int timeWhite = 300; //time 5 minutes in seconds, counts down to 0
+    public static int timeBlack = 300; //same for black
+    public static int totalTime = 0; //total time of game
+    protected ArrayList<AudioClip> soundArrayList = new ArrayList<>(); //used to store the paths for each audio file
+    protected String[] soundNames = new String[]{"chipsCollide1.wav", "chipsCollide2.wav", "chipsCollide3.wav", "chipsCollide4.wav"}; //names of the audioclips
+    protected Random randomSound = new Random(); //used to choose a sound at random
 
     public GameView getView(GameView view){
         return view;
@@ -55,33 +55,31 @@ abstract public class AbstractController {
 
     public static void setTotalTime() {
         totalTime = 0;
-    }
+    } //used each new game to reset the time
 
-    public static void setTime() {
+    public static void setTime() { //resets the time for each team
         timeWhite = 300;
         timeBlack = 300;
     }
 
-    public static void setTimeWhite(int timeWhite) {
-        AbstractController.timeWhite = timeWhite;
-    }
+    //reset time from a loaded state, same for the next 2 methods
+    public static void setTimeWhite(int timeWhite) { AbstractController.timeWhite = timeWhite; }
 
-    public static void setTimeBlack(int timeBlack) {
-        AbstractController.timeBlack = timeBlack;
-    }
+    public static void setTimeBlack(int timeBlack) { AbstractController.timeBlack = timeBlack; }
 
-    public static void setTotalTime(int totalTime) {
-        AbstractController.totalTime = totalTime;
-    }
+    public static void setTotalTime(int totalTime) { AbstractController.totalTime = totalTime; }
 
+    //pause the time, used when the pause button is pressed
     public void pauseTime() {
         timeline.pause();
     }
 
+    //start the time, used when the pausemenu is closed
     public void startTime() {
         timeline.play();
     }
 
+    //sets up the timer, if whiteTime or blackTime reaches 0, the opposite team wins.
     public void countDownTimer() {
         this.timeline = new Timeline(new KeyFrame(Duration.seconds(1), ev -> {
             if (isWhiteTurn) {
@@ -104,16 +102,11 @@ abstract public class AbstractController {
         timeline.play();
     }
 
+    //format time to show in minutes and seconds
     public static String formatTime(int timeSeconds) {
-            int minutes = timeSeconds / 60;
-            int seconds = timeSeconds % 60;
-            String formattedTime = "";
-            if (seconds < 10) {
-                formattedTime = minutes + ":" +  "0" + seconds;
-            } else {
-                formattedTime = minutes + ":" + seconds;
-            }
-            return formattedTime;
+        int minutes = timeSeconds / 60;
+        int seconds = timeSeconds % 60;
+        return seconds < 10 ? minutes + ":" +  "0" + seconds : minutes + ":" + seconds;
     }
 
     // Setup a piece in each corner
@@ -134,10 +127,12 @@ abstract public class AbstractController {
         return false;
     }
 
+    //plays one of the four move sounds randomly
     protected void playOnMoveSound() {
         this.soundArrayList.get(randomSound.nextInt(soundArrayList.size())).play();
     }
 
+    //creates each new audioclip using the strings with sound names
     protected void setupSounds() {
         for(String name: soundNames) {
             soundArrayList.add(new AudioClip(new File("./src/assets/" + name).toURI().toString()));
@@ -519,6 +514,4 @@ abstract public class AbstractController {
             }
         }
     }
-
-    public int getMinFieldSize(){ return  this.minFieldSize;}
 }
