@@ -119,10 +119,12 @@ public class StyleCollection {
         this.props.addAll(Arrays.asList(props));
     }
 
+    // Apply style-String to Node
     public void applyTo(Node applyTo) {
         applyTo.setStyle(this.toString());
     }
 
+    // Return combined String of all StyleProps
     public String toString() {
         // Join without any "glue" chars
         Collector<CharSequence, ?, String> spaceCollector = Collectors.joining("");
