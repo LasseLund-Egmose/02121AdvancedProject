@@ -139,20 +139,26 @@ abstract public class AbstractController {
 
     //plays one of the four move sounds randomly
     protected void playOnMoveSound() {
-        this.soundArrayList.get(randomSound.nextInt(soundArrayList.size())).play();
+        // Get a random sound clip
+        Clip clip = this.soundArrayList.get(randomSound.nextInt(soundArrayList.size()));
+        // Reset the clip to start
+        clip.setFramePosition(0);
+        // Play the clip
+        clip.start();
     }
 
     //creates each new audioclip using the strings with sound names
     protected void setupSounds() {
-        Clip clip = null;
-
         try {
-            clip = AudioSystem.getClip();
-
             for(String name: soundNames) {
-                InputStream is = this.getClass().getClassLoader().getResourceAsStream("/assets/" + name);
+
+                // Get audio clip from assets directory
+                Clip clip;
+                clip = AudioSystem.getClip();
+                InputStream is = this.getClass().getResourceAsStream("/assets/" + name);
 
                 try {
+                    // Add clip to soundArrayList
                     AudioInputStream ais = AudioSystem.getAudioInputStream(is);
                     clip.open(ais);
                     soundArrayList.add(clip);
