@@ -2,10 +2,14 @@ package Controller;
 
 import Model.Move;
 import Enum.MoveType;
+import Enum.Setting;
 import Enum.Team;
+
 import Model.CheckerPiece;
 import Model.Field;
+import Model.Move;
 import Model.Settings;
+
 import View.GameView;
 
 import javafx.animation.Animation;
@@ -27,8 +31,6 @@ import Enum.Setting;
 import javax.sound.sampled.*;
 import java.util.concurrent.TimeUnit;
 
-import static Enum.Setting.Time;
-
 // TODO: Needs cleanup and comments
 abstract public class AbstractController {
 
@@ -49,26 +51,18 @@ abstract public class AbstractController {
     protected CheckerPiece selectedPiece = null; // Keep track of selected piece
     protected GameView view; // Reference to view instance
     protected Timeline timeline = new Timeline();
-    public int timeWhite; //time 5 minutes in seconds, counts down to 0
-    public int timeBlack; //same for black
-        // this.timeWhite = (int) Settings.get(Setting.Time);
-        // this.timeBlack = (int) Settings.get(Setting.Time);
-    public int totalTime = 0; //total time of game
     protected ArrayList<Clip> soundArrayList = new ArrayList<>(); //used to store the paths for each audio file
+    public int timeWhite; // White players time variable
+    public int timeBlack; // Black players time variable
+    public int totalTime = 0; // Total elapsed time of game
     protected String[] soundNames = new String[]{"chipsCollide1.wav", "chipsCollide2.wav", "chipsCollide3.wav", "chipsCollide4.wav"}; //names of the audioclips
-    protected Random randomSound = new Random(); //used to choose a sound at random
-
-    public GameView getView(GameView view){
-        return view;
-    }
 
     public void setTotalTime() {
         totalTime = 0;
     } //used each new game to reset the time
 
     public void setTime() { //resets the time for each team
-        timeWhite = (int) Settings.get(Setting.Time);
-        timeBlack = (int) Settings.get(Setting.Time);
+        timeWhite = timeBlack = (int) Settings.get(Setting.Time);
     }
 
     //reset time from a loaded state, same for the next 2 methods
@@ -93,19 +87,18 @@ abstract public class AbstractController {
         this.timeline = new Timeline(new KeyFrame(Duration.seconds(1), ev -> {
             if (isWhiteTurn) {
                 GameView.displayWhiteTimeLeft.setText("White time left: " + formatTime(timeWhite--));
-                totalTime++;
                 if (timeWhite <= -2) {
                     timeline.stop();
                     this.view.displayWin(Team.BLACK);
                 }
             } else {
                 GameView.displayBlackTimeLeft.setText("Black time left: " + formatTime(timeBlack--));
-                totalTime++;
                 if (timeBlack <= -2) {
                     timeline.stop();
                     this.view.displayWin(Team.WHITE);
                 }
             }
+            totalTime++;
         }));
         timeline.setCycleCount(Animation.INDEFINITE);
         timeline.play();
@@ -138,6 +131,7 @@ abstract public class AbstractController {
 
     //plays one of the four move sounds randomly
     protected void playOnMoveSound() {
+        Random randomSound = new Random();
         // Get a random sound clip
         Clip clip = this.soundArrayList.get(randomSound.nextInt(soundArrayList.size()));
         // Reset the clip to start
@@ -270,6 +264,7 @@ abstract public class AbstractController {
         this.view.setupField(field, p);
     }
 
+    // Setup black field from exsisting field
     public void setupField(Field field) {
         field.addEventFilter(MouseEvent.MOUSE_PRESSED, this.moveClickEventHandler);
         this.view.setupField(field, field.getPosition());
@@ -364,9 +359,6 @@ abstract public class AbstractController {
     // Handle a regular move
     public void doRegularMove(Field toField, boolean didJump) {
 
-        // Disable pause button
-        this.view.setPauseButtonActive(false);
-
         //play on move sound
         playOnMoveSound();
 
@@ -379,6 +371,9 @@ abstract public class AbstractController {
         // Reset highlight-related properties
         this.possibleJumpMoves.clear();
         this.possibleRegularMoves.clear();
+
+        // Disable pause button
+        this.view.setPauseButtonActive(false);
 
         // Finish turn if onPieceMove returns true
         if(this.onPieceMove(this.selectedPiece, didJump)) {
@@ -568,7 +563,7 @@ abstract public class AbstractController {
         }
 
         // Select piece if turn matches the piece's team
-        if (this.selectedPiece != piece && this.isWhiteTurn == (piece.getTeam() == Team.WHITE)) {
+        if (this.isWhiteTurn == (piece.getTeam() == Team.WHITE)) {
             this.selectedPiece = piece;
             this.selectedPiece.setHighlight(true);
 
