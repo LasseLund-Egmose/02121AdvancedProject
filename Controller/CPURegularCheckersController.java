@@ -35,6 +35,9 @@ public class CPURegularCheckersController extends RegularCheckersController {
             HashMap<Team, Integer> activeCount
     ) {
         super(view, dimension, grid, checkerPieces, fields, isWhiteTurn, activeCount);
+
+        this.cpu = new CPU(this);
+        this.cpu.initStrategies();
     }
 
     public boolean onTurnStart() {
