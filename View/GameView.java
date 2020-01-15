@@ -302,11 +302,12 @@ public class GameView extends AbstractView {
     }
 
     public void setPauseButtonActive(boolean pauseButtonActive) {
-        isPauseButtonActive = pauseButtonActive;
+        this.isPauseButtonActive = pauseButtonActive;
         StyleCollection.build(
-            this.pausePane,
-            StyleProp.CURSOR(pauseButtonActive ? "hand" : null),
-            StyleProp.OPACITY(!pauseButtonActive ? "0.5" : null)
+                this.pausePane,
+                StyleProp.BACKGROUND_IMAGE("url(/assets/dark_wood.jpg)"),
+                StyleProp.CURSOR(pauseButtonActive ? "hand" : null),
+                StyleProp.OPACITY(pauseButtonActive ? "1" : "0.5")
         );
     }
 
@@ -565,11 +566,7 @@ public class GameView extends AbstractView {
         this.pausePane.getChildren().add(pauseText);
 
         // Add click event to pause button, adds stopGamePane to root in front of the other game elements.
-        StyleCollection.build(
-            this.pausePane,
-            StyleProp.BACKGROUND_IMAGE("url(/assets/dark_wood.jpg)"),
-            StyleProp.CURSOR("hand")
-        );
+        this.setPauseButtonActive(true);
 
         this.pausePane.setOnMouseClicked(e -> {
             if (this.isPauseButtonActive) {
