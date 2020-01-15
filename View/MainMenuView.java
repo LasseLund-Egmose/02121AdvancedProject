@@ -161,6 +161,7 @@ public class MainMenuView extends AbstractView {
         return label;
     }
 
+    // Return a double is String can be parsed or return default value instead
     protected double getDoubleOrDefault(String s, double d) {
         try {
             return Double.parseDouble(s);
