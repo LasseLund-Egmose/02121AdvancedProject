@@ -47,6 +47,14 @@ public class CPURegularCheckersController extends RegularCheckersController {
         this.cpu.initStrategies();
     }
 
+    public void countDownTimer() {
+        // Do not display CPU time left as it is not relevant
+        GameView.displayBlackTimeLeft.setText("CPU");
+
+        // Setup timer for white only
+        super.countDownTimer(false);
+    }
+
     public boolean onTurnStart() {
         super.onTurnStart();
 
@@ -80,21 +88,5 @@ public class CPURegularCheckersController extends RegularCheckersController {
         super.setupPieces();
 
         this.cpu.initStrategies();
-    }
-
-    public void countDownTimer() {
-        GameView.displayBlackTimeLeft.setText("CPU");
-        this.timeline = new Timeline(new KeyFrame(Duration.seconds(1), ev -> {
-            if (isWhiteTurn) {
-                GameView.displayWhiteTimeLeft.setText("White time left: " + formatTime(timeWhite--));
-                totalTime++;
-                if (timeWhite <= -2) {
-                    timeline.stop();
-                    this.view.displayWin(Team.BLACK);
-                }
-            }
-        }));
-        timeline.setCycleCount(Animation.INDEFINITE);
-        timeline.play();
     }
 }

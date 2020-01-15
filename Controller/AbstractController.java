@@ -30,6 +30,11 @@ import java.util.Random;
 // TODO: Needs cleanup and comments
 abstract public class AbstractController {
 
+    // List of used audio clips (when moving a piece in-game)
+    protected static String[] audioClips = new String[] {
+            "chipsCollide1.wav", "chipsCollide2.wav", "chipsCollide3.wav", "chipsCollide4.wav"
+    };
+
     protected ArrayList<CheckerPiece> checkerPieces = new ArrayList<>(); // A list of all pieces
     protected HashMap<Integer, HashMap<Integer, Field>> fields = new HashMap<>(); // A map (x -> y -> pane) of all fields
 
@@ -51,64 +56,16 @@ abstract public class AbstractController {
     public int timeWhite; // White players time variable
     public int timeBlack; // Black players time variable
     public int totalTime = 0; // Total elapsed time of game
-    protected String[] soundNames = new String[]{"chipsCollide1.wav", "chipsCollide2.wav", "chipsCollide3.wav", "chipsCollide4.wav"}; //names of the audioclips
-
-    public void setTotalTime() {
-        totalTime = 0;
-    } //used each new game to reset the time
-
-    public void setTime() { //resets the time for each team
-        timeWhite = timeBlack = Settings.getInt(Setting.Time);
-    }
-
-    //reset time from a loaded state, same for the next 2 methods
-    public void setTimeWhite(int timeWhite) { this.timeWhite = timeWhite; }
-
-    public void setTimeBlack(int timeBlack) { this.timeBlack = timeBlack; }
-
-    public void setTotalTime(int totalTime) { this.totalTime = totalTime; }
-
-    //pause the time, used when the pause button is pressed
-    public void pauseTime() {
-        timeline.pause();
-    }
-
-    //start the time, used when the pausemenu is closed
-    public void startTime() {
-        timeline.play();
-    }
-
-    //sets up the timer, if whiteTime or blackTime reaches 0, the opposite team wins.
-    public void countDownTimer() {
-        this.timeline = new Timeline(new KeyFrame(Duration.seconds(1), ev -> {
-            if (isWhiteTurn) {
-                GameView.displayWhiteTimeLeft.setText("White time left: " + formatTime(timeWhite--));
-                if (timeWhite <= -2) {
-                    timeline.stop();
-                    this.view.displayWin(Team.BLACK);
-                }
-            } else {
-                GameView.displayBlackTimeLeft.setText("Black time left: " + formatTime(timeBlack--));
-                if (timeBlack <= -2) {
-                    timeline.stop();
-                    this.view.displayWin(Team.WHITE);
-                }
-            }
-            totalTime++;
-        }));
-        timeline.setCycleCount(Animation.INDEFINITE);
-        timeline.play();
-    }
-
-    //format time to show in minutes and seconds
-    public static String formatTime(int timeSeconds) {
-        int minutes = timeSeconds / 60;
-        int seconds = timeSeconds % 60;
-        return seconds < 10 ? minutes + ":" +  "0" + seconds : minutes + ":" + seconds;
-    }
 
     // Setup a piece in each corner
     abstract public void setupPieces();
+
+    // Format int to time string
+    public static String formatTime(int timeSeconds) {
+        int minutes = timeSeconds / 60;
+        int seconds = timeSeconds % 60;
+        return seconds < 10 ? minutes + ":" + "0" + seconds : minutes + ":" + seconds;
+    }
 
     // Check if a team has won
     protected boolean checkForWin() {
@@ -125,42 +82,32 @@ abstract public class AbstractController {
         return false;
     }
 
-    //plays one of the four move sounds randomly
-    protected void playOnMoveSound() {
-        Random randomSound = new Random();
-        // Get a random sound clip
-        Clip clip = this.soundArrayList.get(randomSound.nextInt(soundArrayList.size()));
-        // Reset the clip to start
-        clip.setFramePosition(0);
-        // Play the clip
-        clip.start();
+    // Setup game timer
+    // If whiteTime or blackTime reaches 0, the opposite team wins.
+    public void countDownTimer() {
+        this.countDownTimer(true);
     }
 
-    //creates each new audioclip using the strings with sound names
-    protected void setupSounds() {
-        try {
-            for(String name: soundNames) {
-
-                // Get audio clip from assets directory
-                Clip clip;
-                clip = AudioSystem.getClip();
-                BufferedInputStream bis = new BufferedInputStream(this.getClass().getResourceAsStream("/assets/" + name));
-
-                try {
-                    // Add clip to soundArrayList
-                    AudioInputStream ais = AudioSystem.getAudioInputStream(bis);
-                    clip.open(ais);
-                    soundArrayList.add(clip);
-                } catch(UnsupportedAudioFileException e) {
-                    System.out.println("Error - Unsupported audio file:" + e.getMessage());
-                } catch (IOException e) {
-                    System.out.println("IO error: " + e.getMessage());
+    // Set up timer (this specific method call is used with CPU)
+    public void countDownTimer(boolean setupBlack) {
+        this.timeline = new Timeline(new KeyFrame(Duration.seconds(1), ev -> {
+            if (isWhiteTurn) {
+                GameView.displayWhiteTimeLeft.setText("White time left: " + formatTime(timeWhite--));
+                if (timeWhite <= -2) {
+                    timeline.stop();
+                    this.view.displayWin(Team.BLACK);
+                }
+            } else if(setupBlack) {
+                GameView.displayBlackTimeLeft.setText("Black time left: " + formatTime(timeBlack--));
+                if (timeBlack <= -2) {
+                    timeline.stop();
+                    this.view.displayWin(Team.WHITE);
                 }
             }
-
-        } catch (LineUnavailableException e) {
-            System.out.println("Error occurred in audio line: " + e.getMessage());
-        }
+            totalTime++;
+        }));
+        timeline.setCycleCount(Animation.INDEFINITE);
+        timeline.play();
     }
 
     // Check if a jump move is eligible (e.g. no piece behind jumped piece)
@@ -172,7 +119,7 @@ abstract public class AbstractController {
         Point newPos = (Point) opponentPosition.clone();
         newPos.translate(diff.x, diff.y);
 
-        if(!this.isPositionValid(newPos)) {
+        if (!this.isPositionValid(newPos)) {
             return null;
         }
 
@@ -181,7 +128,7 @@ abstract public class AbstractController {
 
         CheckerPiece attachedPiece = jumpOver.getAttachedPieceSecure();
 
-        if(attachedPiece == null || attachedPiece.getTeam() == thisPiece.getTeam()) {
+        if (attachedPiece == null || attachedPiece.getTeam() == thisPiece.getTeam()) {
             return null;
         }
 
@@ -192,10 +139,10 @@ abstract public class AbstractController {
     protected void highlightEligibleFields(CheckerPiece piece) {
         ArrayList<Move> legalMoves = this.getLegalMovesForPiece(piece);
 
-        for(Move move : legalMoves) {
+        for (Move move : legalMoves) {
             Field toField = move.getToField();
 
-            if(move.getMoveType() == MoveType.JUMP) {
+            if (move.getMoveType() == MoveType.JUMP) {
                 this.possibleJumpMoves.put(toField, move.getJumpedField());
                 this.view.highlightPane(toField);
                 continue;
@@ -245,6 +192,46 @@ abstract public class AbstractController {
         return true;
     }
 
+    // Pause timer
+    public void pauseTime() {
+        this.timeline.pause();
+    }
+
+    //plays one of the four move sounds randomly
+    protected void playOnMoveSound() {
+        Random randomSound = new Random();
+
+        // Get a random sound clip
+        Clip clip = this.soundArrayList.get(randomSound.nextInt(soundArrayList.size()));
+        clip.setFramePosition(0); // Reset the clip to start
+        clip.start(); // Play the clip
+    }
+
+    // Reset time for both teams
+    public void setTime() {
+        this.timeWhite = this.timeBlack = Settings.getInt(Setting.Time);
+    }
+
+    // Set black time from state
+    public void setTimeBlack(int timeBlack) {
+        this.timeBlack = timeBlack;
+    }
+
+    // Set white time from state
+    public void setTimeWhite(int timeWhite) {
+        this.timeWhite = timeWhite;
+    }
+
+    // Reset total time
+    public void setTotalTime() {
+        this.totalTime = 0;
+    }
+
+    // Set total time from state
+    public void setTotalTime(int totalTime) {
+        this.totalTime = totalTime;
+    }
+
     // Setup one black field by position
     protected void setupField(Point p) {
         Field field = new Field(p);
@@ -282,6 +269,38 @@ abstract public class AbstractController {
         this.checkerPieces.add(piece);
     }
 
+    // Setup audio clips from this.soundNames
+    protected void setupSounds() {
+        try {
+            for (String name : AbstractController.audioClips) {
+
+                // Get audio clip from assets directory
+                Clip clip;
+                clip = AudioSystem.getClip();
+                BufferedInputStream bis = new BufferedInputStream(this.getClass().getResourceAsStream("/assets/" + name));
+
+                try {
+                    // Add clip to soundArrayList
+                    AudioInputStream ais = AudioSystem.getAudioInputStream(bis);
+                    clip.open(ais);
+                    this.soundArrayList.add(clip);
+                } catch (UnsupportedAudioFileException e) {
+                    System.out.println("Error - Unsupported audio file:" + e.getMessage());
+                } catch (IOException e) {
+                    System.out.println("IO error: " + e.getMessage());
+                }
+            }
+
+        } catch (LineUnavailableException e) {
+            System.out.println("Error occurred in audio line: " + e.getMessage());
+        }
+    }
+
+    // Start timer
+    public void startTime() {
+        timeline.play();
+    }
+
     // Get diagonally surrounding fields (within board boundaries) from a given position
     protected ArrayList<Point> surroundingFields(Point p) {
         ArrayList<Point> eligiblePoints = new ArrayList<>();
@@ -298,7 +317,7 @@ abstract public class AbstractController {
     }
 
     // Get position of surrounding fields
-    protected Point[] surroundingFieldsPosition (Point p) {
+    protected Point[] surroundingFieldsPosition(Point p) {
         return new Point[]{
                 new Point(p.x - 1, p.y + 1),
                 new Point(p.x + 1, p.y + 1),
@@ -376,7 +395,7 @@ abstract public class AbstractController {
         this.view.setPauseButtonActive(false);
 
         // Finish turn if onPieceMove returns true
-        if(this.onPieceMove(this.selectedPiece, didJump)) {
+        if (this.onPieceMove(this.selectedPiece, didJump)) {
             // Reset forced jump moves
             this.forcedJumpMoves.clear();
 
@@ -398,7 +417,7 @@ abstract public class AbstractController {
         this.view.setPauseButtonActive(true);
 
         // Is game won or can we play on?
-        if(!checkForWin()) {
+        if (!checkForWin()) {
             this.view.setupDisplayTurn(this.isWhiteTurn);
             if (this.onTurnStart()) {
                 this.view.rotate();
@@ -461,13 +480,13 @@ abstract public class AbstractController {
     public ArrayList<Move> getLegalMovesForPiece(CheckerPiece piece) {
         ArrayList<Move> legalMoves = new ArrayList<>();
 
-        if(!piece.isActive()) {
+        if (!piece.isActive()) {
             return legalMoves;
         }
 
         // Iterate surrounding diagonal fields of given piece
         for (Point p : this.surroundingFields(piece.getPosition())) {
-            if(this.fieldShouldNotBeConsidered(piece, p)) {
+            if (this.fieldShouldNotBeConsidered(piece, p)) {
                 continue;
             }
 
@@ -498,9 +517,9 @@ abstract public class AbstractController {
         }
 
         // Clean any regular moves mistakenly added to available moves (when forced jump moves are present)
-        if(this.forcedJumpMoves.size() > 0) {
-            for(Move m : legalMoves) {
-                if(m.getMoveType() != MoveType.REGULAR) {
+        if (this.forcedJumpMoves.size() > 0) {
+            for (Move m : legalMoves) {
+                if (m.getMoveType() != MoveType.REGULAR) {
                     continue;
                 }
 
@@ -516,14 +535,14 @@ abstract public class AbstractController {
         Point diagonalFieldPosition = diagonalField.getPosition();
 
         Point diff = new Point(
-            mainFieldPosition.x - diagonalFieldPosition.x,
-            mainFieldPosition.y - diagonalFieldPosition.y
+                mainFieldPosition.x - diagonalFieldPosition.x,
+                mainFieldPosition.y - diagonalFieldPosition.y
         );
 
         Point otherDiagonalPosition = new Point(mainFieldPosition.x + diff.x, mainFieldPosition.y + diff.y);
 
         return this.isPositionValid(otherDiagonalPosition) ?
-            this.fields.get(otherDiagonalPosition.x).get(otherDiagonalPosition.y) : null;
+                this.fields.get(otherDiagonalPosition.x).get(otherDiagonalPosition.y) : null;
     }
 
     // Get selected piece
@@ -535,7 +554,7 @@ abstract public class AbstractController {
         ArrayList<Field> fields = new ArrayList<>();
         ArrayList<Point> points = this.surroundingFields(f.getPosition());
 
-        for(Point p : points) {
+        for (Point p : points) {
             fields.add(this.fields.get(p.x).get(p.y));
         }
 
@@ -548,11 +567,11 @@ abstract public class AbstractController {
 
     // Set selected piece
     public void setSelectedPiece(CheckerPiece piece) {
-        if(this.selectedPiece == piece) {
+        if (this.selectedPiece == piece) {
             this.onSelectedPieceClick();
         }
 
-        if(piece == null || this.pieceHighlightLocked) {
+        if (piece == null || this.pieceHighlightLocked) {
             return;
         }
 
