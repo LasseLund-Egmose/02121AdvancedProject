@@ -13,6 +13,7 @@ import java.util.HashMap;
 
 public class SimpDamController extends AbstractController {
 
+
     // Short constructor
     public SimpDamController(GameView view, int dimension, GridPane grid) {
         super(view, dimension, grid);

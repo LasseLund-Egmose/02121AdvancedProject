@@ -10,13 +10,20 @@ import Model.Field;
 import Model.Settings;
 import Persistence.ObjectDB;
 
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
 import Util.StyleCollection;
 import Util.StyleProp;
 import javafx.animation.RotateTransition;
+import javafx.animation.Timeline;
 import javafx.geometry.Pos;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.layout.*;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaView;
 import javafx.scene.image.Image;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
@@ -32,6 +39,8 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.awt.*;
+import java.io.File;
+import java.sql.Time;
 import java.util.HashMap;
 
 // TODO: Needs cleanup and comments
@@ -60,6 +69,7 @@ public class GameView extends AbstractView {
     protected GridPane grid;
     protected Pane surfacePane;
     protected RotateTransition surfacePaneRotation; // Transition rotating board after each turn
+    protected Timeline timeline;
     protected Settings settings;
     protected StackPane stopGamePane = new StackPane();
     protected StackPane root = new StackPane();
@@ -233,6 +243,7 @@ public class GameView extends AbstractView {
         StyleCollection.buttonStyle(resumeButton);
 
         resumeButton.setOnMouseClicked(e -> {
+            this.timeline.play();
             this.root.getChildren().remove(stopGamePane);
             dialog.close();
             this.controller.startTime();
@@ -374,6 +385,22 @@ public class GameView extends AbstractView {
 
     // Setup scene
     public Scene setupScene() {
+        String path = "./src/assets/hey.mp3";
+        Media media = new Media(new File(path).toURI().toString());
+        MediaPlayer mediaPlayer = new MediaPlayer(media);
+        mediaPlayer.play();
+
+        this.timeline = new Timeline(new KeyFrame(Duration.seconds(0.5), ev -> {
+            mediaPlayer.seek(Duration.ZERO);
+            mediaPlayer.play();
+        }));
+        this.timeline.setCycleCount(Animation.INDEFINITE);
+        this.timeline.play();
+
+
+
+
+
 
         // Setup controller
         this.controller = (AbstractController) Settings.get(Setting.Controller);
@@ -546,6 +573,7 @@ public class GameView extends AbstractView {
 
         this.pausePane.setOnMouseClicked(e -> {
             if (this.isPauseButtonActive) {
+                this.timeline.pause();
                 root.getChildren().add(this.stopGamePane);
                 displayPauseScreen();
             }

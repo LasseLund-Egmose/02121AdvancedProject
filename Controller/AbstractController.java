@@ -40,8 +40,6 @@ abstract public class AbstractController {
     protected boolean pieceHighlightLocked = false; // Should highlight be locked to one piece? Happens when jumping multiple pieces in one turn
     protected CheckerPiece selectedPiece = null; // Keep track of selected piece
     protected GameView view; // Reference to view instance
-    protected int minFieldSize=8; //minimum field size
-    protected int maxFieldSize=100; //maximum field size
     protected Timeline timeline = new Timeline();
     public int timeWhite = 300; //time 5 minutes in seconds, counts down to 0
     public int timeBlack = 300; //same for black

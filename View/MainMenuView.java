@@ -16,6 +16,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 
@@ -54,7 +55,7 @@ public class MainMenuView extends AbstractView {
                         "meaning you can move the king pieces an arbitrary amount of spaces. ";
                 break;
             default:
-                text = "";
+                text = "Come on you! Pick a game mode!";
                 break;
         }
 
@@ -108,12 +109,12 @@ public class MainMenuView extends AbstractView {
         TextFlow textFlow = new TextFlow();
         textFlow.setMaxSize(200,50);
         textFlow.setMinSize(200,50);
-        this.information = new Text("Solong and thanks for all the fish!");
+        this.information = new Text("Welcome to the greatest game of checkers EVER!");
+        this.information.setFont(Font.font ("Verdana", 20));
         textFlow.getChildren().add(this.information);
         informationContainer.getChildren().add(textFlow);
 
-
-        dimensionSlider = new Slider(8, 100, dimension);
+        dimensionSlider = new Slider(8,100, dimension);
         dimensionSlider.setShowTickMarks(true);
         dimensionSlider.setShowTickLabels(true);
         dimensionSlider.setPrefSize(1000, 50);
@@ -156,7 +157,7 @@ public class MainMenuView extends AbstractView {
 
         //loader buttons:
         GameType[] gameTypes = GameType.values();
-        for (int i = 0; i < gameTypes.length; i++) {
+        for (int i = 0; i < gameTypes.length-1; i++) {
             GameType g = gameTypes[i];
 
             if(g == GameType.Unselected) {
