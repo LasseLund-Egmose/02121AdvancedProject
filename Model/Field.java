@@ -47,8 +47,4 @@ public class Field extends StackPane implements Serializable {
         this.attachedPiece = piece;
     }
 
-    /*
-     * End getters and setters
-     */
-
 }

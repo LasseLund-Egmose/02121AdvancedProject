@@ -30,9 +30,5 @@ public class Settings {
         this.controller = controller;
     }
 
-    /*
-     * End getters and setters
-     */
-
 }
 

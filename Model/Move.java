@@ -39,8 +39,4 @@ public class Move {
     public Field getToField() {
         return this.toField;
     }
-
-    /*
-     * End getters
-     */
 }

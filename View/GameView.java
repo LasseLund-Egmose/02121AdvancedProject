@@ -28,6 +28,7 @@ import javafx.util.Duration;
 import java.awt.*;
 import java.util.HashMap;
 
+// TODO: Needs cleanup and comments
 public class GameView extends AbstractView {
 
     // Constants
@@ -207,8 +208,9 @@ public class GameView extends AbstractView {
             saveGame.setTimeWhite(AbstractController.timeWhite);
             saveGame.setTimeBlack(AbstractController.timeBlack);
             saveGame.setTotalTime(AbstractController.totalTime);
-            saveGame.setSelectedButton(MainMenuView.selectedButton);
-            if (saveGame.saveState(MainMenuView.selectedButton)) {
+            saveGame.setSelectedGameType(MainMenuView.selectedGameType);
+
+            if (saveGame.saveState(MainMenuView.selectedGameType.name())) {
                 saveButton.setText("Game Saved!");
             } else {
                 saveButton.setText("Couldn't Save Game");
