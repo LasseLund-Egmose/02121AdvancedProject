@@ -63,11 +63,17 @@ abstract public class AbstractController {
     }
 
     //reset time from a loaded state, same for the next 2 methods
-    public static void setTimeWhite(int timeWhite) { AbstractController.timeWhite = timeWhite; }
+    public static void setTimeWhite(int timeWhite) {
+        AbstractController.timeWhite = timeWhite;
+    }
 
-    public static void setTimeBlack(int timeBlack) { AbstractController.timeBlack = timeBlack; }
+    public static void setTimeBlack(int timeBlack) {
+        AbstractController.timeBlack = timeBlack;
+    }
 
-    public static void setTotalTime(int totalTime) { AbstractController.totalTime = totalTime; }
+    public static void setTotalTime(int totalTime) {
+        AbstractController.totalTime = totalTime;
+    }
 
     //pause the time, used when the pause button is pressed
     public void pauseTime() {
@@ -322,6 +328,10 @@ abstract public class AbstractController {
         this.activeCount = activeCount;
     }
 
+    /*
+     * Public methods
+     */
+
     // Handle a jump move
     public void doJumpMove(Field toField, Field jumpedField) {
         // Detach (remove) jumped Model.CheckerPiece
@@ -359,6 +369,33 @@ abstract public class AbstractController {
             this.finishTurn();
         }
     }
+
+    // Remove highlights from highlighted fields
+    public void normalizeFields() {
+        ArrayList<Field> allHighlightedPanes = new ArrayList<>();
+        allHighlightedPanes.addAll(this.possibleJumpMoves.keySet());
+        allHighlightedPanes.addAll(this.possibleRegularMoves);
+
+        this.possibleJumpMoves.clear();
+        this.possibleRegularMoves.clear();
+
+        for (Field field : allHighlightedPanes) {
+            this.view.normalizePane(field);
+        }
+    }
+
+    // Setup black fields
+    public void setupFields() {
+        for (int i = 0; i < this.dimension; i++) {
+            for (int j = (i + 1) % 2; j < this.dimension; j += 2) {
+                this.setupField(new Point(j + 1, i + 1));
+            }
+        }
+    }
+
+    /*
+     * Getters and setters
+     */
 
     // Should a piece be allowed to move to the given position? - Default yes
     public boolean fieldShouldNotBeConsidered(CheckerPiece piece, Point position) {
@@ -424,6 +461,17 @@ abstract public class AbstractController {
             }
         }
 
+        // Clean any regular moves mistakenly added to available moves (when forced jump moves are present)
+        if(this.forcedJumpMoves.size() > 0) {
+            for(Move m : legalMoves) {
+                if(m.getMoveType() != MoveType.REGULAR) {
+                    continue;
+                }
+
+                legalMoves.remove(m);
+            }
+        }
+
         return legalMoves;
     }
 
@@ -462,27 +510,13 @@ abstract public class AbstractController {
         return this.view;
     }
 
-    // Remove highlights from highlighted fields
-    public void normalizeFields() {
-        ArrayList<Field> allHighlightedPanes = new ArrayList<>();
-        allHighlightedPanes.addAll(this.possibleJumpMoves.keySet());
-        allHighlightedPanes.addAll(this.possibleRegularMoves);
-
-        this.possibleJumpMoves.clear();
-        this.possibleRegularMoves.clear();
-
-        for (Field field : allHighlightedPanes) {
-            this.view.normalizePane(field);
-        }
-    }
-
     // Set selected piece
     public void setSelectedPiece(CheckerPiece piece) {
-        if(piece != null && this.selectedPiece == piece) {
+        if(this.selectedPiece == piece) {
             this.onSelectedPieceClick();
         }
 
-        if(this.pieceHighlightLocked) {
+        if(piece == null || this.pieceHighlightLocked) {
             return;
         }
 
@@ -504,14 +538,5 @@ abstract public class AbstractController {
 
         // Reset selectedPiece
         this.selectedPiece = null;
-    }
-
-    // Setup black fields
-    public void setupFields() {
-        for (int i = 0; i < this.dimension; i++) {
-            for (int j = (i + 1) % 2; j < this.dimension; j += 2) {
-                this.setupField(new Point(j + 1, i + 1));
-            }
-        }
     }
 }
