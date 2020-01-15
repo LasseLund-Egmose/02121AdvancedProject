@@ -385,8 +385,8 @@ public class GameView extends AbstractView {
     }
 
     protected void setupMusic() {
-        String path = "./src/assets/hey.mp3";
-        Media media = new Media(new File(path).toURI().toString());
+        String path = "/assets/hey.mp3";
+        Media media = new Media(this.getClass().getResource(path).toExternalForm());
         MediaPlayer mediaPlayer = new MediaPlayer(media);
         mediaPlayer.play();
 

@@ -1,6 +1,5 @@
 package Controller;
 
-import Boot.Main;
 import Model.Move;
 import Enum.MoveType;
 import Enum.Team;
@@ -15,10 +14,10 @@ import javafx.animation.Timeline;
 import javafx.event.EventHandler;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
-import javafx.scene.media.AudioClip;
 import javafx.util.Duration;
 
 import java.awt.*;
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -155,11 +154,11 @@ abstract public class AbstractController {
                 // Get audio clip from assets directory
                 Clip clip;
                 clip = AudioSystem.getClip();
-                InputStream is = this.getClass().getResourceAsStream("/assets/" + name);
+                BufferedInputStream bis = new BufferedInputStream(this.getClass().getResourceAsStream("/assets/" + name));
 
                 try {
                     // Add clip to soundArrayList
-                    AudioInputStream ais = AudioSystem.getAudioInputStream(is);
+                    AudioInputStream ais = AudioSystem.getAudioInputStream(bis);
                     clip.open(ais);
                     soundArrayList.add(clip);
                 } catch(UnsupportedAudioFileException e) {
