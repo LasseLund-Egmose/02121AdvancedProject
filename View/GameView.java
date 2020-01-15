@@ -384,8 +384,7 @@ public class GameView extends AbstractView {
         field.setTranslateZ(0.01);
     }
 
-    // Setup scene
-    public Scene setupScene() {
+    protected void setupMusic() {
         String path = "./src/assets/hey.mp3";
         Media media = new Media(new File(path).toURI().toString());
         MediaPlayer mediaPlayer = new MediaPlayer(media);
@@ -397,11 +396,12 @@ public class GameView extends AbstractView {
         }));
         this.timeline.setCycleCount(Animation.INDEFINITE);
         this.timeline.play();
+    }
 
+    // Setup scene
+    public Scene setupScene() {
 
-
-
-
+        setupMusic();
 
         // Setup controller
         this.controller = (AbstractController) Settings.get(Setting.Controller);
@@ -423,6 +423,8 @@ public class GameView extends AbstractView {
 
     // Setup scene from saved game
     public Scene setupScene(ObjectDB db) {
+
+        setupMusic();
 
         // Setup controller
         this.controller = (AbstractController) Settings.get(Setting.Controller);
