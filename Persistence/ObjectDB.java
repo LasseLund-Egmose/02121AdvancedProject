@@ -1,6 +1,5 @@
 package Persistence;
 
-import Enum.GameType;
 import Enum.Team;
 import Model.CheckerPiece;
 import Model.Field;
@@ -13,19 +12,26 @@ import java.util.HashMap;
 
 public class ObjectDB implements Serializable {
 
-    // TODO: Description of method of saving game
+    /*
+     * This class handles saving and loading games by serializing relevant classes and saving it to a file
+     */
 
     private static final long serialVersionUID = -7307863873494379286L;
 
+    /*
+     * Saved lists of data
+     */
+
+    protected HashMap<Team, Integer> activeCount = new HashMap<>(); // A map (Team -> int) of number of active pieces on each team
     protected ArrayList<CheckerPiece> checkerPieces = new ArrayList<>(); // A list of all pieces
     protected HashMap<Integer, HashMap<Integer, Field>> fields = new HashMap<>(); // A map (x -> y -> pane) of all fields
 
-    protected HashMap<Team, Integer> activeCount = new HashMap<>(); // A map (Team -> int) of number of active pieces on each team
+    /*
+     * Saved settings / global variables
+     */
 
     protected int dimension;
-    protected boolean isWhiteTurn; // Keep track of turn
-
-    // Time
+    protected boolean isWhiteTurn;
     protected int timeBlack;
     protected int timeWhite;
     protected int totalTime;
@@ -33,6 +39,7 @@ public class ObjectDB implements Serializable {
     /*
      * Setters
      */
+
     public void setActiveCount(HashMap<Team, Integer> activeCount) {
         this.activeCount = activeCount;
     }
@@ -118,7 +125,7 @@ public class ObjectDB implements Serializable {
         }
     }
 
-    // deserialize file and load data into state
+    // Deserialize file and load data into state
     public ObjectDB loadState(String filename) {
         // Create an object stream from file and load that into an instance of ObjectDB
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(FileSystemView.getFileSystemView().getHomeDirectory() + "/CheckerSaves/" + filename))) {
@@ -133,7 +140,7 @@ public class ObjectDB implements Serializable {
                 piece.setupPiece();
             }
 
-            // return the db instance
+            // Return the db instance containing game state
             return db;
         } catch (IOException | ClassNotFoundException e) {
             return null;
