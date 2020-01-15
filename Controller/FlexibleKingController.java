@@ -14,34 +14,42 @@ import java.util.HashMap;
 // TODO: Needs cleanup and comments
 public class FlexibleKingController extends RegularCheckersController {
 
-    protected ArrayList<Point> surroundingPoints(Point p) {
-        Field field = this.fields.get(p.x).get(p.y);
-        CheckerPiece fieldAttachedPiece = field.getAttachedPieceSecure();
+    // Extend
+    protected ArrayList<Point> surroundingPoints(Point point) {
+        // Get regular surrounding points
+        ArrayList<Point> eligiblePoints = super.surroundingPoints(point);
 
-        if(fieldAttachedPiece == null || !fieldAttachedPiece.getIsKing()) {
-            return super.surroundingPoints(p);
+        CheckerPiece piece = this.fields.get(point.x).get(point.y).getAttachedPieceSecure();
+
+        // Cannot move anywhere out of the ordinary if no eligible positions at this point or piece is not king
+        if(eligiblePoints.size() == 0 || piece == null || !piece.getIsKing()) {
+            return eligiblePoints;
         }
 
-        ArrayList<Point> eligiblePoints = new ArrayList<>();
-        Point[] points = this.surroundingFieldsPosition(p);
+        // Get diagonal position from current position
+        Point[] points = this.surroundingFieldsPosition(point);
 
-        for (int i = 0; i < 4; i++) {
-            Point ip = points[i];
-            int differencX = ip.x - p.x;
-            int differencY = ip.y - p.y;
+        for (Point p : points) {
+            // Get difference from given position
+            Point diagonalDifference = new Point(p.x - point.x, p.y - point.y);
 
-            if (this.isPositionValid(ip)) {
-                eligiblePoints.add(ip);
-            }
-
+            // Gradually extend difference (and add to eligiblePoints) until an invalid or occupied field is found
             for (int j = 2; j < this.dimension; j++) {
-                Point jp = new Point(p.x + (j * differencX), p.y + (j * differencY));
-                if (this.isPositionValid(jp) && this.fields.get(jp.x).get(jp.y).getAttachedPieceSecure() == null) {
-                    eligiblePoints.add(jp);
-                } else {
+                Point extendedDiagonal = new Point(p.x + j * diagonalDifference.x, p.y + j * diagonalDifference.y);
+
+                // Is the field valid?
+                if (!this.isPositionValid(extendedDiagonal)) {
                     break;
                 }
 
+                CheckerPiece fieldPiece = this.fields.get(extendedDiagonal.x).get(extendedDiagonal.y).getAttachedPieceSecure();
+
+                // Is the field occupied?
+                if(fieldPiece != null) {
+                    break;
+                }
+
+                eligiblePoints.add(extendedDiagonal);
             }
         }
         return eligiblePoints;

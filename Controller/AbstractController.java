@@ -293,19 +293,20 @@ abstract public class AbstractController {
 
     // Start timer
     public void startTime() {
-        timeline.play();
+        this.timeline.play();
     }
 
     // Get diagonally surrounding fields (within board boundaries) from a given position
-    protected ArrayList<Point> surroundingPoints(Point p) {
+    protected ArrayList<Point> surroundingPoints(Point point) {
         ArrayList<Point> eligiblePoints = new ArrayList<>();
-        Point[] points = surroundingFieldsPosition(p);
+        Point[] points = this.surroundingFieldsPosition(point);
 
-        for (int i = 0; i < 4; i++) {
-            Point ip = points[i];
-            if (this.isPositionValid(ip)) {
-                eligiblePoints.add(ip);
+        for (Point p : points) {
+            if (!this.isPositionValid(p)) {
+                continue;
             }
+
+            eligiblePoints.add(p);
         }
 
         return eligiblePoints;
