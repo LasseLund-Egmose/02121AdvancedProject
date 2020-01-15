@@ -157,6 +157,10 @@ public class MainMenuView extends AbstractView {
         for (int i = 0; i < gameTypes.length; i++) {
             GameType g = gameTypes[i];
 
+            if(g == GameType.Unselected) {
+                continue;
+            }
+
             // Create game button
             ToggleButton gameButton = constructGameButton(g, toggleGroup);
             GridPane.setConstraints(gameButton, 0, i);

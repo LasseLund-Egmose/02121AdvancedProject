@@ -1,9 +1,9 @@
 package Enum;
 
 public enum GameType {
-    FlexibleKingTwoPlayer,
-    SinglePlayer,
     SimpDam,
+    SinglePlayer,
     TwoPlayer,
+    FlexibleKingTwoPlayer,
     Unselected
 }
