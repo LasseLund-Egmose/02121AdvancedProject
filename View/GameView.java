@@ -10,6 +10,8 @@ import Model.Field;
 import Model.Settings;
 import Persistence.ObjectDB;
 
+import Util.StyleCollection;
+import Util.StyleProp;
 import javafx.animation.RotateTransition;
 import javafx.geometry.Pos;
 import javafx.scene.PerspectiveCamera;
@@ -45,7 +47,6 @@ public class GameView extends AbstractView {
 
     // Assets and background styling
     protected static final String ASSET_GRID = "/assets/grid.png";
-    protected static final String BACKGROUND_FIELD = "-fx-background-image: url(/assets/dark_wood.jpg);";
 
     // Pause button
     protected boolean isPauseButtonActive = true;
@@ -85,7 +86,10 @@ public class GameView extends AbstractView {
 
         // Pass through click events and remove shadow
         this.grid.setPickOnBounds(false);
-        this.grid.setStyle("-fx-effect: null;");
+        StyleCollection.build(
+            this.grid,
+            StyleProp.EFFECT("null")
+        );
 
         // Add grid to board
         this.surfacePane.getChildren().add(this.grid);
@@ -261,11 +265,11 @@ public class GameView extends AbstractView {
 
     public void setPauseButtonActive(boolean pauseButtonActive) {
         isPauseButtonActive = pauseButtonActive;
-        if (pauseButtonActive) {
-            this.pausePane.setStyle("-fx-background-image: url(/assets/dark_wood.jpg);  -fx-cursor: hand");
-        } else {
-            this.pausePane.setStyle("-fx-background-image: url(/assets/dark_wood.jpg); -fx-opacity: 0.5;");
-        }
+        StyleCollection.build(
+            this.pausePane,
+            StyleProp.CURSOR(pauseButtonActive ? "hand" : null),
+            StyleProp.OPACITY(!pauseButtonActive ? "0.5" : null)
+        );
     }
 
     // Get size (in pixels) of one field in board
@@ -280,19 +284,29 @@ public class GameView extends AbstractView {
 
     // Add highlight to black field
     public void highlightPane(StackPane pane) {
-        int borderWidth = this.getFieldSize() < 20 ? 2 : 5;
-        pane.setStyle(GameView.BACKGROUND_FIELD + " -fx-border-color: green; -fx-border-width: " + borderWidth + ";");
+        StyleCollection.modifyProps(
+            pane,
+            StyleProp.BORDER_COLOR("green"),
+            StyleProp.BORDER_WIDTH(this.getFieldSize() < 2 ? "2px" : "5px")
+        );
     }
 
     // Add highlight to black field (for CPU move)
     public void highlightPaneCPU(StackPane pane) {
-        int borderWidth = this.getFieldSize() < 20 ? 2 : 5;
-        pane.setStyle(GameView.BACKGROUND_FIELD + " -fx-border-color: blue; -fx-border-width: " + borderWidth + ";");
+        StyleCollection.modifyProps(
+            pane,
+            StyleProp.BORDER_COLOR("blue"),
+            StyleProp.BORDER_WIDTH(this.getFieldSize() < 2 ? "2px" : "5px")
+        );
     }
 
     // Remove highlight from black field
     public void normalizePane(StackPane pane) {
-        pane.setStyle(GameView.BACKGROUND_FIELD);
+        StyleCollection.modifyProps(
+            pane,
+            StyleProp.BORDER_COLOR(null),
+            StyleProp.BORDER_WIDTH(null)
+        );
     }
 
     // Rotate board
@@ -318,7 +332,10 @@ public class GameView extends AbstractView {
 
     // Setup one black field
     public void setupField(StackPane field, Point position) {
-        field.setStyle(GameView.BACKGROUND_FIELD);
+        StyleCollection.build(
+            field,
+            StyleProp.BACKGROUND_IMAGE("url(/assets/dark_wood.jpg)")
+        );
         field.setPrefSize(this.getFieldSize(), this.getFieldSize());
 
         // Add it to the grid
@@ -403,8 +420,12 @@ public class GameView extends AbstractView {
 
         // Setup turn text and its container
         this.displayTurn = new Text();
-        this.displayTurn.setStyle("-fx-font: 50 Arial;");
-        this.displayTurn.setFill(Color.GOLDENROD);
+        StyleCollection.build(
+            this.displayTurn,
+            StyleProp.FONT("50 Arial"),
+            StyleProp.FILL("#DAA520")
+        );
+
         this.setupDisplayTurn(isWhiteTurn);
 
         StackPane displayTurnContainer = new StackPane();
@@ -413,9 +434,13 @@ public class GameView extends AbstractView {
 
         //Setup white time text and its container
         displayWhiteTimeLeft = new Text();
-        displayWhiteTimeLeft.setStyle("-fx-font: 30 Arial;");
-        displayWhiteTimeLeft.setFill(Color.DARKGOLDENROD);
-        displayWhiteTimeLeft.setText("White time left: " + controller.formatTime(controller.timeWhite--));
+        displayWhiteTimeLeft.setText("White time left: " + AbstractController.formatTime(controller.timeWhite--));
+
+        StyleCollection.build(
+            displayWhiteTimeLeft,
+            StyleProp.FONT("30 Arial"),
+            StyleProp.FILL("#B8860B")
+        );
 
         StackPane displayWhiteTimeContainer = new StackPane();
         setupContainer(displayWhiteTimeContainer);
@@ -423,9 +448,13 @@ public class GameView extends AbstractView {
 
         //Setup black time text and its container
         displayBlackTimeLeft = new Text();
-        displayBlackTimeLeft.setStyle("-fx-font: 30 Arial;");
-        displayBlackTimeLeft.setFill(Color.DARKGOLDENROD);
-        displayBlackTimeLeft.setText("Black time left: " + controller.formatTime(controller.timeBlack--));
+        displayBlackTimeLeft.setText("Black time left: " + AbstractController.formatTime(controller.timeBlack--));
+
+        StyleCollection.build(
+            displayBlackTimeLeft,
+            StyleProp.FONT("30 Arial"),
+            StyleProp.FILL("#B8860B")
+        );
 
         StackPane displayBlackTimeContainer = new StackPane();
         setupContainer(displayBlackTimeContainer);
@@ -441,8 +470,12 @@ public class GameView extends AbstractView {
         boardContainer.setRotationAxis(Rotate.X_AXIS);
         boardContainer.setRotate(-GameView.BOARD_TILT);
         boardContainer.setPickOnBounds(false);
-        boardContainer.setStyle("-fx-effect: null;");
         boardContainer.setTranslateZ(-GameView.zOffset());
+
+        StyleCollection.build(
+            boardContainer,
+            StyleProp.EFFECT("null")
+        );
 
         // Setup board surface and add it to board container
         this.setupSurface();
@@ -451,8 +484,12 @@ public class GameView extends AbstractView {
         //styling for the pane the prevents player interaction while the game is paused.
         this.stopGamePane.setMinSize(GameView.WIDTH, GameView.HEIGHT);
         this.stopGamePane.setMaxSize(GameView.WIDTH, GameView.HEIGHT);
-        this.stopGamePane.setStyle("-fx-background-color: #555555a0");
         this.stopGamePane.setTranslateZ(2 * -GameView.zOffset());
+
+        StyleCollection.build(
+            this.stopGamePane,
+            StyleProp.BACKGROUND_COLOR("#555555a0")
+        );
 
         //setup and style pause button
         this.pausePane = new StackPane();
@@ -464,12 +501,22 @@ public class GameView extends AbstractView {
         //setup and style text for pause button
         Text pauseText = new Text();
         pauseText.setText("Pause");
-        pauseText.setStyle("-fx-font: 20 Arial;");
         pauseText.setFill(Color.DARKGOLDENROD);
+
+        StyleCollection.build(
+            pauseText,
+            StyleProp.FONT("20 Arial")
+        );
+
         this.pausePane.getChildren().add(pauseText);
 
-        //add clickevent to pausebutton, adds stopGamePane to root in front of the other game elements.
-        this.pausePane.setStyle("-fx-background-image: url(/assets/dark_wood.jpg);  -fx-cursor: hand");
+        // Add click event to pause button, adds stopGamePane to root in front of the other game elements.
+        StyleCollection.build(
+            this.pausePane,
+            StyleProp.BACKGROUND_IMAGE("url(/assets/dark_wood.jpg)"),
+            StyleProp.CURSOR("hand")
+        );
+
         this.pausePane.setOnMouseClicked(e -> {
             if (this.isPauseButtonActive) {
                 root.getChildren().add(this.stopGamePane);
@@ -482,7 +529,10 @@ public class GameView extends AbstractView {
 
         // Pass through click events and disable shadows for root
         root.setPickOnBounds(false);
-        root.setStyle("-fx-effect: null;");
+        StyleCollection.build(
+            root,
+            StyleProp.EFFECT("null")
+        );
 
         // Set alignments for elements
         StackPane.setAlignment(background, Pos.CENTER);

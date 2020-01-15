@@ -10,10 +10,6 @@ public class StyleProp {
         return new StyleProp("background-image", value);
     }
 
-    public static StyleProp CURSOR(String value) {
-        return new StyleProp("cursor", value);
-    }
-
     public static StyleProp BORDER_COLOR(String value) {
         return new StyleProp("border-color", value);
     }
@@ -22,12 +18,32 @@ public class StyleProp {
         return new StyleProp("border-width", value);
     }
 
+    public static StyleProp CURSOR(String value) {
+        return new StyleProp("cursor", value);
+    }
+
+    public static StyleProp EFFECT(String value) {
+        return new StyleProp("effect", value);
+    }
+
+    public static StyleProp FILL(String value) {
+        return new StyleProp("fill", value);
+    }
+
+    public static StyleProp FONT(String value) {
+        return new StyleProp("font", value);
+    }
+
     public static StyleProp FONT_SIZE(String value) {
         return new StyleProp("font-size", value);
     }
 
     public static StyleProp FONT_WEIGHT(String value) {
         return new StyleProp("font-weight", value);
+    }
+
+    public static StyleProp OPACITY(String value) {
+        return new StyleProp("opacity", value);
     }
 
     public static StyleProp TEXT_FILL(String value) {

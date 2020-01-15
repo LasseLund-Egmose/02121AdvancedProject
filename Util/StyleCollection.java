@@ -52,7 +52,6 @@ public class StyleCollection {
 
         // Add remaining props
         for(StyleProp prop : props) {
-            System.out.println(prop.toString());
             newStyle.append(prop.toString());
         }
 
