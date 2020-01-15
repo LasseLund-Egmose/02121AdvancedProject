@@ -19,7 +19,7 @@ abstract public class AbstractStrategy {
     protected ArrayList<Move> jumpsFromPosition(CheckerPiece piece, Field fromField) {
         ArrayList<Move> jumps = new ArrayList<>();
 
-        for(Field jumpedField : this.controller.getSurroundingFields(fromField)) {
+        for(Field jumpedField : this.controller.surroundingFields(fromField)) {
             CheckerPiece attachedPiece = jumpedField.getAttachedPieceSecure();
             if(attachedPiece == null || attachedPiece.getTeam() == piece.getTeam()) {
                 continue;
@@ -29,7 +29,7 @@ abstract public class AbstractStrategy {
                 continue;
             }
 
-            Field oppositeField = this.controller.getOppositeDiagonalField(jumpedField, fromField);
+            Field oppositeField = this.controller.oppositeDiagonalField(jumpedField, fromField);
             if(oppositeField == null || oppositeField.getAttachedPieceSecure() != null) {
                 continue;
             }
@@ -48,7 +48,7 @@ abstract public class AbstractStrategy {
                 continue;
             }
 
-            ArrayList<Move> legalMovesForPiece = this.controller.getLegalMovesForPiece(piece);
+            ArrayList<Move> legalMovesForPiece = this.controller.legalMovesForPiece(piece);
 
             if(legalMovesForPiece.size() > 0) {
                 this.allLegalMoves.addAll(legalMovesForPiece);

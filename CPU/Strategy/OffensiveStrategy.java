@@ -35,7 +35,7 @@ public class OffensiveStrategy extends AbstractStrategy {
         int gain = 0;
         Field field = move.getToField();
 
-        for(Field diagonalField : this.controller.getSurroundingFields(field)) {
+        for(Field diagonalField : this.controller.surroundingFields(field)) {
             CheckerPiece surroundingPiece = diagonalField.getAttachedPieceSecure();
 
             if(surroundingPiece == null || surroundingPiece.getTeam() == move.getPiece().getTeam()) {
@@ -43,7 +43,7 @@ public class OffensiveStrategy extends AbstractStrategy {
             }
 
             // Piece exists and is on opponent's team
-            Field jToField = this.controller.getOppositeDiagonalField(field, diagonalField);
+            Field jToField = this.controller.oppositeDiagonalField(field, diagonalField);
             if(jToField != null && (jToField.getAttachedPieceSecure() == null || jToField.getAttachedPieceSecure() == move.getPiece())) {
                 // Can be jumped afterwards - this move is not advised
                 return -1;

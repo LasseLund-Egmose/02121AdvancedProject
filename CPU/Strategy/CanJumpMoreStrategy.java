@@ -25,7 +25,7 @@ public class CanJumpMoreStrategy extends AbstractStrategy {
 
         // Do first forced jump move
         CheckerPiece piece = this.forcedJumpMoves.get(0);
-        ArrayList<Move> allMoves = this.controller.getLegalMovesForPiece(piece);
+        ArrayList<Move> allMoves = this.controller.legalMovesForPiece(piece);
 
         for(Move m : allMoves) {
             if(m.getMoveType() != MoveType.JUMP) {

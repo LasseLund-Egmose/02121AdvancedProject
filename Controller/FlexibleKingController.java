@@ -13,12 +13,12 @@ import java.util.HashMap;
 // TODO: Needs cleanup and comments
 public class FlexibleKingController extends RegularCheckersController {
 
-    protected ArrayList<Point> surroundingFields(Point p) {
+    protected ArrayList<Point> surroundingPoints(Point p) {
         Field field = this.fields.get(p.x).get(p.y);
         CheckerPiece fieldAttachedPiece = field.getAttachedPieceSecure();
 
         if(fieldAttachedPiece == null || !fieldAttachedPiece.getIsKing()) {
-            return super.surroundingFields(p);
+            return super.surroundingPoints(p);
         }
 
         ArrayList<Point> eligiblePoints = new ArrayList<>();

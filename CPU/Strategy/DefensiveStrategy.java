@@ -38,12 +38,12 @@ public class DefensiveStrategy extends AbstractStrategy {
 
     protected Move findFixingMoveByMovingAway(VulnerablePosition vulnerability) {
         // Get all possible moves (away) for piece in vulnerability
-        for(Move possibleMove : this.controller.getLegalMovesForPiece(vulnerability.getPiece())) {
+        for(Move possibleMove : this.controller.legalMovesForPiece(vulnerability.getPiece())) {
             boolean isSafe = true;
 
             // Test if (possibly) new diagonal position can be jumped by opponent in next move
             Field field = possibleMove.getToField();
-            for(Field diagonalField : this.controller.getSurroundingFields(field)) {
+            for(Field diagonalField : this.controller.surroundingFields(field)) {
                 CheckerPiece newFieldSurroundingField = diagonalField.getAttachedPieceSecure();
 
                 if (newFieldSurroundingField == null || newFieldSurroundingField.getTeam() == possibleMove.getPiece().getTeam()) {
@@ -52,7 +52,7 @@ public class DefensiveStrategy extends AbstractStrategy {
                 }
 
                 // Piece exists and is on opponent's team
-                Field opponentsFieldAfterPossibleJump = this.controller.getOppositeDiagonalField(field, diagonalField);
+                Field opponentsFieldAfterPossibleJump = this.controller.oppositeDiagonalField(field, diagonalField);
                 if (opponentsFieldAfterPossibleJump == null || opponentsFieldAfterPossibleJump.getAttachedPieceSecure() != null) {
                     isSafe = false;
                     break;
@@ -72,14 +72,14 @@ public class DefensiveStrategy extends AbstractStrategy {
 
         Field pieceField = piece.getParent();
 
-        for(Field opField : this.controller.getSurroundingFields(pieceField)) {
+        for(Field opField : this.controller.surroundingFields(pieceField)) {
             CheckerPiece fieldPiece = opField.getAttachedPieceSecure();
 
             if(fieldPiece == null || fieldPiece.getTeam() == Team.BLACK) {
                 continue;
             }
 
-            Field oppositeDiagonalField = this.controller.getOppositeDiagonalField(pieceField, opField);
+            Field oppositeDiagonalField = this.controller.oppositeDiagonalField(pieceField, opField);
 
             if(
                 oppositeDiagonalField != null &&

@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
-// TODO: Needs cleanup and comments
 abstract public class AbstractController {
 
     // List of used audio clips (when moving a piece in-game)
@@ -45,7 +44,7 @@ abstract public class AbstractController {
     protected ArrayList<Field> possibleRegularMoves = new ArrayList<>(); // A list of all possible regular moves
 
     protected int dimension; // Dimension of board
-    protected GridPane grid;
+    protected GridPane grid; // Main grid of board
     protected boolean isWhiteTurn = true; // Keep track of turn
     protected EventHandler<MouseEvent> moveClickEventHandler; // EventHandler for click events on black fields
     protected boolean pieceHighlightLocked = false; // Should highlight be locked to one piece? Happens when jumping multiple pieces in one turn
@@ -137,7 +136,7 @@ abstract public class AbstractController {
 
     // Highlight fields a selected piece can move to
     protected void highlightEligibleFields(CheckerPiece piece) {
-        ArrayList<Move> legalMoves = this.getLegalMovesForPiece(piece);
+        ArrayList<Move> legalMoves = this.legalMovesForPiece(piece);
 
         for (Move move : legalMoves) {
             Field toField = move.getToField();
@@ -179,8 +178,6 @@ abstract public class AbstractController {
             this.doRegularMove(clickedElementField, false);
         }
     }
-
-    protected void onSelectedPieceClick() {}
 
     // Returns boolean whether or not board should rotate
     public boolean onTurnStart() {
@@ -302,7 +299,7 @@ abstract public class AbstractController {
     }
 
     // Get diagonally surrounding fields (within board boundaries) from a given position
-    protected ArrayList<Point> surroundingFields(Point p) {
+    protected ArrayList<Point> surroundingPoints(Point p) {
         ArrayList<Point> eligiblePoints = new ArrayList<>();
         Point[] points = surroundingFieldsPosition(p);
 
@@ -408,6 +405,11 @@ abstract public class AbstractController {
         }
     }
 
+    // Should a piece be allowed to move to the given position? - Default yes
+    public boolean fieldShouldNotBeConsidered(CheckerPiece piece, Point position) {
+        return false;
+    }
+
     // Check if game is over, toggle isWhiteTurn and setup turn for other team
     public void finishTurn() {
         this.isWhiteTurn = !this.isWhiteTurn;
@@ -425,59 +427,8 @@ abstract public class AbstractController {
         }
     }
 
-    // Remove highlights from highlighted fields
-    public void normalizeFields() {
-        ArrayList<Field> allHighlightedPanes = new ArrayList<>();
-        allHighlightedPanes.addAll(this.possibleJumpMoves.keySet());
-        allHighlightedPanes.addAll(this.possibleRegularMoves);
-
-        this.possibleJumpMoves.clear();
-        this.possibleRegularMoves.clear();
-
-        for (Field field : allHighlightedPanes) {
-            this.view.normalizePane(field);
-        }
-    }
-
-    // Setup black fields
-    public void setupFields() {
-        for (int i = 0; i < this.dimension; i++) {
-            for (int j = (i + 1) % 2; j < this.dimension; j += 2) {
-                this.setupField(new Point(j + 1, i + 1));
-            }
-        }
-    }
-
-    /*
-     * Getters and setters
-     */
-
-    // Should a piece be allowed to move to the given position? - Default yes
-    public boolean fieldShouldNotBeConsidered(CheckerPiece piece, Point position) {
-        return false;
-    }
-
-    public HashMap<Team, Integer> getActiveCount() {
-        return activeCount;
-    }
-
-    public boolean isWhiteTurn() {
-        return isWhiteTurn;
-    }
-
-    public ArrayList<CheckerPiece> getCheckerPieces() {
-        return this.checkerPieces;
-    }
-
-    public HashMap<Integer, HashMap<Integer, Field>> getFields() {
-        return this.fields;
-    }
-
-    public ArrayList<CheckerPiece> getForcedJumpMoves() {
-        return this.forcedJumpMoves;
-    }
-
-    public ArrayList<Move> getLegalMovesForPiece(CheckerPiece piece) {
+    // Get all "legal" moves for a given piece
+    public ArrayList<Move> legalMovesForPiece(CheckerPiece piece) {
         ArrayList<Move> legalMoves = new ArrayList<>();
 
         if (!piece.isActive()) {
@@ -485,7 +436,7 @@ abstract public class AbstractController {
         }
 
         // Iterate surrounding diagonal fields of given piece
-        for (Point p : this.surroundingFields(piece.getPosition())) {
+        for (Point p : this.surroundingPoints(piece.getPosition())) {
             if (this.fieldShouldNotBeConsidered(piece, p)) {
                 continue;
             }
@@ -530,7 +481,22 @@ abstract public class AbstractController {
         return legalMoves;
     }
 
-    public Field getOppositeDiagonalField(Field mainField, Field diagonalField) {
+    // Remove highlights from highlighted fields
+    public void normalizeFields() {
+        ArrayList<Field> allHighlightedPanes = new ArrayList<>();
+        allHighlightedPanes.addAll(this.possibleJumpMoves.keySet());
+        allHighlightedPanes.addAll(this.possibleRegularMoves);
+
+        this.possibleJumpMoves.clear();
+        this.possibleRegularMoves.clear();
+
+        for (Field field : allHighlightedPanes) {
+            this.view.normalizePane(field);
+        }
+    }
+
+    // Get field diagonally on the other side of mainField compared to diagonalField
+    public Field oppositeDiagonalField(Field mainField, Field diagonalField) {
         Point mainFieldPosition = mainField.getPosition();
         Point diagonalFieldPosition = diagonalField.getPosition();
 
@@ -545,14 +511,19 @@ abstract public class AbstractController {
                 this.fields.get(otherDiagonalPosition.x).get(otherDiagonalPosition.y) : null;
     }
 
-    // Get selected piece
-    public CheckerPiece getSelectedPiece() {
-        return this.selectedPiece;
+    // Setup black fields
+    public void setupFields() {
+        for (int i = 0; i < this.dimension; i++) {
+            for (int j = (i + 1) % 2; j < this.dimension; j += 2) {
+                this.setupField(new Point(j + 1, i + 1));
+            }
+        }
     }
 
-    public ArrayList<Field> getSurroundingFields(Field f) {
+    // Get fields (diagonally) surrounding a given field
+    public ArrayList<Field> surroundingFields(Field f) {
         ArrayList<Field> fields = new ArrayList<>();
-        ArrayList<Point> points = this.surroundingFields(f.getPosition());
+        ArrayList<Point> points = this.surroundingPoints(f.getPosition());
 
         for (Point p : points) {
             fields.add(this.fields.get(p.x).get(p.y));
@@ -561,6 +532,35 @@ abstract public class AbstractController {
         return fields;
     }
 
+    /*
+     * Getters and setters
+     */
+
+    public boolean isWhiteTurn() {
+        return this.isWhiteTurn;
+    }
+
+    public HashMap<Team, Integer> getActiveCount() {
+        return this.activeCount;
+    }
+
+    public ArrayList<CheckerPiece> getCheckerPieces() {
+        return this.checkerPieces;
+    }
+
+    public HashMap<Integer, HashMap<Integer, Field>> getFields() {
+        return this.fields;
+    }
+
+    public ArrayList<CheckerPiece> getForcedJumpMoves() {
+        return this.forcedJumpMoves;
+    }
+
+    public CheckerPiece getSelectedPiece() {
+        return this.selectedPiece;
+    }
+
+    // Get view instance
     public GameView getView() {
         return this.view;
     }
@@ -568,7 +568,10 @@ abstract public class AbstractController {
     // Set selected piece
     public void setSelectedPiece(CheckerPiece piece) {
         if (this.selectedPiece == piece) {
-            this.onSelectedPieceClick();
+            this.normalizeFields();
+            this.selectedPiece.setHighlight(false);
+            this.selectedPiece = null;
+            return;
         }
 
         if (piece == null || this.pieceHighlightLocked) {

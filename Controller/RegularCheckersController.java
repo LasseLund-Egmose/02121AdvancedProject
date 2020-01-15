@@ -58,7 +58,7 @@ public class RegularCheckersController extends AbstractController {
 
             boolean pieceHasJumps = false;
 
-            for (Point p : this.surroundingFields(piece.getPosition())) {
+            for (Point p : this.surroundingPoints(piece.getPosition())) {
                 if(this.fieldShouldNotBeConsidered(piece, p)) {
                     continue;
                 }
@@ -120,7 +120,7 @@ public class RegularCheckersController extends AbstractController {
     public boolean canJumpMore(CheckerPiece piece, boolean shouldHighlight) {
         this.forcedJumpMoves.clear();
 
-        ArrayList<Point> surrounding = this.surroundingFields(piece.getPosition());
+        ArrayList<Point> surrounding = this.surroundingPoints(piece.getPosition());
         for(Point surroundingField : surrounding) {
             if(this.fieldShouldNotBeConsidered(piece, surroundingField)) {
                 continue;
