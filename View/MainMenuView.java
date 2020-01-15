@@ -74,6 +74,27 @@ public class MainMenuView extends AbstractView {
         return "Main Menu";
     }
 
+    public VBox setupSliderContainer() {
+        VBox container = new VBox(5);
+        container.setStyle("-fx-border-image-source: url(/assets/dark_wood.jpg);" +
+                " -fx-border-image-width: 10; -fx-border-image-slice: 10");
+        container.setPadding(new Insets(10));
+        container.setVisible(false);
+        return container;
+    }
+
+    public Slider setupSlider(int min, int max, int value, int prefheight, int prefwidth) {
+        Slider slider = new Slider(min, max, value);
+        slider.setShowTickMarks(true);
+        slider.setShowTickLabels(true);
+        slider.setPrefSize(prefheight, prefwidth);
+        slider.setBlockIncrement(1);
+        slider.setMajorTickUnit(1);
+        slider.setMinorTickCount(0);
+        slider.setSnapToTicks(true);
+        return slider;
+    }
+
     // Setup scene
     public Scene setupScene() {
         int dimension = 8;
@@ -98,18 +119,10 @@ public class MainMenuView extends AbstractView {
         this.grid.setVgap(30);
 
         //dimensionslider
-        this.containSlider = new VBox(5);
-        this.containSlider.setStyle("-fx-border-image-source: url(/assets/dark_wood.jpg);" +
-                " -fx-border-image-width: 10; -fx-border-image-slice: 10");
-        this.containSlider.setPadding(new Insets(10));
-        this.containSlider.setVisible(false);
+        this.containSlider = setupSliderContainer();
 
         //timeslider
-        this.containTimeSlider = new VBox(5);
-        this.containTimeSlider.setStyle("-fx-border-image-source: url(/assets/dark_wood.jpg);" +
-                " -fx-border-image-width: 10; -fx-border-image-slice: 10");
-        this.containTimeSlider.setPadding(new Insets(10));
-        this.containTimeSlider.setVisible(false);
+        this.containTimeSlider = setupSliderContainer();
 
         HBox informationContainer = new HBox();
         informationContainer.setStyle("-fx-border-image-source: url(/assets/dark_wood.jpg);" +
@@ -125,24 +138,10 @@ public class MainMenuView extends AbstractView {
         informationContainer.getChildren().add(textFlow);
 
         //dimensionslider
-        dimensionSlider = new Slider(8, 100, dimension);
-        dimensionSlider.setShowTickMarks(true);
-        dimensionSlider.setShowTickLabels(true);
-        dimensionSlider.setPrefSize(1000, 50);
-        dimensionSlider.setBlockIncrement(1);
-        dimensionSlider.setMajorTickUnit(1);
-        dimensionSlider.setMinorTickCount(0);
-        dimensionSlider.setSnapToTicks(true);
+        dimensionSlider = setupSlider(8, 100, dimension, 1000,50);
 
         //timeslider
-        timeSlider = new Slider(1, 30, 5);
-        timeSlider.setShowTickMarks(true);
-        timeSlider.setShowTickLabels(true);
-        timeSlider.setPrefSize(400, 50);
-        timeSlider.setBlockIncrement(1);
-        timeSlider.setMajorTickUnit(1);
-        timeSlider.setMinorTickCount(0);
-        timeSlider.setSnapToTicks(true);
+        timeSlider = setupSlider(1, 30, 5, 400, 50);
 
         ToggleGroup toggleGroup = new ToggleGroup();
 
@@ -170,13 +169,10 @@ public class MainMenuView extends AbstractView {
                 default:
                     controller = new RegularCheckersController(Main.gameView, dim, Main.gameView.grid);
                     break;
-
             }
-
             Settings.set(Setting.Controller, controller);
             Main.setView((Main.gameView));
         });
-
 
         //loader buttons:
         GameType[] gameTypes = GameType.values();
@@ -243,8 +239,15 @@ public class MainMenuView extends AbstractView {
 
         //timeslider
         Label timeOfGame = new Label("Set time constraints:");
-        timeOfGame.setStyle(" -fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #DAA520;" +
-                " -fx-background-image: url(/assets/dark_wood.jpg); -fx-border-color: #DAA520; -fx-border-width: 2px;");
+        StyleCollection.build(
+                timeOfGame,
+                StyleProp.BACKGROUND_IMAGE("url(/assets/dark_wood.jpg)"),
+                StyleProp.BORDER_COLOR("#DAA520"),
+                StyleProp.BORDER_WIDTH("5px"),
+                StyleProp.FONT_SIZE("30px"),
+                StyleProp.FONT_WEIGHT("bold"),
+                StyleProp.TEXT_FILL("#DAA520")
+        );
         timeOfGame.setAlignment(Pos.CENTER);
 
         //add children
