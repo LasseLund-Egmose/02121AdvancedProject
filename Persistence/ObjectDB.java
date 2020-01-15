@@ -26,6 +26,7 @@ public class ObjectDB implements Serializable {
     protected int dimension;
     protected boolean isWhiteTurn = true; // Keep track of turn
 
+    // Time
     protected int timeWhite;
     protected int timeBlack;
     protected int totalTime;
@@ -179,16 +180,18 @@ public class ObjectDB implements Serializable {
     public ObjectDB loadState(String filename) {
         // Create an object stream from file and load that into an instance of ObjectDB
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(filename))) {
+            // Read file and initialise a new instance of ObjectDB
             ObjectDB db = (ObjectDB) ois.readObject();
 
             ArrayList<CheckerPiece> checkerPieces = db.getCheckerPieces();
 
-            // For each checker piece -> set cylinder continer to a new StackPane and setup piece
+            // For each checker piece -> set cylinder container to a new StackPane and setup piece
             for (CheckerPiece piece : checkerPieces) {
                 piece.setCylinderContainer(new StackPane());
                 piece.setupPiece();
             }
 
+            // Set dimension in settings
             Settings.set(Setting.Dimension, db.getDimension());
 
             // return the db instance
