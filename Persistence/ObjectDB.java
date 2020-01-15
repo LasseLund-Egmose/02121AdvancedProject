@@ -20,7 +20,7 @@ public class ObjectDB implements Serializable {
     protected HashMap<Team, Integer> activeCount = new HashMap<>(); // A map (Team -> int) of number of active pieces on each team
 
     protected int dimension;
-    protected boolean isWhiteTurn = true; // Keep track of turn
+    protected boolean isWhiteTurn; // Keep track of turn
 
     // Time
     protected int timeWhite;
@@ -29,7 +29,9 @@ public class ObjectDB implements Serializable {
 
     protected GameType selectedGameType;
 
-    // SETTERS
+    /*
+     * Setters
+     */
     public void setActiveCount(HashMap<Team, Integer> activeCount) {
         this.activeCount = activeCount;
     }
@@ -66,7 +68,9 @@ public class ObjectDB implements Serializable {
         this.selectedGameType = setSelectedGameType;
     }
 
-    // GETTERS
+    /*
+     * Getters
+     */
     public HashMap<Team, Integer> getActiveCount() {
         return this.activeCount;
     }
@@ -135,5 +139,4 @@ public class ObjectDB implements Serializable {
             return null;
         }
     }
-
 }
