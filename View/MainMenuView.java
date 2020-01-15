@@ -7,6 +7,8 @@ import Enum.Setting;
 import Model.Settings;
 import Persistence.ObjectDB;
 
+import Util.StyleCollection;
+import Util.StyleProp;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -185,8 +187,16 @@ public class MainMenuView extends AbstractView {
         });
 
         Label dimensionOfField = new Label("Set the field dimension:");
-        dimensionOfField.setStyle(" -fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: #DAA520;" +
-                " -fx-background-image: url(/assets/dark_wood.jpg); -fx-border-color: #DAA520; -fx-border-width: 5px;");
+
+        StyleCollection.build(
+            dimensionOfField,
+            StyleProp.BACKGROUND_IMAGE("url(/assets/dark_wood.jpg)"),
+            StyleProp.BORDER_COLOR("#DAA520"),
+            StyleProp.BORDER_WIDTH("5px"),
+            StyleProp.FONT_SIZE("30px"),
+            StyleProp.FONT_WEIGHT("bold"),
+            StyleProp.TEXT_FILL("#DAA520")
+        );
         dimensionOfField.setAlignment(Pos.CENTER);
 
         grid.getChildren().addAll(dimensionSlider);
@@ -205,9 +215,17 @@ public class MainMenuView extends AbstractView {
 
     public ToggleButton constructButton(String name, Object toggleGroupObject) {
         ToggleButton button = new ToggleButton(name);
-        button.setStyle("-fx-background-image: url(/assets/dark_wood.jpg); -fx-cursor: hand;" +
-                " -fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: #DAA520;" +
-                "-fx-border-color: #DAA520; -fx-border-width: 5px;");
+
+        StyleCollection.build(
+            button,
+            StyleProp.BACKGROUND_IMAGE("url(/assets/dark_wood.jpg)"),
+            StyleProp.BORDER_COLOR("#DAA520"),
+            StyleProp.BORDER_WIDTH("5px"),
+            StyleProp.CURSOR("hand"),
+            StyleProp.FONT_SIZE("30px"),
+            StyleProp.FONT_WEIGHT("bold"),
+            StyleProp.TEXT_FILL("#DAA520")
+        );
 
         if (toggleGroupObject instanceof ToggleGroup) {
             ToggleGroup toggleGroup = (ToggleGroup) toggleGroupObject;
@@ -228,17 +246,13 @@ public class MainMenuView extends AbstractView {
 
             button.setOnMouseClicked(this.onMenuGameTypeButtonClicked);
             button.selectedProperty().addListener((observable, oldValue, newValue) -> {
-                if (newValue) {
-                    MainMenuView.selectedGameType = gameType;
-                    button.setStyle("-fx-background-color: Green; -fx-cursor: hand;" +
-                        " -fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: #DAA520;" +
-                        "-fx-border-color: #DAA520; -fx-border-width: 5px;");
-                } else {
-                    MainMenuView.selectedGameType = gameType.Unselected;
-                    button.setStyle("-fx-background-image: url(/assets/dark_wood.jpg); -fx-cursor: hand;" +
-                        " -fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: #DAA520;" +
-                        "-fx-border-color: #DAA520; -fx-border-width: 5px;");
-                }
+                MainMenuView.selectedGameType = newValue ? gameType : GameType.Unselected;
+
+                StyleCollection.modifyProps(
+                    button,
+                    StyleProp.BACKGROUND_COLOR(newValue ? "green" : null),
+                    StyleProp.BACKGROUND_IMAGE(!newValue ? "url(/assets/dark_wood.jpg)" : null)
+                );
 
                 if (toggleGroup.getSelectedToggle() == null) {
                     this.playButton.setVisible(false);
@@ -258,10 +272,16 @@ public class MainMenuView extends AbstractView {
 
     public void constructLoadButton(GameType gameType, int place) {
         Button button = new Button("Load Game");
-
-        button.setStyle("-fx-background-image: url(/assets/grid.png); -fx-cursor: hand;" +
-                " -fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #7d6425;" +
-                "-fx-border-color: #7d6425; -fx-border-width: 5px;");
+        StyleCollection.build(
+            button,
+            StyleProp.BACKGROUND_IMAGE("url(/assets/grid.png)"),
+            StyleProp.BORDER_COLOR("#7d6425"),
+            StyleProp.BORDER_WIDTH("5px"),
+            StyleProp.CURSOR("hand"),
+            StyleProp.FONT_SIZE("18px"),
+            StyleProp.FONT_WEIGHT("bold"),
+            StyleProp.TEXT_FILL("#7d6425")
+        );
 
         ObjectDB db = new ObjectDB();
         ObjectDB state = db.loadState(gameType.name());
