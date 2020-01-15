@@ -4,6 +4,7 @@ import Boot.Main;
 import Controller.AbstractController;
 import Enum.Setting;
 import Enum.Team;
+
 import Model.CheckerPiece;
 import Model.Field;
 import Model.Settings;
@@ -14,9 +15,12 @@ import javafx.geometry.Pos;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
 import javafx.scene.image.Image;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
 import javafx.scene.shape.Rectangle;
@@ -27,7 +31,6 @@ import javafx.util.Duration;
 
 import java.awt.*;
 import java.util.HashMap;
-import java.util.Stack;
 
 // TODO: Needs cleanup and comments
 public class GameView extends AbstractView {
@@ -349,14 +352,15 @@ public class GameView extends AbstractView {
     // Setup scene from saved game
     public Scene setupScene(ObjectDB db) {
 
-        controller.setTotalTime(db.getTotalTime());
-        controller.setTimeWhite(db.getTimeWhite());
-        controller.setTimeBlack(db.getTimeBlack());
-
-        Scene scene = makeScene(db.isWhiteTurn());
-
         // Setup controller
         this.controller = (AbstractController) Settings.get(Setting.Controller);
+
+        // Set time values
+        this.controller.setTotalTime(db.getTotalTime());
+        this.controller.setTimeWhite(db.getTimeWhite());
+        this.controller.setTimeBlack(db.getTimeBlack());
+
+        Scene scene = makeScene(db.isWhiteTurn());
 
         // Loop over all the fields in the fields hashmap
         for (HashMap.Entry<Integer, HashMap<Integer, Field>> x : db.getFields().entrySet()) {
@@ -376,8 +380,6 @@ public class GameView extends AbstractView {
             }
         }
 
-        this.controller.countDownTimer();
-
         // Rotate surfacePane if it's blacks turn
         if (!db.isWhiteTurn()) {
             this.surfacePaneRotation.play();
@@ -385,6 +387,7 @@ public class GameView extends AbstractView {
 
         // Start the turn
         this.controller.onTurnStart();
+        this.controller.countDownTimer();
 
         return scene;
     }
