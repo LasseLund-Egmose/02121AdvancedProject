@@ -43,8 +43,8 @@ public class OffensiveStrategy extends AbstractStrategy {
             }
 
             // Piece exists and is on opponent's team
-            Field opponentsFieldAfterPossibleJump = this.controller.getOppositeDiagonalField(field, diagonalField);
-            if(opponentsFieldAfterPossibleJump != null && opponentsFieldAfterPossibleJump.getAttachedPieceSecure() == null) {
+            Field jToField = this.controller.getOppositeDiagonalField(field, diagonalField);
+            if(jToField != null && (jToField.getAttachedPieceSecure() == null || jToField.getAttachedPieceSecure() == move.getPiece())) {
                 // Can be jumped afterwards - this move is not advised
                 return -1;
             }
