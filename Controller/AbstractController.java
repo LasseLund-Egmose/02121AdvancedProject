@@ -1,5 +1,6 @@
 package Controller;
 
+import Boot.Main;
 import Model.Move;
 import Enum.MoveType;
 import Enum.Team;
@@ -175,6 +176,9 @@ abstract public class AbstractController {
         this.isWhiteTurn = !this.isWhiteTurn;
         this.pieceHighlightLocked = false;
 
+        // Enable pause button
+        this.view.setPauseButtonActive(true);
+
         // Is game won or can we play on?
         if(!checkForWin()) {
             this.view.setupDisplayTurn(this.isWhiteTurn);
@@ -343,6 +347,10 @@ abstract public class AbstractController {
 
     // Handle a regular move
     public void doRegularMove(Field toField, boolean didJump) {
+
+        // Disable pause button
+        this.view.setPauseButtonActive(false);
+
         //play on move sound
         playOnMoveSound();
 

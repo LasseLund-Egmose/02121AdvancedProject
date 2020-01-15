@@ -27,6 +27,7 @@ import javafx.util.Duration;
 
 import java.awt.*;
 import java.util.HashMap;
+import java.util.Stack;
 
 // TODO: Needs cleanup and comments
 public class GameView extends AbstractView {
@@ -42,6 +43,10 @@ public class GameView extends AbstractView {
     // Assets and background styling
     protected static final String ASSET_GRID = "/assets/grid.png";
     protected static final String BACKGROUND_FIELD = "-fx-background-image: url(/assets/dark_wood.jpg);";
+
+    // Pause button
+    protected boolean isPauseButtonActive = true;
+    protected StackPane pausePane;
 
     protected AbstractController controller; // GameControllers.Controller instance
     protected int dimension = 8; // Board dimension
@@ -251,6 +256,15 @@ public class GameView extends AbstractView {
         dialog.show();
     }
 
+    public void setPauseButtonActive(boolean pauseButtonActive) {
+        isPauseButtonActive = pauseButtonActive;
+        if (pauseButtonActive) {
+            this.pausePane.setStyle("-fx-background-image: url(/assets/dark_wood.jpg);  -fx-cursor: hand");
+        } else {
+            this.pausePane.setStyle("-fx-background-image: url(/assets/dark_wood.jpg); -fx-opacity: 0.5;");
+        }
+    }
+
     // Get size (in pixels) of one field in board
     public double getFieldSize() {
         return ((double) GameView.BOARD_SIZE) / this.dimension;
@@ -435,31 +449,33 @@ public class GameView extends AbstractView {
         this.stopGamePane.setMinSize(GameView.WIDTH, GameView.HEIGHT);
         this.stopGamePane.setMaxSize(GameView.WIDTH, GameView.HEIGHT);
         this.stopGamePane.setStyle("-fx-background-color: #555555a0");
-        this.stopGamePane.setTranslateZ(2*-GameView.zOffset());
+        this.stopGamePane.setTranslateZ(2 * -GameView.zOffset());
 
         //setup and style pause button
-        StackPane pausepane = new StackPane();
-        pausepane.setMinHeight(40);
-        pausepane.setMinWidth(10);
-        pausepane.setMaxHeight(20);
-        pausepane.setMaxWidth(100);
-        pausepane.setStyle("-fx-background-image: url(/assets/dark_wood.jpg);  -fx-cursor: hand");
+        this.pausePane = new StackPane();
+        this.pausePane.setMinHeight(40);
+        this.pausePane.setMinWidth(10);
+        this.pausePane.setMaxHeight(20);
+        this.pausePane.setMaxWidth(100);
 
         //setup and style text for pause button
         Text pauseText = new Text();
         pauseText.setText("Pause");
         pauseText.setStyle("-fx-font: 20 Arial;");
         pauseText.setFill(Color.DARKGOLDENROD);
-        pausepane.getChildren().add(pauseText);
+        this.pausePane.getChildren().add(pauseText);
 
         //add clickevent to pausebutton, adds stopGamePane to root in front of the other game elements.
-        pausepane.setOnMouseClicked( e ->{
-            root.getChildren().add(this.stopGamePane);
-            displayPauseScreen();
+        this.pausePane.setStyle("-fx-background-image: url(/assets/dark_wood.jpg);  -fx-cursor: hand");
+        this.pausePane.setOnMouseClicked(e -> {
+            if (this.isPauseButtonActive) {
+                root.getChildren().add(this.stopGamePane);
+                displayPauseScreen();
+            }
         });
 
         // Add aforementioned elements to root
-        root.getChildren().addAll(background, boardContainer, displayTurnContainer, displayWhiteTimeContainer, displayBlackTimeContainer, pausepane);
+        root.getChildren().addAll(background, boardContainer, displayTurnContainer, displayWhiteTimeContainer, displayBlackTimeContainer, this.pausePane);
 
         // Pass through click events and disable shadows for root
         root.setPickOnBounds(false);
@@ -472,8 +488,8 @@ public class GameView extends AbstractView {
         StackPane.setAlignment(displayBlackTimeContainer, Pos.TOP_RIGHT);
         StackPane.setAlignment(this.surfacePane, Pos.CENTER);
         StackPane.setAlignment(this.displayTurn, Pos.CENTER);
-        StackPane.setAlignment(pausepane, Pos.BOTTOM_CENTER);
-        StackPane.setAlignment(pausepane, Pos.TOP_CENTER);
+        StackPane.setAlignment(this.pausePane, Pos.BOTTOM_CENTER);
+        StackPane.setAlignment(this.pausePane, Pos.TOP_CENTER);
 
         // Setup scene (with depthBuffer to avoid z-fighting and unexpected behaviour) and apply it
         Scene scene = new Scene(root, GameView.WIDTH, GameView.HEIGHT, true, null);
