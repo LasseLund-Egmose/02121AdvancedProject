@@ -1,6 +1,5 @@
 package Controller;
 
-import Model.Move;
 import Enum.MoveType;
 import Enum.Setting;
 import Enum.Team;
@@ -20,16 +19,13 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.util.Duration;
 
+import javax.sound.sampled.*;
 import java.awt.*;
 import java.io.BufferedInputStream;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.*;
-import Enum.Setting;
-
-import javax.sound.sampled.*;
-import java.util.concurrent.TimeUnit;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Random;
 
 // TODO: Needs cleanup and comments
 abstract public class AbstractController {
@@ -289,12 +285,7 @@ abstract public class AbstractController {
     // Get diagonally surrounding fields (within board boundaries) from a given position
     protected ArrayList<Point> surroundingFields(Point p) {
         ArrayList<Point> eligiblePoints = new ArrayList<>();
-        Point[] points = new Point[]{
-            new Point(p.x - 1, p.y + 1),
-            new Point(p.x + 1, p.y + 1),
-            new Point(p.x - 1, p.y - 1),
-            new Point(p.x + 1, p.y - 1)
-        };
+        Point[] points = surroundingFieldsPosition(p);
 
         for (int i = 0; i < 4; i++) {
             Point ip = points[i];
@@ -304,6 +295,16 @@ abstract public class AbstractController {
         }
 
         return eligiblePoints;
+    }
+
+    // Get position of surrounding fields
+    protected Point[] surroundingFieldsPosition (Point p) {
+        return new Point[]{
+                new Point(p.x - 1, p.y + 1),
+                new Point(p.x + 1, p.y + 1),
+                new Point(p.x - 1, p.y - 1),
+                new Point(p.x + 1, p.y - 1)
+        };
     }
 
     // Construct controller

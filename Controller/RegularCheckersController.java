@@ -18,6 +18,7 @@ public class RegularCheckersController extends AbstractController {
         Team pieceTeam = movedPiece.getTeam();
         Point piecePosition = movedPiece.getPosition();
 
+        // Check if piece is on the back row -> make piece king
         if(pieceTeam == Team.BLACK && piecePosition.y == 1) {
             movedPiece.setKing();
         }
@@ -85,10 +86,12 @@ public class RegularCheckersController extends AbstractController {
             piece.setCanHighlight(pieceHasJumps);
         }
 
+        // End game if team can't move
         if(!teamHasMoves) {
             this.view.displayWin(this.isWhiteTurn ? Team.BLACK : Team.WHITE);
         }
 
+        // Make all pieces highlightable if there is no forced jump moves
         if(this.forcedJumpMoves.size() == 0) {
             for(CheckerPiece piece : this.checkerPieces) {
                 piece.setCanHighlight(true);
@@ -114,6 +117,7 @@ public class RegularCheckersController extends AbstractController {
         super(view, dimension, grid, checkerPieces, fields, isWhiteTurn, activeCount);
     }
 
+    // Check if piece can jump more
     public boolean canJumpMore(CheckerPiece piece, boolean shouldHighlight) {
         this.forcedJumpMoves.clear();
 
@@ -125,6 +129,7 @@ public class RegularCheckersController extends AbstractController {
 
             Field field = this.fields.get(surroundingField.x).get(surroundingField.y);
 
+            // Check if field has any children
             if(field.getChildren().size() == 0) {
                 continue;
             }
@@ -166,12 +171,14 @@ public class RegularCheckersController extends AbstractController {
             (piece.getTeam() == Team.BLACK && position.getY() > alternativeFromPosition.getY());
     }
 
+    // Setup one row of pieces
     public void setupPieceRow(int row, Team t) {
         for (int j = (row + 1) % 2; j < this.dimension; j += 2) {
             this.setupPiece(new Point(j + 1, row + 1), t);
         }
     }
 
+    // Setup the pieces for each team
     public void setupPieces() {
         for (int i = 0; i < 3; i++) {
             this.setupPieceRow(i, Team.WHITE);

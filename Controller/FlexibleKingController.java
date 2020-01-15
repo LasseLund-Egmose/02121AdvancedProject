@@ -22,18 +22,12 @@ public class FlexibleKingController extends RegularCheckersController {
         }
 
         ArrayList<Point> eligiblePoints = new ArrayList<>();
-        Point[] points = new Point[]{
-                new Point(p.x - 1, p.y + 1),
-                new Point(p.x + 1, p.y + 1),
-                new Point(p.x - 1, p.y - 1),
-                new Point(p.x + 1, p.y - 1)
-        };
-
+        Point[] points = this.surroundingFieldsPosition(p);
 
         for (int i = 0; i < 4; i++) {
             Point ip = points[i];
-            int differencX = ip.x-p.x;
-            int differencY = ip.y-p.y;
+            int differencX = ip.x - p.x;
+            int differencY = ip.y - p.y;
 
             if (this.isPositionValid(ip)) {
                 eligiblePoints.add(ip);
