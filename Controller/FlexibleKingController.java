@@ -18,6 +18,7 @@ public class FlexibleKingController extends RegularCheckersController {
     protected ArrayList<Point> surroundingPoints(Point point) {
         // Get regular surrounding points
         ArrayList<Point> eligiblePoints = super.surroundingPoints(point);
+        ArrayList<Point> allEligiblePoints = new ArrayList<>(eligiblePoints);
 
         CheckerPiece piece = this.fields.get(point.x).get(point.y).getAttachedPieceSecure();
 
@@ -26,16 +27,13 @@ public class FlexibleKingController extends RegularCheckersController {
             return eligiblePoints;
         }
 
-        // Get diagonal position from current position
-        Point[] points = this.surroundingFieldsPosition(point);
-
-        for (Point p : points) {
+        for (Point p : eligiblePoints) {
             // Get difference from given position
             Point diagonalDifference = new Point(p.x - point.x, p.y - point.y);
 
             // Gradually extend difference (and add to eligiblePoints) until an invalid or occupied field is found
             for (int j = 2; j < this.dimension; j++) {
-                Point extendedDiagonal = new Point(p.x + j * diagonalDifference.x, p.y + j * diagonalDifference.y);
+                Point extendedDiagonal = new Point(point.x + j * diagonalDifference.x, point.y + j * diagonalDifference.y);
 
                 // Is the field valid?
                 if (!this.isPositionValid(extendedDiagonal)) {
@@ -49,11 +47,15 @@ public class FlexibleKingController extends RegularCheckersController {
                     break;
                 }
 
-                eligiblePoints.add(extendedDiagonal);
+                allEligiblePoints.add(extendedDiagonal);
             }
         }
-        return eligiblePoints;
+        return allEligiblePoints;
     }
+
+    /*
+     * Constructors
+     */
 
     public FlexibleKingController(GameView view, GridPane grid) {
         super(view, grid);
