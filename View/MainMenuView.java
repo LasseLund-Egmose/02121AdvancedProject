@@ -273,7 +273,10 @@ public class MainMenuView extends AbstractView {
         button.setOnMouseClicked(e -> {
             MainMenuView.selectedGameType = gameType;
 
-            int dimension = Settings.getInt(Setting.Dimension);
+            int dimension = state.getDimension();
+
+            // Set dimension in settings
+            Settings.set(Setting.Dimension, dimension);
 
             AbstractController controller;
             switch (state.getSelectedGameType()) {

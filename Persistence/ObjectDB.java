@@ -191,9 +191,6 @@ public class ObjectDB implements Serializable {
                 piece.setupPiece();
             }
 
-            // Set dimension in settings
-            Settings.set(Setting.Dimension, db.getDimension());
-
             // return the db instance
             return db;
         } catch (IOException | ClassNotFoundException e) {
