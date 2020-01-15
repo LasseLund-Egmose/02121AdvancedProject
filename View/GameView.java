@@ -45,7 +45,6 @@ import javafx.util.Duration;
 import java.awt.*;
 import java.util.HashMap;
 
-// TODO: Needs cleanup and comments
 public class GameView extends AbstractView {
 
     // Constants
@@ -89,6 +88,151 @@ public class GameView extends AbstractView {
     // Using the Pythagorean theorem and the law of sines
     protected static double zOffset() {
         return Math.sqrt(2) * (GameView.BOARD_SIZE / 2.0) * Math.sin(Math.toRadians(GameView.BOARD_TILT));
+    }
+
+    // Construct text field containing time left for player
+    protected Text constructTimeLeftText(String prefix, int time) {
+        Text timeLeft = new Text();
+        timeLeft.setText(prefix + AbstractController.formatTime(time));
+
+        StyleCollection.build(
+                timeLeft,
+                StyleProp.FONT("28 Arial"),
+                StyleProp.FILL("#B8860B")
+        );
+
+        return timeLeft;
+    }
+
+    // Create scene
+    protected Scene makeScene(boolean isWhiteTurn) {
+        this.dimension = Settings.getInt(Setting.Dimension);
+
+        // Setup root pane
+        StackPane root = new StackPane();
+        root.setMinSize(GameView.WIDTH, GameView.HEIGHT);
+        root.setMaxSize(GameView.WIDTH, GameView.HEIGHT);
+
+        // Setup turn text and its container
+        this.displayTurn = new Text();
+        StyleCollection.build(
+                this.displayTurn,
+                StyleProp.FONT("50 Arial"),
+                StyleProp.FILL("#DAA520")
+        );
+
+        this.setupDisplayTurn(isWhiteTurn);
+
+        StackPane displayTurnContainer = new StackPane();
+        setupContainer(displayTurnContainer);
+        displayTurnContainer.getChildren().add(this.displayTurn);
+
+        // Setup white time text and its container
+        GameView.displayWhiteTimeLeft = this.constructTimeLeftText("White time left: ", controller.timeWhite--);
+
+        StackPane displayWhiteTimeContainer = new StackPane();
+        setupContainer(displayWhiteTimeContainer);
+        displayWhiteTimeContainer.getChildren().add(displayWhiteTimeLeft);
+
+        // Setup black time text and its container
+        GameView.displayBlackTimeLeft = this.constructTimeLeftText("Black time left: ", controller.timeBlack--);
+
+        StackPane displayBlackTimeContainer = new StackPane();
+        setupContainer(displayBlackTimeContainer);
+        displayBlackTimeContainer.getChildren().add(displayBlackTimeLeft);
+
+        // Setup background and move it behind the board
+        Rectangle background = new Rectangle(GameView.WIDTH * 2, GameView.HEIGHT * 2);
+        background.setFill(Color.web("antiquewhite"));
+
+        // Setup container for board and rotate it according to BOARD_TILT
+        StackPane boardContainer = new StackPane();
+        boardContainer.setPrefSize(GameView.WIDTH, GameView.HEIGHT);
+        boardContainer.setRotationAxis(Rotate.X_AXIS);
+        boardContainer.setRotate(-GameView.BOARD_TILT);
+        boardContainer.setPickOnBounds(false);
+        boardContainer.setTranslateZ(-GameView.zOffset());
+
+        StyleCollection.build(
+                boardContainer,
+                StyleProp.EFFECT("null")
+        );
+
+        // Setup board surface and add it to board container
+        this.setupSurface();
+        boardContainer.getChildren().add(this.surfacePane);
+
+        // Styling for the pane that prevents player interaction while the game is paused
+        this.stopGamePane.setMinSize(GameView.WIDTH, GameView.HEIGHT);
+        this.stopGamePane.setMaxSize(GameView.WIDTH, GameView.HEIGHT);
+        this.stopGamePane.setTranslateZ(2 * -GameView.zOffset());
+
+        StyleCollection.build(
+                this.stopGamePane,
+                StyleProp.BACKGROUND_COLOR("#555555a0")
+        );
+
+        // Setup and style pause button
+        this.pausePane = new StackPane();
+        this.pausePane.setMinHeight(40);
+        this.pausePane.setMinWidth(10);
+        this.pausePane.setMaxHeight(20);
+        this.pausePane.setMaxWidth(100);
+
+        // Setup and style text for pause button
+        Text pauseText = new Text();
+        pauseText.setText("Pause");
+        pauseText.setFill(Color.DARKGOLDENROD);
+
+        StyleCollection.build(
+                pauseText,
+                StyleProp.FONT("20 Arial")
+        );
+
+        this.pausePane.getChildren().add(pauseText);
+
+        // Add click event to pause button, adds stopGamePane to root in front of the other game elements.
+        this.setPauseButtonActive(true);
+
+        this.pausePane.setOnMouseClicked(e -> {
+            if (this.isPauseButtonActive) {
+                this.musicTimeline.pause();
+                root.getChildren().add(this.stopGamePane);
+                displayPauseScreen();
+            }
+        });
+
+        // Add aforementioned elements to root
+        root.getChildren().addAll(background, boardContainer, displayTurnContainer, displayWhiteTimeContainer, displayBlackTimeContainer, this.pausePane);
+
+        // Pass through click events and disable shadows for root
+        root.setPickOnBounds(false);
+        StyleCollection.build(
+                root,
+                StyleProp.EFFECT("null")
+        );
+
+        // Set alignments for elements
+        StackPane.setAlignment(background, Pos.CENTER);
+        StackPane.setAlignment(displayTurnContainer, Pos.TOP_CENTER);
+        StackPane.setAlignment(displayWhiteTimeContainer, Pos.TOP_LEFT);
+        StackPane.setAlignment(displayBlackTimeContainer, Pos.TOP_RIGHT);
+        StackPane.setAlignment(this.surfacePane, Pos.CENTER);
+        StackPane.setAlignment(this.displayTurn, Pos.CENTER);
+        StackPane.setAlignment(this.pausePane, Pos.BOTTOM_CENTER);
+        StackPane.setAlignment(this.pausePane, Pos.TOP_CENTER);
+
+        // Setup scene (with depthBuffer to avoid z-fighting and unexpected behaviour) and apply it
+        Scene scene = new Scene(root, GameView.WIDTH, GameView.HEIGHT, true, null);
+
+        // Setup camera for scene
+        PerspectiveCamera pc = new PerspectiveCamera();
+        pc.setTranslateZ(-GameView.zOffset());
+        scene.setCamera(pc);
+
+        // Set root and return scene
+        this.root = root;
+        return scene;
     }
 
     // Setup GridPane on board surface
@@ -166,76 +310,11 @@ public class GameView extends AbstractView {
         super(args);
     }
 
-    // Setup win scene and display it
-    public void displayWin(Team winningTeam) {
-        Main.setView(Main.mainMenuView);
-
-        Stage dialog = new Stage();
-        dialog.setTitle("You won!");
-
-        StackPane root = new StackPane();
-
-        Button button = new Button("Close");
-        StyleCollection.build(
-                button,
-                StyleProp.BACKGROUND_COLOR("transparent"),
-                StyleProp.CURSOR("hand"),
-                StyleProp.FONT_SIZE("30px"),
-                StyleProp.FONT_WEIGHT("bold"),
-                StyleProp.TEXT_FILL("#DAA520")
-        );
-        button.setOnMouseClicked(e -> dialog.close());
-
-        StackPane pane = new StackPane();
-        StyleCollection.build(
-                pane,
-                StyleProp.BORDER_COLOR("#DAA520"),
-                StyleProp.BORDER_WIDTH("5px"),
-                StyleProp.BACKGROUND_COLOR("antiquewhite")
-        );
-        pane.setMinSize(GameView.POPUP_SIZE, GameView.POPUP_SIZE);
-        pane.setMaxSize(GameView.POPUP_SIZE, GameView.POPUP_SIZE);
-
-        Text text = new Text();
-        text.setText(winningTeam == Team.BLACK ? "Black won" : "White won");
-        StyleCollection.build(
-                text,
-                StyleProp.FONT("70px Arial")
-        );
-
-
-        //total game time
-        StackPane timepane = new StackPane();
-        timepane.setMinSize(GameView.POPUP_SIZE, GameView.POPUP_SIZE/1.6); //design choice
-        timepane.setMaxSize(GameView.POPUP_SIZE, GameView.POPUP_SIZE/1.6);
-
-        //displays the total time the game took
-        Text timetext = new Text();
-        timetext.setText("Game length: " + controller.formatTime(controller.totalTime));
-        StyleCollection.build(
-                timetext,
-                StyleProp.FONT("30px Arial")
-        );
-
-        StackPane.setAlignment(text, Pos.CENTER);
-        StackPane.setAlignment(pane, Pos.CENTER);
-        StackPane.setAlignment(button, Pos.BOTTOM_CENTER);
-        StackPane.setAlignment(timepane, Pos.BOTTOM_CENTER);
-        StackPane.setAlignment(timetext, Pos.CENTER);
-
-        pane.getChildren().addAll(text, timepane, button); //add button last to have it on top
-        timepane.getChildren().add(timetext);
-        root.getChildren().add(pane);
-
-        Scene scene = new Scene(root, GameView.WIDTH, GameView.HEIGHT);
-        dialog.setScene(scene);
-        dialog.show();
-    }
-
-    //Setup pause scene and display it
+    // Setup pause scene and display it
     public void displayPauseScreen() {
         this.controller.pauseTime();
 
+        // Setup dialog and root element
         Stage dialog = new Stage();
         dialog.setTitle("Game paused");
 
@@ -249,7 +328,7 @@ public class GameView extends AbstractView {
                 StyleProp.BACKGROUND_COLOR("antiquewhite")
         );
 
-        //removes stopGamePane from the game stage, and starts the time again.
+        // Setup resume button with click event
         Button resumeButton = new Button("Resume game");
         StyleCollection.buttonStyle(resumeButton);
 
@@ -260,7 +339,7 @@ public class GameView extends AbstractView {
             this.controller.startTime();
         });
 
-        //calls on instance of ObjectDB to save the current game state
+        // Setup save button with click event
         Button saveButton = new Button("Save game");
         StyleCollection.buttonStyle(saveButton);
 
@@ -288,7 +367,7 @@ public class GameView extends AbstractView {
             }
         });
 
-        //go to main menu
+        // Setup quit game button with click event
         Button quitButton = new Button("Quit game");
         StyleCollection.buttonStyle(quitButton);
 
@@ -297,14 +376,14 @@ public class GameView extends AbstractView {
             dialog.close();
         });
 
-        //return to game if the pause window is closed
+        // Return to game if the pause window is closed
         dialog.setOnCloseRequest(event -> {
             this.root.getChildren().remove(stopGamePane);
             this.controller.startTime();
         });
 
 
-        // Create VBox and add it to root
+        // Create pause menu container and add it to root
         VBox pauseMenuVBox = new VBox();
         pauseMenuVBox.setSpacing(40);
         pauseMenuVBox.setAlignment(Pos.CENTER);
@@ -314,22 +393,83 @@ public class GameView extends AbstractView {
 
         StackPane.setAlignment(pauseMenuVBox, Pos.CENTER);
 
+        // Setup scene and show stage
         Scene scene = new Scene(root, GameView.WIDTH, GameView.HEIGHT);
         dialog.setScene(scene);
         dialog.show();
     }
 
-    // Update isPauseButtonActive value
-    public void setPauseButtonActive(boolean pauseButtonActive) {
-        this.isPauseButtonActive = pauseButtonActive;
+    // Setup win scene and display it
+    public void displayWin(Team winningTeam) {
+        Main.setView(Main.mainMenuView); // Go back to main menu
 
-        // Visualise when button is inactive
+        // Setup new dialog
+        Stage dialog = new Stage();
+        dialog.setTitle("You won!");
+
+        StackPane root = new StackPane();
+
+        // Setup close button
+        Button button = new Button("Close");
         StyleCollection.build(
-                this.pausePane,
-                StyleProp.BACKGROUND_IMAGE("url(/assets/dark_wood.jpg)"),
-                StyleProp.CURSOR(pauseButtonActive ? "hand" : null),
-                StyleProp.OPACITY(pauseButtonActive ? "1" : "0.5")
+                button,
+                StyleProp.BACKGROUND_COLOR("transparent"),
+                StyleProp.CURSOR("hand"),
+                StyleProp.FONT_SIZE("30px"),
+                StyleProp.FONT_WEIGHT("bold"),
+                StyleProp.TEXT_FILL("#DAA520")
         );
+        button.setOnMouseClicked(e -> dialog.close());
+
+        // Setup main pane
+        StackPane pane = new StackPane();
+        StyleCollection.build(
+                pane,
+                StyleProp.BORDER_COLOR("#DAA520"),
+                StyleProp.BORDER_WIDTH("5px"),
+                StyleProp.BACKGROUND_COLOR("antiquewhite")
+        );
+        pane.setMinSize(GameView.POPUP_SIZE, GameView.POPUP_SIZE);
+        pane.setMaxSize(GameView.POPUP_SIZE, GameView.POPUP_SIZE);
+
+        // Setup who won text
+        Text text = new Text();
+        text.setText(winningTeam == Team.BLACK ? "Black won" : "White won");
+        StyleCollection.build(
+                text,
+                StyleProp.FONT("70px Arial")
+        );
+
+
+        // Setup total game time container
+        StackPane timePane = new StackPane();
+        timePane.setMinSize(GameView.POPUP_SIZE, GameView.POPUP_SIZE / 1.6);
+        timePane.setMaxSize(GameView.POPUP_SIZE, GameView.POPUP_SIZE / 1.6);
+
+        // Display total game time
+        Text timeText = new Text();
+        timeText.setText("Game length: " + AbstractController.formatTime(controller.totalTime));
+        StyleCollection.build(
+                timeText,
+                StyleProp.FONT("30px Arial")
+        );
+
+        // Setup alignments
+        StackPane.setAlignment(text, Pos.CENTER);
+        StackPane.setAlignment(pane, Pos.CENTER);
+        StackPane.setAlignment(button, Pos.BOTTOM_CENTER);
+        StackPane.setAlignment(timePane, Pos.BOTTOM_CENTER);
+        StackPane.setAlignment(timeText, Pos.CENTER);
+
+        // Add children to parents
+        pane.getChildren().addAll(text, timePane, button);
+        timePane.getChildren().add(timePane);
+        root.getChildren().add(pane);
+
+        // Setup scene and show stage
+        Scene scene = new Scene(root, GameView.WIDTH, GameView.HEIGHT);
+        dialog.setScene(scene);
+        dialog.show();
     }
 
     // Get size (in pixels) of one field in board
@@ -374,11 +514,20 @@ public class GameView extends AbstractView {
         this.surfacePaneRotation.play();
     }
 
-    // Set text based on turn
-    public void setupDisplayTurn(boolean isWhiteTurn) {
-        this.displayTurn.setText(isWhiteTurn ? "White's turn" : "Black's turn");
+    // Update isPauseButtonActive value
+    public void setPauseButtonActive(boolean pauseButtonActive) {
+        this.isPauseButtonActive = pauseButtonActive;
+
+        // Visualise when button is inactive
+        StyleCollection.build(
+                this.pausePane,
+                StyleProp.BACKGROUND_IMAGE("url(/assets/dark_wood.jpg)"),
+                StyleProp.CURSOR(pauseButtonActive ? "hand" : null),
+                StyleProp.OPACITY(pauseButtonActive ? "1" : "0.5")
+        );
     }
 
+    // Setup container element
     public void setupContainer(StackPane container) {
         container.setMinHeight(80);
         container.setMinWidth(20);
@@ -392,6 +541,11 @@ public class GameView extends AbstractView {
                 StyleProp.BORDER_WIDTH("5px"),
                 StyleProp.TEXT_FILL("#DAA520")
         );
+    }
+
+    // Set text based on turn
+    public void setupDisplayTurn(boolean isWhiteTurn) {
+        this.displayTurn.setText(isWhiteTurn ? "White's turn" : "Black's turn");
     }
 
     // Setup one black field
@@ -411,7 +565,6 @@ public class GameView extends AbstractView {
 
     // Setup background music
     protected void setupMusic() {
-
         // Load and play music file
         String path = "/assets/hey.mp3";
         Media media = new Media(this.getClass().getResource(path).toExternalForm());
@@ -424,19 +577,6 @@ public class GameView extends AbstractView {
         }));
         this.musicTimeline.setCycleCount(Animation.INDEFINITE);
         this.musicTimeline.play();
-    }
-
-    protected Text timeLeftText(String prefix, int time) {
-        Text timeLeft = new Text();
-        timeLeft.setText(prefix + AbstractController.formatTime(time));
-
-        StyleCollection.build(
-                timeLeft,
-                StyleProp.FONT("28 Arial"),
-                StyleProp.FILL("#B8860B")
-        );
-
-        return timeLeft;
     }
 
     // Setup scene
@@ -504,137 +644,6 @@ public class GameView extends AbstractView {
         // Start the turn
         this.controller.onTurnStart();
         this.controller.countDownTimer();
-
-        return scene;
-    }
-
-    protected Scene makeScene(boolean isWhiteTurn) {
-
-        this.dimension = Settings.getInt(Setting.Dimension);
-
-        // Setup root pane
-        StackPane root = new StackPane();
-        root.setMinSize(GameView.WIDTH, GameView.HEIGHT);
-        root.setMaxSize(GameView.WIDTH, GameView.HEIGHT);
-
-        // Setup turn text and its container
-        this.displayTurn = new Text();
-        StyleCollection.build(
-            this.displayTurn,
-            StyleProp.FONT("50 Arial"),
-            StyleProp.FILL("#DAA520")
-        );
-
-        this.setupDisplayTurn(isWhiteTurn);
-
-        StackPane displayTurnContainer = new StackPane();
-        setupContainer(displayTurnContainer);
-        displayTurnContainer.getChildren().add(this.displayTurn);
-
-        //Setup white time text and its container
-        GameView.displayWhiteTimeLeft = this.timeLeftText("White time left: ", controller.timeWhite--);
-
-        StackPane displayWhiteTimeContainer = new StackPane();
-        setupContainer(displayWhiteTimeContainer);
-        displayWhiteTimeContainer.getChildren().add(displayWhiteTimeLeft);
-
-        //Setup black time text and its container
-        GameView.displayBlackTimeLeft = this.timeLeftText("Black time left: ", controller.timeBlack--);
-
-        StackPane displayBlackTimeContainer = new StackPane();
-        setupContainer(displayBlackTimeContainer);
-        displayBlackTimeContainer.getChildren().add(displayBlackTimeLeft);
-
-        // Setup background and move it behind the board
-        Rectangle background = new Rectangle(GameView.WIDTH * 2, GameView.HEIGHT * 2);
-        background.setFill(Color.web("antiquewhite"));
-
-        // Setup container for board and rotate it according to BOARD_TILT
-        StackPane boardContainer = new StackPane();
-        boardContainer.setPrefSize(GameView.WIDTH, GameView.HEIGHT);
-        boardContainer.setRotationAxis(Rotate.X_AXIS);
-        boardContainer.setRotate(-GameView.BOARD_TILT);
-        boardContainer.setPickOnBounds(false);
-        boardContainer.setTranslateZ(-GameView.zOffset());
-
-        StyleCollection.build(
-            boardContainer,
-            StyleProp.EFFECT("null")
-        );
-
-        // Setup board surface and add it to board container
-        this.setupSurface();
-        boardContainer.getChildren().add(this.surfacePane);
-
-        //styling for the pane the prevents player interaction while the game is paused.
-        this.stopGamePane.setMinSize(GameView.WIDTH, GameView.HEIGHT);
-        this.stopGamePane.setMaxSize(GameView.WIDTH, GameView.HEIGHT);
-        this.stopGamePane.setTranslateZ(2 * -GameView.zOffset());
-
-        StyleCollection.build(
-            this.stopGamePane,
-            StyleProp.BACKGROUND_COLOR("#555555a0")
-        );
-
-        //setup and style pause button
-        this.pausePane = new StackPane();
-        this.pausePane.setMinHeight(40);
-        this.pausePane.setMinWidth(10);
-        this.pausePane.setMaxHeight(20);
-        this.pausePane.setMaxWidth(100);
-
-        //setup and style text for pause button
-        Text pauseText = new Text();
-        pauseText.setText("Pause");
-        pauseText.setFill(Color.DARKGOLDENROD);
-
-        StyleCollection.build(
-            pauseText,
-            StyleProp.FONT("20 Arial")
-        );
-
-        this.pausePane.getChildren().add(pauseText);
-
-        // Add click event to pause button, adds stopGamePane to root in front of the other game elements.
-        this.setPauseButtonActive(true);
-
-        this.pausePane.setOnMouseClicked(e -> {
-            if (this.isPauseButtonActive) {
-                this.musicTimeline.pause();
-                root.getChildren().add(this.stopGamePane);
-                displayPauseScreen();
-            }
-        });
-
-        // Add aforementioned elements to root
-        root.getChildren().addAll(background, boardContainer, displayTurnContainer, displayWhiteTimeContainer, displayBlackTimeContainer, this.pausePane);
-
-        // Pass through click events and disable shadows for root
-        root.setPickOnBounds(false);
-        StyleCollection.build(
-            root,
-            StyleProp.EFFECT("null")
-        );
-
-        // Set alignments for elements
-        StackPane.setAlignment(background, Pos.CENTER);
-        StackPane.setAlignment(displayTurnContainer, Pos.TOP_CENTER);
-        StackPane.setAlignment(displayWhiteTimeContainer, Pos.TOP_LEFT);
-        StackPane.setAlignment(displayBlackTimeContainer, Pos.TOP_RIGHT);
-        StackPane.setAlignment(this.surfacePane, Pos.CENTER);
-        StackPane.setAlignment(this.displayTurn, Pos.CENTER);
-        StackPane.setAlignment(this.pausePane, Pos.BOTTOM_CENTER);
-        StackPane.setAlignment(this.pausePane, Pos.TOP_CENTER);
-
-        // Setup scene (with depthBuffer to avoid z-fighting and unexpected behaviour) and apply it
-        Scene scene = new Scene(root, GameView.WIDTH, GameView.HEIGHT, true, null);
-
-        // Setup camera for scene
-        PerspectiveCamera pc = new PerspectiveCamera();
-        pc.setTranslateZ(-GameView.zOffset());
-        scene.setCamera(pc);
-
-        this.root = root;
 
         return scene;
     }
