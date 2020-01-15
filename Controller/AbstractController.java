@@ -104,15 +104,9 @@ abstract public class AbstractController {
 
     //format time to show in minutes and seconds
     public static String formatTime(int timeSeconds) {
-            int minutes = timeSeconds / 60;
-            int seconds = timeSeconds % 60;
-            String formattedTime = "";
-            if (seconds < 10) {
-                formattedTime = minutes + ":" +  "0" + seconds;
-            } else {
-                formattedTime = minutes + ":" + seconds;
-            }
-            return formattedTime;
+        int minutes = timeSeconds / 60;
+        int seconds = timeSeconds % 60;
+        return seconds < 10 ? minutes + ":" +  "0" + seconds : minutes + ":" + seconds;
     }
 
     // Setup a piece in each corner
@@ -520,6 +514,4 @@ abstract public class AbstractController {
             }
         }
     }
-
-    public int getMinFieldSize(){ return  this.minFieldSize;}
 }
