@@ -13,20 +13,31 @@ import javafx.util.Duration;
 
 import java.util.ArrayList;
 
-// TODO: Needs comments
 public class CPU {
 
-    protected CPURegularCheckersController controller;
-    protected CanJumpMoreStrategy jumpMoreStrategy;
-    protected ArrayList<AbstractStrategy> strategies = new ArrayList<>();
+    /*
+     * This class handles the core of the CPU player.
+     * When the CPU controller instance calls takeTurn() this class figures out
+     * a move by going through all attached "strategies" which then results in a
+     * qualified move at some point
+     */
+
+    protected CPURegularCheckersController controller; // Reference to game controller
+    protected CanJumpMoreStrategy jumpMoreStrategy; // Reference to jump more strategy (special strategy used when jumping multiple times in one turn)
+    protected ArrayList<AbstractStrategy> strategies = new ArrayList<>(); // All strategy instances
 
     public void takeRestOfTurn(Move nextMove) {
         boolean shouldFinishTurn = true;
 
+        // Do move
         if(nextMove.getMoveType() == MoveType.JUMP) {
             this.controller.doJumpMove(nextMove.getToField(), nextMove.getJumpedField());
 
+            // Check if multi-jump is eligible
             if(this.controller.canJumpMore(nextMove.getPiece(), false)) {
+                // CanJumpMoreStrategy will catch next move and make sure only the currently active piece can move
+
+                // Setup CanJumpMoreStrategy
                 this.jumpMoreStrategy.setState(true, this.controller.getForcedJumpMoves());
 
                 // Restart turn and do jump with currently selected piece
@@ -37,11 +48,14 @@ public class CPU {
             this.controller.doRegularMove(nextMove.getToField(), false);
         }
 
+        // Disable CanJumpMoreStrategy again
         this.jumpMoreStrategy.setState(false);
 
+        // Remove highlights
         nextMove.getPiece().setHighlight(false);
         this.controller.getView().normalizePane(nextMove.getToField());
 
+        // Finish turn if not multi-jumping
         if(shouldFinishTurn) {
             this.controller.finishTurn();
         }
@@ -51,6 +65,7 @@ public class CPU {
         this.controller = controller;
     }
 
+    // Setup all strategies
     public void initStrategies() {
         this.jumpMoreStrategy = new CanJumpMoreStrategy(this.controller);
 
@@ -59,7 +74,9 @@ public class CPU {
         this.strategies.add(new OffensiveStrategy(this.controller)); // Else make an offensive move
     }
 
+    // Take first part of turn
     public void takeTurn() {
+        // Iterate strategies until move is found
         for(AbstractStrategy strategy : this.strategies) {
             Move nextMove = strategy.getMoveOrNull();
 
@@ -67,13 +84,17 @@ public class CPU {
                 continue;
             }
 
+            // Move is found
+
             CheckerPiece piece = nextMove.getPiece();
 
             this.controller.setSelectedPieceCPU(piece);
 
+            // Setup relevant highlight
             piece.setHighlightCPU(true);
             this.controller.getView().highlightPaneCPU(nextMove.getToField());
 
+            // Wait 1 second to notify opponent about move
             PauseTransition pause = new PauseTransition(Duration.seconds(1));
             pause.setOnFinished(event -> this.takeRestOfTurn(nextMove));
             pause.play();
