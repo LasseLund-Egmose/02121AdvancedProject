@@ -6,6 +6,7 @@ import Enum.MoveType;
 import Enum.Team;
 import Model.CheckerPiece;
 import Model.Field;
+import Model.Settings;
 import View.GameView;
 
 import javafx.animation.Animation;
@@ -20,6 +21,10 @@ import javafx.util.Duration;
 import java.awt.*;
 import java.io.File;
 import java.util.*;
+import Enum.Setting;
+import java.util.concurrent.TimeUnit;
+
+import static Enum.Setting.Time;
 
 // TODO: Needs cleanup and comments
 abstract public class AbstractController {
@@ -41,8 +46,10 @@ abstract public class AbstractController {
     protected CheckerPiece selectedPiece = null; // Keep track of selected piece
     protected GameView view; // Reference to view instance
     protected Timeline timeline = new Timeline();
-    public int timeWhite = 300; //time 5 minutes in seconds, counts down to 0
-    public int timeBlack = 300; //same for black
+    public int timeWhite; //time 5 minutes in seconds, counts down to 0
+    public int timeBlack; //same for black
+        // this.timeWhite = (int) Settings.get(Setting.Time);
+        // this.timeBlack = (int) Settings.get(Setting.Time);
     public int totalTime = 0; //total time of game
     protected ArrayList<AudioClip> soundArrayList = new ArrayList<>(); //used to store the paths for each audio file
     protected String[] soundNames = new String[]{"chipsCollide1.wav", "chipsCollide2.wav", "chipsCollide3.wav", "chipsCollide4.wav"}; //names of the audioclips
@@ -57,8 +64,8 @@ abstract public class AbstractController {
     } //used each new game to reset the time
 
     public void setTime() { //resets the time for each team
-        timeWhite = 300;
-        timeBlack = 300;
+        timeWhite = (int) Settings.get(Setting.Time);
+        timeBlack = (int) Settings.get(Setting.Time);
     }
 
     //reset time from a loaded state, same for the next 2 methods
@@ -304,6 +311,7 @@ abstract public class AbstractController {
         this.activeCount.put(Team.WHITE, 0);
 
         this.setupSounds();
+        this.setTime();
     }
 
 
@@ -316,12 +324,17 @@ abstract public class AbstractController {
             boolean isWhiteTurn,
             HashMap<Team, Integer> activeCount
     ) {
-        this(view, dimension, grid);
-
+        this.view = view;
+        this.dimension = dimension;
+        this.grid = grid;
         this.checkerPieces = checkerPieces;
         this.fields = fields;
         this.isWhiteTurn = isWhiteTurn;
         this.activeCount = activeCount;
+
+        this.moveClickEventHandler = mouseEvent -> this.onFieldClick(mouseEvent.getSource());
+
+        this.setupSounds();
     }
 
     /*

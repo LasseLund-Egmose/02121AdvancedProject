@@ -25,7 +25,9 @@ public class MainMenuView extends AbstractView {
 
     protected ToggleButton playButton;
     protected Slider dimensionSlider;
+    protected Slider timeSlider;
     protected VBox containSlider;
+    protected VBox containTimeSlider;
     protected GridPane grid;
     protected Text information;
     protected EventHandler<MouseEvent> onMenuGameTypeButtonClicked = e -> this.changeText();
@@ -36,7 +38,7 @@ public class MainMenuView extends AbstractView {
 
         switch (MainMenuView.selectedGameType) {
             case SimpDam:
-                text = "This is the simplest version of checker. In this version each player has exactly " +
+                text = "This is the simplest version of checkers. In this version each player has exactly " +
                         "one piece each, starting at opposite corners of the board. However, in this version every " +
                         "checker piece acts as a king piece, meaning it is not locked to only moving forward.";
                 break;
@@ -95,11 +97,19 @@ public class MainMenuView extends AbstractView {
         this.grid.setHgap(50);
         this.grid.setVgap(30);
 
+        //dimensionslider
         this.containSlider = new VBox(5);
         this.containSlider.setStyle("-fx-border-image-source: url(/assets/dark_wood.jpg);" +
                 " -fx-border-image-width: 10; -fx-border-image-slice: 10");
         this.containSlider.setPadding(new Insets(10));
         this.containSlider.setVisible(false);
+
+        //timeslider
+        this.containTimeSlider = new VBox(5);
+        this.containTimeSlider.setStyle("-fx-border-image-source: url(/assets/dark_wood.jpg);" +
+                " -fx-border-image-width: 10; -fx-border-image-slice: 10");
+        this.containTimeSlider.setPadding(new Insets(10));
+        this.containTimeSlider.setVisible(false);
 
         HBox informationContainer = new HBox();
         informationContainer.setStyle("-fx-border-image-source: url(/assets/dark_wood.jpg);" +
@@ -114,7 +124,8 @@ public class MainMenuView extends AbstractView {
         textFlow.getChildren().add(this.information);
         informationContainer.getChildren().add(textFlow);
 
-        dimensionSlider = new Slider(8,100, dimension);
+        //dimensionslider
+        dimensionSlider = new Slider(8, 100, dimension);
         dimensionSlider.setShowTickMarks(true);
         dimensionSlider.setShowTickLabels(true);
         dimensionSlider.setPrefSize(1000, 50);
@@ -123,6 +134,16 @@ public class MainMenuView extends AbstractView {
         dimensionSlider.setMinorTickCount(0);
         dimensionSlider.setSnapToTicks(true);
 
+        //timeslider
+        timeSlider = new Slider(1, 30, 5);
+        timeSlider.setShowTickMarks(true);
+        timeSlider.setShowTickLabels(true);
+        timeSlider.setPrefSize(400, 50);
+        timeSlider.setBlockIncrement(1);
+        timeSlider.setMajorTickUnit(1);
+        timeSlider.setMinorTickCount(0);
+        timeSlider.setSnapToTicks(true);
+
         ToggleGroup toggleGroup = new ToggleGroup();
 
         //Play button setting dimension, controller and changing game view
@@ -130,7 +151,9 @@ public class MainMenuView extends AbstractView {
         this.playButton.setVisible(false);
         this.playButton.setOnMouseClicked(e -> {
             int dim = (int) dimensionSlider.getValue();
+            int time = (int) timeSlider.getValue()*60;
             Settings.set(Setting.Dimension, dim);
+            Settings.set(Setting.Time, time);
 
             AbstractController controller;
             switch (MainMenuView.selectedGameType) {
@@ -172,6 +195,7 @@ public class MainMenuView extends AbstractView {
             this.constructLoadButton(gameTypes[i], i);
         }
 
+        //dimensionslider
         TextField showSlider = new TextField(String.valueOf((int)dimensionSlider.getValue()));
         showSlider.setMaxSize(50, 50);
 
@@ -187,6 +211,23 @@ public class MainMenuView extends AbstractView {
             }
         });
 
+        //timeslider
+        TextField showTimeSlider = new TextField(String.valueOf((int)timeSlider.getValue()));
+        showTimeSlider.setMaxSize(50, 50);
+
+        timeSlider.setOnMouseClicked(e -> showTimeSlider.setText(String.valueOf((int)timeSlider.getValue())));
+        timeSlider.setOnMouseDragged(e -> showTimeSlider.setText(String.valueOf((int)timeSlider.getValue())));
+
+        showTimeSlider.textProperty().addListener((observable, oldValue, newValue) -> {
+            try {
+                double value = Double.parseDouble(newValue);
+                timeSlider.setValue(value);
+            } catch (Exception e) {
+                timeSlider.setValue(1);
+            }
+        });
+
+        //dimensionslider
         Label dimensionOfField = new Label("Set the field dimension:");
 
         StyleCollection.build(
@@ -200,16 +241,24 @@ public class MainMenuView extends AbstractView {
         );
         dimensionOfField.setAlignment(Pos.CENTER);
 
+        //timeslider
+        Label timeOfGame = new Label("Set time constraints:");
+        timeOfGame.setStyle(" -fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #DAA520;" +
+                " -fx-background-image: url(/assets/dark_wood.jpg); -fx-border-color: #DAA520; -fx-border-width: 2px;");
+        timeOfGame.setAlignment(Pos.CENTER);
+
+        //add children
         grid.getChildren().addAll(dimensionSlider);
         containSlider.getChildren().addAll(dimensionOfField, showSlider, dimensionSlider);
-        root.getChildren().addAll(grid, informationContainer, containSlider);
+        containTimeSlider.getChildren().addAll(timeOfGame, showTimeSlider, timeSlider);
+        root.getChildren().addAll(grid, informationContainer, containSlider, containTimeSlider);
 
         // Set grid constraints
         GridPane.setConstraints(grid, 0, 0);
         GridPane.setConstraints(informationContainer, 1, 0);
         GridPane.setConstraints(containSlider, 0, 1);
         GridPane.setConstraints(playButton, 0, GameType.values().length);
-
+        GridPane.setConstraints(containTimeSlider, 1, 1);
 
         return new Scene(root, GameView.WIDTH, GameView.HEIGHT, true, null);
     }
@@ -258,9 +307,11 @@ public class MainMenuView extends AbstractView {
                 if (toggleGroup.getSelectedToggle() == null) {
                     this.playButton.setVisible(false);
                     this.containSlider.setVisible(false);
+                    this.containTimeSlider.setVisible(false);
                 } else {
                     this.playButton.setVisible(true);
                     this.containSlider.setVisible(true);
+                    this.containTimeSlider.setVisible(true);
                 }
 
 

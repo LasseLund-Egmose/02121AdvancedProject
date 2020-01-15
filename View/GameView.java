@@ -439,6 +439,7 @@ public class GameView extends AbstractView {
             for (HashMap.Entry<Integer, Field> y : x.getValue().entrySet()) {
                 // Setup black fields (with click events)
                 this.controller.setupField(y.getValue());
+
             }
         }
 
@@ -493,7 +494,7 @@ public class GameView extends AbstractView {
 
         StyleCollection.build(
             displayWhiteTimeLeft,
-            StyleProp.FONT("30 Arial"),
+            StyleProp.FONT("28 Arial"),
             StyleProp.FILL("#B8860B")
         );
 
@@ -507,7 +508,7 @@ public class GameView extends AbstractView {
 
         StyleCollection.build(
             displayBlackTimeLeft,
-            StyleProp.FONT("30 Arial"),
+            StyleProp.FONT("28 Arial"),
             StyleProp.FILL("#B8860B")
         );
 
