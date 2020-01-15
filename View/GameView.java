@@ -87,8 +87,8 @@ public class GameView extends AbstractView {
         // Pass through click events and remove shadow
         this.grid.setPickOnBounds(false);
         StyleCollection.build(
-            this.grid,
-            StyleProp.EFFECT("null")
+                this.grid,
+                StyleProp.EFFECT("null")
         );
 
         // Add grid to board
@@ -99,7 +99,10 @@ public class GameView extends AbstractView {
     protected void setupSurface() {
         this.surfacePane = new StackPane();
         this.surfacePane.setPickOnBounds(false);
-        this.surfacePane.setStyle("-fx-effect: null;");
+        StyleCollection.build(
+                this.surfacePane,
+                StyleProp.EFFECT("null")
+        );
 
         // Setup box below board surface
         Box box = new Box();
@@ -109,7 +112,10 @@ public class GameView extends AbstractView {
 
         // Pass through click events and remove shadow
         box.setPickOnBounds(false);
-        box.setStyle("-fx-effect: null;");
+        StyleCollection.build(
+                box,
+                StyleProp.EFFECT("null")
+        );
 
         // Add wood texture to box
         PhongMaterial material = new PhongMaterial();
@@ -149,17 +155,33 @@ public class GameView extends AbstractView {
         StackPane root = new StackPane();
 
         Button button = new Button("Close");
-        button.setStyle("-fx-background-color: transparent; -fx-cursor: hand; -fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: #DAA520;");
+        StyleCollection.build(
+                button,
+                StyleProp.BACKGROUND_COLOR("transparent"),
+                StyleProp.CURSOR("hand"),
+                StyleProp.FONT_SIZE("30px"),
+                StyleProp.FONT_WEIGHT("bold"),
+                StyleProp.TEXT_FILL("#DAA520")
+        );
         button.setOnMouseClicked(e -> dialog.close());
 
         StackPane pane = new StackPane();
-        pane.setStyle("-fx-background-color: antiquewhite; -fx-border-color: #DAA520; -fx-border-width: 5px;");
+        StyleCollection.build(
+                pane,
+                StyleProp.BORDER_COLOR("#DAA520"),
+                StyleProp.BORDER_WIDTH("5px"),
+                StyleProp.BACKGROUND_COLOR("antiquewhite")
+        );
         pane.setMinSize(GameView.POPUP_SIZE, GameView.POPUP_SIZE);
         pane.setMaxSize(GameView.POPUP_SIZE, GameView.POPUP_SIZE);
 
         Text text = new Text();
         text.setText(winningTeam == Team.BLACK ? "Black won" : "White won");
-        text.setStyle("-fx-font: 70px Arial");
+        StyleCollection.build(
+                text,
+                StyleProp.FONT("70px Arial")
+        );
+
 
         //total game time
         StackPane timepane = new StackPane();
@@ -169,7 +191,10 @@ public class GameView extends AbstractView {
         //displays the total time the game took
         Text timetext = new Text();
         timetext.setText("Game length: " + controller.formatTime(controller.totalTime));
-        timetext.setStyle("-fx-font: 30px Arial");
+        StyleCollection.build(
+                timetext,
+                StyleProp.FONT("30px Arial")
+        );
 
         StackPane.setAlignment(text, Pos.CENTER);
         StackPane.setAlignment(pane, Pos.CENTER);
@@ -196,13 +221,17 @@ public class GameView extends AbstractView {
         StackPane root = new StackPane();
         root.setMinSize(GameView.WIDTH, GameView.HEIGHT);
         root.setMaxSize(GameView.WIDTH, GameView.HEIGHT);
-        root.setStyle("-fx-border-color: #DAA520; -fx-border-width: 5px; -fx-background-color: antiquewhite;");
+        StyleCollection.build(
+                root,
+                StyleProp.BORDER_COLOR("#DAA520"),
+                StyleProp.BORDER_WIDTH("5px"),
+                StyleProp.BACKGROUND_COLOR("antiquewhite")
+        );
 
         //removes stopGamePane from the game stage, and starts the time again.
         Button resumeButton = new Button("Resume game");
-        resumeButton.setStyle("-fx-background-image: url(/assets/dark_wood.jpg); -fx-cursor: hand;" +
-                " -fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: #DAA520;" +
-                "-fx-border-color: #DAA520; -fx-border-width: 5px;");
+        StyleCollection.buttonStyle(resumeButton);
+
         resumeButton.setOnMouseClicked(e -> {
             this.root.getChildren().remove(stopGamePane);
             dialog.close();
@@ -211,9 +240,8 @@ public class GameView extends AbstractView {
 
         //calls on instance of ObjectDB to save every variable as is in the current gamestate
         Button saveButton = new Button("Save game");
-        saveButton.setStyle("-fx-background-image: url(/assets/dark_wood.jpg); -fx-cursor: hand;" +
-                " -fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: #DAA520;" +
-                "-fx-border-color: #DAA520; -fx-border-width: 5px;");
+        StyleCollection.buttonStyle(saveButton);
+
         saveButton.setOnMouseClicked(e -> {
             ObjectDB saveGame = new ObjectDB();
             saveGame.setActiveCount(controller.getActiveCount());
@@ -235,9 +263,8 @@ public class GameView extends AbstractView {
 
         //go to main menu
         Button quitButton = new Button("Quit game");
-        quitButton.setStyle("-fx-background-image: url(/assets/dark_wood.jpg); -fx-cursor: hand;" +
-                " -fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: #DAA520;" +
-                "-fx-border-color: #DAA520; -fx-border-width: 5px;");
+        StyleCollection.buttonStyle(quitButton);
+
         quitButton.setOnMouseClicked(e -> {
             Main.setView(Main.mainMenuView);
             dialog.close();
