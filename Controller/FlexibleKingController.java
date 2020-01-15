@@ -40,9 +40,9 @@ public class FlexibleKingController extends RegularCheckersController {
             }
 
             for (int j = 2; j < this.dimension; j++) {
-                Point ip1 = new Point(p.x + (j * differencX), p.y + (j * differencY));
-                if (this.isPositionValid(ip1) && this.fields.get(ip1.x).get(ip1.y).getAttachedPieceSecure() == null) {
-                    eligiblePoints.add(ip1);
+                Point jp = new Point(p.x + (j * differencX), p.y + (j * differencY));
+                if (this.isPositionValid(jp) && this.fields.get(jp.x).get(jp.y).getAttachedPieceSecure() == null) {
+                    eligiblePoints.add(jp);
                 } else {
                     break;
                 }
