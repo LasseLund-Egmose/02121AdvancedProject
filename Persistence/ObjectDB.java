@@ -6,6 +6,7 @@ import Model.CheckerPiece;
 import Model.Field;
 import javafx.scene.layout.StackPane;
 
+import javax.swing.filechooser.FileSystemView;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,7 +14,7 @@ import java.util.HashMap;
 public class ObjectDB implements Serializable {
 
     private static final long serialVersionUID = -7307863873494379286L;
-    
+
     protected ArrayList<CheckerPiece> checkerPieces = new ArrayList<>(); // A list of all pieces
     protected HashMap<Integer, HashMap<Integer, Field>> fields = new HashMap<>(); // A map (x -> y -> pane) of all fields
 
@@ -109,11 +110,18 @@ public class ObjectDB implements Serializable {
 
     // Serialize and save state to a file
     public boolean saveState(String filename) {
+
+        File dir = new File(FileSystemView.getFileSystemView().getHomeDirectory() + "/CheckerSaves");
+        if (!dir.exists()) {
+            dir.mkdir();
+        }
+
         // Create an object stream and write a file with the state of this
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(filename))) {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(FileSystemView.getFileSystemView().getHomeDirectory() + "/CheckerSaves/" + filename))) {
             oos.writeObject(this);
             return true;
         } catch (IOException e) {
+            e.printStackTrace();
             return false;
         }
     }
@@ -121,7 +129,7 @@ public class ObjectDB implements Serializable {
     // deserialize file and load data into state
     public ObjectDB loadState(String filename) {
         // Create an object stream from file and load that into an instance of ObjectDB
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(filename))) {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(FileSystemView.getFileSystemView().getHomeDirectory() + "/CheckerSaves/" + filename))) {
             // Read file and initialise a new instance of ObjectDB
             ObjectDB db = (ObjectDB) ois.readObject();
 
