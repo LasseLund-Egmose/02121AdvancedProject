@@ -4,5 +4,6 @@ public enum GameType {
     FlexibleKingTwoPlayer,
     SinglePlayer,
     SimpDam,
-    TwoPlayer
+    TwoPlayer,
+    Unselected
 }

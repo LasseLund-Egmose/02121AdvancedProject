@@ -29,7 +29,7 @@ public class MainMenuView extends AbstractView {
     protected static GameType selectedGameType = null;
 
     protected void changeText() {
-        String text = "Something went wrong";
+        String text;
 
         switch (MainMenuView.selectedGameType) {
             case SimpDam:
@@ -50,6 +50,9 @@ public class MainMenuView extends AbstractView {
                 text = "This is the international version of checkers. For two players. " +
                         "This version has the international rules " +
                         "meaning you can move the king pieces an arbitrary amount of spaces. ";
+                break;
+            default:
+                text = "";
                 break;
         }
 
@@ -162,11 +165,11 @@ public class MainMenuView extends AbstractView {
             this.constructLoadButton(gameTypes[i], i);
         }
 
-        TextField showSlider = new TextField(String.valueOf(dimensionSlider.getValue()));
+        TextField showSlider = new TextField(String.valueOf((int)dimensionSlider.getValue()));
         showSlider.setMaxSize(50, 50);
 
-        dimensionSlider.setOnMouseClicked(e -> showSlider.setText(String.valueOf(dimensionSlider.getValue())));
-        dimensionSlider.setOnMouseDragged(e -> showSlider.setText(String.valueOf(dimensionSlider.getValue())));
+        dimensionSlider.setOnMouseClicked(e -> showSlider.setText(String.valueOf((int)dimensionSlider.getValue())));
+        dimensionSlider.setOnMouseDragged(e -> showSlider.setText(String.valueOf((int)dimensionSlider.getValue())));
 
         showSlider.textProperty().addListener((observable, oldValue, newValue) -> {
             try {
@@ -227,7 +230,7 @@ public class MainMenuView extends AbstractView {
                         " -fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: #DAA520;" +
                         "-fx-border-color: #DAA520; -fx-border-width: 5px;");
                 } else {
-                    MainMenuView.selectedGameType = null;
+                    MainMenuView.selectedGameType = gameType.Unselected;
                     button.setStyle("-fx-background-image: url(/assets/dark_wood.jpg); -fx-cursor: hand;" +
                         " -fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: #DAA520;" +
                         "-fx-border-color: #DAA520; -fx-border-width: 5px;");
