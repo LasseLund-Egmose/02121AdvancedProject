@@ -20,8 +20,12 @@ import javafx.util.Duration;
 
 import java.awt.*;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 import Enum.Setting;
+
+import javax.sound.sampled.*;
 import java.util.concurrent.TimeUnit;
 
 import static Enum.Setting.Time;
@@ -51,7 +55,7 @@ abstract public class AbstractController {
         // this.timeWhite = (int) Settings.get(Setting.Time);
         // this.timeBlack = (int) Settings.get(Setting.Time);
     public int totalTime = 0; //total time of game
-    protected ArrayList<AudioClip> soundArrayList = new ArrayList<>(); //used to store the paths for each audio file
+    protected ArrayList<Clip> soundArrayList = new ArrayList<>(); //used to store the paths for each audio file
     protected String[] soundNames = new String[]{"chipsCollide1.wav", "chipsCollide2.wav", "chipsCollide3.wav", "chipsCollide4.wav"}; //names of the audioclips
     protected Random randomSound = new Random(); //used to choose a sound at random
 
@@ -135,13 +139,38 @@ abstract public class AbstractController {
 
     //plays one of the four move sounds randomly
     protected void playOnMoveSound() {
-        this.soundArrayList.get(randomSound.nextInt(soundArrayList.size())).play();
+        // Get a random sound clip
+        Clip clip = this.soundArrayList.get(randomSound.nextInt(soundArrayList.size()));
+        // Reset the clip to start
+        clip.setFramePosition(0);
+        // Play the clip
+        clip.start();
     }
 
     //creates each new audioclip using the strings with sound names
     protected void setupSounds() {
-        for(String name: soundNames) {
-            soundArrayList.add(new AudioClip(new File("./src/assets/" + name).toURI().toString()));
+        try {
+            for(String name: soundNames) {
+
+                // Get audio clip from assets directory
+                Clip clip;
+                clip = AudioSystem.getClip();
+                InputStream is = this.getClass().getResourceAsStream("/assets/" + name);
+
+                try {
+                    // Add clip to soundArrayList
+                    AudioInputStream ais = AudioSystem.getAudioInputStream(is);
+                    clip.open(ais);
+                    soundArrayList.add(clip);
+                } catch(UnsupportedAudioFileException e) {
+                    System.out.println("Error - Unsupported audio file:" + e.getMessage());
+                } catch (IOException e) {
+                    System.out.println("IO error: " + e.getMessage());
+                }
+            }
+
+        } catch (LineUnavailableException e) {
+            System.out.println("Error occurred in audio line: " + e.getMessage());
         }
     }
 
