@@ -18,10 +18,6 @@ public class Settings {
         return Settings.settings.getOrDefault(key, null);
     }
 
-    public static int getInt(Setting key) {
-        return (int) Settings.get(key);
-    }
-
     public AbstractController getController() {
         return this.controller;
     }

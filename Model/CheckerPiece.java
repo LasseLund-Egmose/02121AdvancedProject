@@ -36,6 +36,7 @@ public class CheckerPiece implements Serializable {
             return;
         }
 
+        // Set piece color to the specified color
         if (shouldHighlight) {
             if(this.kingCylinder != null) {
                 this.kingCylinder.setMaterial(new PhongMaterial(color));
@@ -45,6 +46,7 @@ public class CheckerPiece implements Serializable {
             return;
         }
 
+        // Set piece color to team color
         if(this.kingCylinder != null) {
             this.kingCylinder.setMaterial(this.getMaterial());
         }
@@ -54,19 +56,24 @@ public class CheckerPiece implements Serializable {
 
     // Setup cylinder shape(s)
     protected void setupCylinder(boolean isKing) {
+
+        // Calculate size of piece
         double radius = (this.size * 2) / 5;
         double height = radius / 1.5;
 
         Cylinder cylinder = new Cylinder(radius, height);
 
+        // Set color of piece to team color and rotate it correctly
         cylinder.setMaterial(this.getMaterial());
         cylinder.setRotationAxis(Rotate.X_AXIS);
         cylinder.setRotate(90);
 
         if(isKing) {
+            // Move the king cylinder on top of regular piece cylinder
             cylinder.setTranslateZ(height + height / 2 + 2);
             this.kingCylinder = cylinder;
         } else {
+            // Move cylinder on top of board
             cylinder.setTranslateZ(height / 2);
             this.cylinder = cylinder;
         }
@@ -141,9 +148,7 @@ public class CheckerPiece implements Serializable {
     /*
      *  Getters
      */
-    public boolean getIsKing() {
-        return this.isKing;
-    }
+    public boolean getIsKing() { return this.isKing; }
 
     public PhongMaterial getMaterial() {
         return this.material;
@@ -159,10 +164,6 @@ public class CheckerPiece implements Serializable {
 
     public Point getPosition() {
         return this.getParent().getPosition();
-    }
-
-    public double getSize() {
-        return size;
     }
 
     public Team getTeam() {
@@ -224,11 +225,6 @@ public class CheckerPiece implements Serializable {
         this.isKing = true;
 
         this.setupPiece();
-    }
-
-    // Set the parent (field) of this piece
-    public void setParent(Field parent) {
-        this.parent = parent;
     }
 
     // Setup click event on piece
