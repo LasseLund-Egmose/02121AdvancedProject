@@ -326,7 +326,7 @@ public class GameView extends AbstractView {
         StyleCollection.modifyProps(
             pane,
             StyleProp.BORDER_COLOR("green"),
-            StyleProp.BORDER_WIDTH(this.getFieldSize() < 2 ? "2px" : "5px")
+            StyleProp.BORDER_WIDTH(this.getFieldSize() < 20 ? "2px" : "5px")
         );
     }
 
@@ -335,7 +335,7 @@ public class GameView extends AbstractView {
         StyleCollection.modifyProps(
             pane,
             StyleProp.BORDER_COLOR("blue"),
-            StyleProp.BORDER_WIDTH(this.getFieldSize() < 2 ? "2px" : "5px")
+            StyleProp.BORDER_WIDTH(this.getFieldSize() < 20 ? "2px" : "5px")
         );
     }
 
