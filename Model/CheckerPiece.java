@@ -20,12 +20,12 @@ public class CheckerPiece implements Serializable {
     private static final long serialVersionUID = 4460854533891541153L;
 
     protected boolean canHighlight = true; // Can this piece be highlighted?
-    protected Cylinder cylinder = null; // Cylinder shape
-    protected StackPane cylinderContainer = new StackPane(); // Cylinder container
+    protected transient Cylinder cylinder = null; // Cylinder shape
+    protected transient StackPane cylinderContainer = new StackPane(); // Cylinder container
     protected boolean isActive = false; // Is this piece added to board?
     protected boolean isKing = false; // Is this piece a king?
-    protected Cylinder kingCylinder = null; // King cylinder shape
-    protected PhongMaterial material = null; // Cylinder texture
+    protected transient Cylinder kingCylinder = null; // King cylinder shape
+    protected transient PhongMaterial material = null; // Cylinder texture
     protected Field parent = null; // Parent field containing cylinderContainer
     protected double size; // Size of one field
     protected Team team; // Team of this piece

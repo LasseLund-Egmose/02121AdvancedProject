@@ -43,9 +43,9 @@ abstract public class AbstractController {
     protected int minFieldSize=8; //minimum field size
     protected int maxFieldSize=100; //maximum field size
     protected Timeline timeline = new Timeline();
-    public static int timeWhite = 300; //time 5 minutes in seconds, counts down to 0
-    public static int timeBlack = 300; //same for black
-    public static int totalTime = 0; //total time of game
+    public int timeWhite = 300; //time 5 minutes in seconds, counts down to 0
+    public int timeBlack = 300; //same for black
+    public int totalTime = 0; //total time of game
     protected ArrayList<AudioClip> soundArrayList = new ArrayList<>(); //used to store the paths for each audio file
     protected String[] soundNames = new String[]{"chipsCollide1.wav", "chipsCollide2.wav", "chipsCollide3.wav", "chipsCollide4.wav"}; //names of the audioclips
     protected Random randomSound = new Random(); //used to choose a sound at random
@@ -54,27 +54,21 @@ abstract public class AbstractController {
         return view;
     }
 
-    public static void setTotalTime() {
+    public void setTotalTime() {
         totalTime = 0;
     } //used each new game to reset the time
 
-    public static void setTime() { //resets the time for each team
+    public void setTime() { //resets the time for each team
         timeWhite = 300;
         timeBlack = 300;
     }
 
     //reset time from a loaded state, same for the next 2 methods
-    public static void setTimeWhite(int timeWhite) {
-        AbstractController.timeWhite = timeWhite;
-    }
+    public void setTimeWhite(int timeWhite) { this.timeWhite = timeWhite; }
 
-    public static void setTimeBlack(int timeBlack) {
-        AbstractController.timeBlack = timeBlack;
-    }
+    public void setTimeBlack(int timeBlack) { this.timeBlack = timeBlack; }
 
-    public static void setTotalTime(int totalTime) {
-        AbstractController.totalTime = totalTime;
-    }
+    public void setTotalTime(int totalTime) { this.totalTime = totalTime; }
 
     //pause the time, used when the pause button is pressed
     public void pauseTime() {

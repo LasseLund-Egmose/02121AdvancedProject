@@ -4,6 +4,7 @@ import Boot.Main;
 import Controller.AbstractController;
 import Enum.Setting;
 import Enum.Team;
+
 import Model.CheckerPiece;
 import Model.Field;
 import Model.Settings;
@@ -14,9 +15,12 @@ import javafx.geometry.Pos;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
 import javafx.scene.image.Image;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
 import javafx.scene.shape.Rectangle;
@@ -27,7 +31,6 @@ import javafx.util.Duration;
 
 import java.awt.*;
 import java.util.HashMap;
-import java.util.Stack;
 
 // TODO: Needs cleanup and comments
 public class GameView extends AbstractView {
@@ -161,7 +164,7 @@ public class GameView extends AbstractView {
 
         //displays the total time the game took
         Text timetext = new Text();
-        timetext.setText("Game length: " + AbstractController.formatTime(AbstractController.totalTime));
+        timetext.setText("Game length: " + controller.formatTime(controller.totalTime));
         timetext.setStyle("-fx-font: 30px Arial");
 
         StackPane.setAlignment(text, Pos.CENTER);
@@ -214,9 +217,9 @@ public class GameView extends AbstractView {
             saveGame.setFields(controller.getFields());
             saveGame.setDimension((int) Settings.get(Setting.Dimension));
             saveGame.setWhiteTurn(controller.isWhiteTurn());
-            saveGame.setTimeWhite(AbstractController.timeWhite);
-            saveGame.setTimeBlack(AbstractController.timeBlack);
-            saveGame.setTotalTime(AbstractController.totalTime);
+            saveGame.setTimeWhite(controller.timeWhite);
+            saveGame.setTimeBlack(controller.timeBlack);
+            saveGame.setTotalTime(controller.totalTime);
             saveGame.setSelectedGameType(MainMenuView.selectedGameType);
 
             if (saveGame.saveState(MainMenuView.selectedGameType.name())) {
@@ -328,14 +331,14 @@ public class GameView extends AbstractView {
     // Setup scene
     public Scene setupScene() {
 
-        //reset time values
-        AbstractController.setTotalTime();
-        AbstractController.setTime();
-
-        Scene scene = makeScene(true);
-
         // Setup controller
         this.controller = (AbstractController) Settings.get(Setting.Controller);
+
+        //reset time values
+        controller.setTotalTime();
+        controller.setTime();
+
+        Scene scene = makeScene(true);
 
         // Setup black fields (with click events), game pieces and start game
         this.controller.setupFields();
@@ -349,14 +352,15 @@ public class GameView extends AbstractView {
     // Setup scene from saved game
     public Scene setupScene(ObjectDB db) {
 
-        AbstractController.setTotalTime(db.getTotalTime());
-        AbstractController.setTimeWhite(db.getTimeWhite());
-        AbstractController.setTimeBlack(db.getTimeBlack());
-
-        Scene scene = makeScene(db.isWhiteTurn());
-
         // Setup controller
         this.controller = (AbstractController) Settings.get(Setting.Controller);
+
+        // Set time values
+        this.controller.setTotalTime(db.getTotalTime());
+        this.controller.setTimeWhite(db.getTimeWhite());
+        this.controller.setTimeBlack(db.getTimeBlack());
+
+        Scene scene = makeScene(db.isWhiteTurn());
 
         // Loop over all the fields in the fields hashmap
         for (HashMap.Entry<Integer, HashMap<Integer, Field>> x : db.getFields().entrySet()) {
@@ -376,8 +380,6 @@ public class GameView extends AbstractView {
             }
         }
 
-        this.controller.countDownTimer();
-
         // Rotate surfacePane if it's blacks turn
         if (!db.isWhiteTurn()) {
             this.surfacePaneRotation.play();
@@ -385,6 +387,7 @@ public class GameView extends AbstractView {
 
         // Start the turn
         this.controller.onTurnStart();
+        this.controller.countDownTimer();
 
         return scene;
     }
@@ -412,7 +415,7 @@ public class GameView extends AbstractView {
         displayWhiteTimeLeft = new Text();
         displayWhiteTimeLeft.setStyle("-fx-font: 30 Arial;");
         displayWhiteTimeLeft.setFill(Color.DARKGOLDENROD);
-        displayWhiteTimeLeft.setText("White time left: " + AbstractController.formatTime(AbstractController.timeWhite--));
+        displayWhiteTimeLeft.setText("White time left: " + controller.formatTime(controller.timeWhite--));
 
         StackPane displayWhiteTimeContainer = new StackPane();
         setupContainer(displayWhiteTimeContainer);
@@ -422,7 +425,7 @@ public class GameView extends AbstractView {
         displayBlackTimeLeft = new Text();
         displayBlackTimeLeft.setStyle("-fx-font: 30 Arial;");
         displayBlackTimeLeft.setFill(Color.DARKGOLDENROD);
-        displayBlackTimeLeft.setText("Black time left: " + AbstractController.formatTime(AbstractController.timeBlack--));
+        displayBlackTimeLeft.setText("Black time left: " + controller.formatTime(controller.timeBlack--));
 
         StackPane displayBlackTimeContainer = new StackPane();
         setupContainer(displayBlackTimeContainer);
