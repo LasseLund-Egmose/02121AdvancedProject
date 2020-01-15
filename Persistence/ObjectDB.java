@@ -1,15 +1,11 @@
 package Persistence;
 
 import Enum.GameType;
-import Enum.Setting;
 import Enum.Team;
 import Model.CheckerPiece;
 import Model.Field;
-import Model.Settings;
-
 import javafx.scene.layout.StackPane;
 
-import java.awt.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -109,64 +105,6 @@ public class ObjectDB implements Serializable {
 
     // Serialize and save state to a file
     public boolean saveState(String filename) {
-
-        ArrayList<CheckerPiece> copy = new ArrayList<>();
-        HashMap<Integer, HashMap<Integer, Field>> fields = new HashMap<>();
-
-        for (CheckerPiece piece : this.checkerPieces) {
-            // Create new checker piece
-            CheckerPiece p = new CheckerPiece(piece.isActive(), piece.getIsKing(), piece.getSize(), piece.getTeam(), piece.getCanHighlight());
-
-            if (piece.getParent() != null) {
-                // Get position of parent
-                Point parentPos = piece.getParent().getPosition();
-
-                // Make new parent (field) instance
-                Field newParent = new Field(p, parentPos);
-
-                // Insert new parent into fields arraylist
-                if (!fields.containsKey(parentPos.x)) {
-                    fields.put(parentPos.x, new HashMap<>());
-                }
-                fields.get(parentPos.x).put(parentPos.y, newParent);
-
-                // Set the parent of p (the new checker piece) to the new parent
-                p.setParent(newParent);
-            }
-
-            // Add p to copy
-            copy.add(p);
-        }
-
-        if (this.fields != null) {
-            // Loop over all the fields in the fields hashmap
-            for (HashMap.Entry<Integer, HashMap<Integer, Field>> x : this.fields.entrySet()) {
-                for (HashMap.Entry<Integer, Field> y : x.getValue().entrySet()) {
-                    // Add new field if there is not already a field with an attached piece
-                    if (y.getValue().getAttachedPiece() == null) {
-                        // Create a new field with the position of the original
-                        Field newField = new Field(new Point(x.getKey(), y.getKey()));
-
-                        // Insert the new field in the fields hashmap
-                        if (!fields.containsKey(x.getKey())) {
-                            fields.put(x.getKey(), new HashMap<>());
-                        }
-                        fields.get(x.getKey()).put(y.getKey(), newField);
-                    }
-                }
-            }
-        }
-
-        // Set global variables
-        this.checkerPieces = copy;
-        this.fields = fields;
-
-        // Remove the cylinder container in every checker piece as they are instances of StackPane
-        // which is not serializable
-        for (CheckerPiece piece : this.checkerPieces) {
-            piece.setCylinderContainer(null);
-        }
-
         // Create an object stream and write a file with the state of this
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(filename))) {
             oos.writeObject(this);
