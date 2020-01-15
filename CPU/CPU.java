@@ -21,6 +21,7 @@ public class CPU {
     protected ArrayList<AbstractStrategy> strategies = new ArrayList<>();
 
     public void takeRestOfTurn(Move nextMove) {
+        boolean shouldFinishTurn = true;
 
         if(nextMove.getMoveType() == MoveType.JUMP) {
             this.controller.doJumpMove(nextMove.getToField(), nextMove.getJumpedField());
@@ -29,6 +30,7 @@ public class CPU {
                 this.jumpMoreStrategy.setState(true, this.controller.getForcedJumpMoves());
 
                 // Restart turn and do jump with currently selected piece
+                shouldFinishTurn = false;
                 this.takeTurn();
             }
         } else {
@@ -39,6 +41,10 @@ public class CPU {
 
         nextMove.getPiece().setHighlight(false);
         this.controller.getView().normalizePane(nextMove.getToField());
+
+        if(shouldFinishTurn) {
+            this.controller.finishTurn();
+        }
     }
 
     public CPU(CPURegularCheckersController controller) {

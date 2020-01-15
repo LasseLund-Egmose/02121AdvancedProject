@@ -14,7 +14,7 @@ import java.util.HashMap;
 // TODO: Needs comments
 public class RegularCheckersController extends AbstractController {
 
-    protected boolean onPieceMove(CheckerPiece movedPiece, boolean didJump) {
+    protected boolean onPieceMove(CheckerPiece movedPiece, boolean didJump, boolean isCPU) {
         Team pieceTeam = movedPiece.getTeam();
         Point piecePosition = movedPiece.getPosition();
 
@@ -30,7 +30,15 @@ public class RegularCheckersController extends AbstractController {
             piece.setCanHighlight(false);
         }
 
+        if(isCPU) {
+            return false;
+        }
+
         return !didJump || !this.canJumpMore(movedPiece, true);
+    }
+
+    protected boolean onPieceMove(CheckerPiece movedPiece, boolean didJump) {
+        return this.onPieceMove(movedPiece, didJump, false);
     }
 
     // Check if any jump moves can be made and if yes, force the player to select one

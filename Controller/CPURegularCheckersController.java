@@ -23,6 +23,10 @@ public class CPURegularCheckersController extends RegularCheckersController {
 
     protected CPU cpu;
 
+    protected boolean onPieceMove(CheckerPiece movedPiece, boolean didJump) {
+        return super.onPieceMove(movedPiece, didJump, !this.isWhiteTurn);
+    }
+
     public CPURegularCheckersController(GameView view, int dimension, GridPane grid) {
         super(view, dimension, grid);
 

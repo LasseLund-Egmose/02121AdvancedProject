@@ -199,23 +199,6 @@ abstract public class AbstractController {
         return jumpTo.getAttachedPieceSecure() == null ? jumpTo : null;
     }
 
-    // Check if game is over, toggle isWhiteTurn and setup turn for other team
-    protected void finishTurn() {
-        this.isWhiteTurn = !this.isWhiteTurn;
-        this.pieceHighlightLocked = false;
-
-        // Enable pause button
-        this.view.setPauseButtonActive(true);
-
-        // Is game won or can we play on?
-        if(!checkForWin()) {
-            this.view.setupDisplayTurn(this.isWhiteTurn);
-            if (this.onTurnStart()) {
-                this.view.rotate();
-            }
-        }
-    }
-
     // Highlight fields a selected piece can move to
     protected void highlightEligibleFields(CheckerPiece piece) {
         ArrayList<Move> legalMoves = this.getLegalMovesForPiece(piece);
@@ -409,6 +392,23 @@ abstract public class AbstractController {
 
             // Finish turn
             this.finishTurn();
+        }
+    }
+
+    // Check if game is over, toggle isWhiteTurn and setup turn for other team
+    public void finishTurn() {
+        this.isWhiteTurn = !this.isWhiteTurn;
+        this.pieceHighlightLocked = false;
+
+        // Enable pause button
+        this.view.setPauseButtonActive(true);
+
+        // Is game won or can we play on?
+        if(!checkForWin()) {
+            this.view.setupDisplayTurn(this.isWhiteTurn);
+            if (this.onTurnStart()) {
+                this.view.rotate();
+            }
         }
     }
 
