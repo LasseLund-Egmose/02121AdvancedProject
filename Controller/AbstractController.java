@@ -352,6 +352,8 @@ abstract public class AbstractController {
         this.isWhiteTurn = isWhiteTurn;
         this.activeCount = activeCount;
 
+        this.dimension = Settings.getInt(Setting.Dimension);
+
         this.moveClickEventHandler = mouseEvent -> this.onFieldClick(mouseEvent.getSource());
 
         this.setupSounds();
