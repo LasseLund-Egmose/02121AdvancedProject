@@ -11,9 +11,9 @@ import Model.Field;
 import java.awt.*;
 import java.util.*;
 
-// TODO: Needs comments
 public class DefensiveStrategy extends AbstractStrategy {
 
+    // Try finding a move to fix vulnerability - else return null
     protected Move findFixingMove(VulnerablePosition vulnerability) {
         Move coveringBehindMove = this.findFixingMoveByCoveringBehind(vulnerability);
         Move movingAwayMove = this.findFixingMoveByMovingAway(vulnerability);
@@ -21,11 +21,13 @@ public class DefensiveStrategy extends AbstractStrategy {
         return movingAwayMove != null ? movingAwayMove : coveringBehindMove;
     }
 
+    // Fix vulnerability by moving another piece behind vulnerable piece to block jump from opponent
     protected Move findFixingMoveByCoveringBehind(VulnerablePosition vulnerability) {
         Point positionToCover = vulnerability.getOpponentMove().getToField().getPosition();
 
         // Can we move a piece there?
         for(Move legalMove : this.allLegalMoves) {
+            // We have to find a legal, regular move that moves another piece behind the vulnerable piece to block jump
             if(legalMove.getMoveType() == MoveType.JUMP || !legalMove.getToField().getPosition().equals(positionToCover)) {
                 continue;
             }
@@ -36,6 +38,7 @@ public class DefensiveStrategy extends AbstractStrategy {
         return null;
     }
 
+    // Fix vulnerability by moving vulnerable piece away to a new, safe position
     protected Move findFixingMoveByMovingAway(VulnerablePosition vulnerability) {
         // Get all possible moves (away) for piece in vulnerability
         for(Move possibleMove : this.controller.legalMovesForPiece(vulnerability.getPiece())) {
@@ -67,6 +70,7 @@ public class DefensiveStrategy extends AbstractStrategy {
         return null;
     }
 
+    // Find all vulnerable positions (position where opponent can jump over piece) for a given piece
     protected ArrayList<VulnerablePosition> getVulnerabilitiesForPiece(CheckerPiece piece) {
         ArrayList<VulnerablePosition> vulnerablePositions = new ArrayList<>();
 
@@ -75,12 +79,14 @@ public class DefensiveStrategy extends AbstractStrategy {
         for(Field opField : this.controller.surroundingFields(pieceField)) {
             CheckerPiece fieldPiece = opField.getAttachedPieceSecure();
 
+            // Is there an opponent on a surrounding piece
             if(fieldPiece == null || fieldPiece.getTeam() == Team.BLACK) {
                 continue;
             }
 
             Field oppositeDiagonalField = this.controller.oppositeDiagonalField(pieceField, opField);
 
+            // Is the piece behind empty so opponent can jump?
             if(
                 oppositeDiagonalField != null &&
                 oppositeDiagonalField.getAttachedPieceSecure() == null &&
@@ -94,6 +100,7 @@ public class DefensiveStrategy extends AbstractStrategy {
         return vulnerablePositions;
     }
 
+    // Get vulnerabilities for all pieces
     protected ArrayList<VulnerablePosition> getVulnerabilities() {
         ArrayList<VulnerablePosition> vulnerabilities = new ArrayList<>();
 
@@ -109,6 +116,8 @@ public class DefensiveStrategy extends AbstractStrategy {
         return vulnerabilities;
     }
 
+    // Risk assess a move (high is worse)
+    // One possible jump from opponent equals 1 risk (so n possible jumps equals n risk and is therefore worse than 1 risk)
     protected int riskAssessment(Move opponentMove) {
         int risk = 1;
 
@@ -125,6 +134,8 @@ public class DefensiveStrategy extends AbstractStrategy {
         super(controller);
     }
 
+    // Get a move
+    // If multiple moves is available, the positions of the pieces are risk assessed and the solving move for the highest risk is chosen
     public Move getMoveOrNull() {
         this.updateAllLegalMoves();
 

@@ -8,12 +8,13 @@ import Model.Move;
 import java.util.ArrayList;
 import java.util.Random;
 
-// TODO: Needs comments
 public class OffensiveStrategy extends AbstractStrategy {
 
-    protected ArrayList<Move> assessedMoves = new ArrayList<>();
-    protected int highestGain;
+    protected ArrayList<Move> assessedMoves = new ArrayList<>(); // A list of gain assessed moves
+    protected int highestGain; // Highest gain
 
+    // Gain assess (how good is a move) a jump move
+    // One jump equals 2 gain
     protected int jumpMoveGainAssessment(Move move) {
         int gain = 2;
 
@@ -26,11 +27,15 @@ public class OffensiveStrategy extends AbstractStrategy {
         return gain;
     }
 
+    // Gain assess a move
     protected int gainAssessment(Move move) {
         return this.controller.getForcedJumpMoves().size() > 0 ?
             this.jumpMoveGainAssessment(move) : this.regularMoveGainAssessment(move);
     }
 
+    // Gain assess a regular move
+    // One possible jump over opponent in next round equals one gain
+    // But if opponent is able to jump piece in move in next round, gain is -1
     protected int regularMoveGainAssessment(Move move) {
         int gain = 0;
         Field field = move.getToField();
@@ -56,6 +61,7 @@ public class OffensiveStrategy extends AbstractStrategy {
         return gain;
     }
 
+    // Return a random move from a move list
     protected Move returnRandom(ArrayList<Move> moves) {
         if(moves.size() == 0) {
             return null;
@@ -69,16 +75,20 @@ public class OffensiveStrategy extends AbstractStrategy {
         super(controller);
     }
 
+    // Get a move
+    // Highest gaining move is selected if multiple moves are available
+    // If no moves are available, a random move is selected (as there are no more strategies after this and the CPU has to make a move)
     public Move getMoveOrNull() {
+        // Clear data from last round and refresh legal moves
         this.assessedMoves.clear();
         this.highestGain = Integer.MIN_VALUE;
-
         this.updateAllLegalMoves();
 
         if(this.allLegalMoves.size() == 0) {
             return null;
         }
 
+        // Create a list of moves with highest gain
         for(Move possibleMove : this.allLegalMoves) {
             int gain = this.gainAssessment(possibleMove);
 
@@ -92,6 +102,7 @@ public class OffensiveStrategy extends AbstractStrategy {
             }
         }
 
+        // Select a move from list of highest
         Move selectedMove = this.returnRandom(this.assessedMoves);
         if(selectedMove != null) {
             return selectedMove;
@@ -99,6 +110,7 @@ public class OffensiveStrategy extends AbstractStrategy {
 
         System.out.println("CPU: Cannot find suitable move! Returning random move.");
 
+        // Select a random move as no qualified moves are available
         return this.returnRandom(this.allLegalMoves);
     }
 }
