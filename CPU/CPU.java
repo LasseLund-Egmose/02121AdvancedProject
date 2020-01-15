@@ -61,8 +61,6 @@ public class CPU {
                 continue;
             }
 
-            System.out.println("Caught by: " + strategy.getClass().getSimpleName());
-
             CheckerPiece piece = nextMove.getPiece();
 
             this.controller.setSelectedPieceCPU(piece);

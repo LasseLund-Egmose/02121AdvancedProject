@@ -171,8 +171,6 @@ abstract public class AbstractController {
 
     // Check if game is over, toggle isWhiteTurn and setup turn for other team
     protected void finishTurn() {
-        System.out.println((this.isWhiteTurn ? "White" : "Black") + " turn finished");
-
         this.isWhiteTurn = !this.isWhiteTurn;
         this.pieceHighlightLocked = false;
 

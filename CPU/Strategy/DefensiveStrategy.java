@@ -60,7 +60,6 @@ public class DefensiveStrategy extends AbstractStrategy {
             }
 
             if(isSafe) {
-                System.out.println("Moving away to block jump...");
                 return possibleMove;
             }
         }
