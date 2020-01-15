@@ -102,7 +102,7 @@ public class ObjectDB implements Serializable {
         return this.dimension;
     }
 
-    public GameType getSelectedButton() {
+    public GameType getSelectedGameType() {
         return this.selectedGameType;
     }
 

@@ -25,8 +25,8 @@ public class MainMenuView extends AbstractView {
     protected VBox containSlider;
     protected GridPane grid;
     protected Text information;
+    protected EventHandler<MouseEvent> onMenuGameTypeButtonClicked = e -> this.changeText();
     protected static GameType selectedGameType = null;
-    protected ObjectDB[] gameStates = new ObjectDB[4];
 
     protected void changeText() {
         String text = "Something went wrong";
@@ -120,7 +120,7 @@ public class MainMenuView extends AbstractView {
         ToggleGroup toggleGroup = new ToggleGroup();
 
         //Play button setting dimension, controller and changing game view
-        this.playButton = constructButton("New Game", grid, null);
+        this.playButton = constructButton("New Game", null);
         this.playButton.setVisible(false);
         this.playButton.setOnMouseClicked(e -> {
             int dim = (int) dimensionSlider.getValue();
@@ -149,17 +149,10 @@ public class MainMenuView extends AbstractView {
         });
 
         // Game type buttons
-        EventHandler<MouseEvent> onMenuGameTypeButtonClicked = e -> this.changeText();
-
-        ToggleButton simpDamBtn = constructButton(GameType.SimpDam.name(), grid, toggleGroup);
-        ToggleButton twoPlayerBtn = constructButton(GameType.TwoPlayer.name(), grid, toggleGroup);
-        ToggleButton singlePlayerBtn = constructButton(GameType.SinglePlayer.name(), grid, toggleGroup);
-        ToggleButton flexibleKingBtn = constructButton(GameType.FlexibleKingTwoPlayer.name(), grid, toggleGroup);
-
-        simpDamBtn.setOnMouseClicked(onMenuGameTypeButtonClicked);
-        twoPlayerBtn.setOnMouseClicked(onMenuGameTypeButtonClicked);
-        singlePlayerBtn.setOnMouseClicked(onMenuGameTypeButtonClicked);
-        flexibleKingBtn.setOnMouseClicked(onMenuGameTypeButtonClicked);
+        ToggleButton simpDamBtn = constructGameButton(GameType.SimpDam, toggleGroup);
+        ToggleButton twoPlayerBtn = constructGameButton(GameType.TwoPlayer, toggleGroup);
+        ToggleButton singlePlayerBtn = constructGameButton(GameType.SinglePlayer, toggleGroup);
+        ToggleButton flexibleKingBtn = constructGameButton(GameType.FlexibleKingTwoPlayer, toggleGroup);
 
 
         //loader buttons:
@@ -171,15 +164,8 @@ public class MainMenuView extends AbstractView {
         TextField showSlider = new TextField(String.valueOf(dimensionSlider.getValue()));
         showSlider.setMaxSize(50, 50);
 
-
-        dimensionSlider.setOnMouseDragged(e -> {
-            showSlider.setText("" + (int) dimensionSlider.getValue());
-        });
-
-        dimensionSlider.setOnMouseClicked(e -> {
-            showSlider.setText("" + (int) dimensionSlider.getValue());
-        });
-
+        dimensionSlider.setOnMouseClicked(e -> showSlider.setText(String.valueOf(dimensionSlider.getValue())));
+        dimensionSlider.setOnMouseDragged(e -> showSlider.setText(String.valueOf(dimensionSlider.getValue())));
 
         showSlider.textProperty().addListener((observable, oldValue, newValue) -> {
             try {
@@ -210,6 +196,7 @@ public class MainMenuView extends AbstractView {
         GridPane.setConstraints(containSlider, 0, 1);
 
         //align the grid
+        GridPane.setConstraints(simpDamBtn, 0, 0);
         GridPane.setConstraints(twoPlayerBtn, 0, 1);
         GridPane.setConstraints(singlePlayerBtn, 0, 2);
         GridPane.setConstraints(flexibleKingBtn, 0, 3);
@@ -219,7 +206,7 @@ public class MainMenuView extends AbstractView {
         return new Scene(root, GameView.WIDTH, GameView.HEIGHT, true, null);
     }
 
-    public ToggleButton constructButton(String name, GridPane grid, Object toggleGroupObject) {
+    public ToggleButton constructButton(String name, Object toggleGroupObject) {
         ToggleButton button = new ToggleButton(name);
         button.setStyle("-fx-background-image: url(/assets/dark_wood.jpg); -fx-cursor: hand;" +
                 " -fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: #DAA520;" +
@@ -228,19 +215,34 @@ public class MainMenuView extends AbstractView {
         if (toggleGroupObject instanceof ToggleGroup) {
             ToggleGroup toggleGroup = (ToggleGroup) toggleGroupObject;
             toggleGroup.getToggles().add(button);
+        }
 
+
+        this.grid.getChildren().add(button);
+
+        return button;
+    }
+
+    public ToggleButton constructGameButton(GameType gameType, Object toggleGroupObject) {
+        ToggleButton button = this.constructButton(gameType.name(), toggleGroupObject);
+
+        if (toggleGroupObject instanceof ToggleGroup) {
+            ToggleGroup toggleGroup = (ToggleGroup) toggleGroupObject;
+
+            button.setOnMouseClicked(this.onMenuGameTypeButtonClicked);
             button.selectedProperty().addListener((observable, oldValue, newValue) -> {
                 if (newValue) {
-                    MainMenuView.selectedButton = name;
+                    MainMenuView.selectedGameType = gameType;
                     button.setStyle("-fx-background-color: Green; -fx-cursor: hand;" +
-                            " -fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: #DAA520;" +
-                            "-fx-border-color: #DAA520; -fx-border-width: 5px;");
+                        " -fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: #DAA520;" +
+                        "-fx-border-color: #DAA520; -fx-border-width: 5px;");
                 } else {
-                    MainMenuView.selectedButton = null;
+                    MainMenuView.selectedGameType = null;
                     button.setStyle("-fx-background-image: url(/assets/dark_wood.jpg); -fx-cursor: hand;" +
-                            " -fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: #DAA520;" +
-                            "-fx-border-color: #DAA520; -fx-border-width: 5px;");
+                        " -fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: #DAA520;" +
+                        "-fx-border-color: #DAA520; -fx-border-width: 5px;");
                 }
+
                 if (toggleGroup.getSelectedToggle() == null) {
                     this.playButton.setVisible(false);
                     this.containSlider.setVisible(false);
@@ -248,18 +250,11 @@ public class MainMenuView extends AbstractView {
                     this.playButton.setVisible(true);
                     this.containSlider.setVisible(true);
                 }
-                if (name.equals(loadNames[0]) || name.equals("New Game")) {
-                    this.dimensionSlider.setMin(3);
 
-                } else {
-                    this.dimensionSlider.setMin(8);
-                }
 
+                this.dimensionSlider.setMin(gameType == GameType.SimpDam ? 3 : 8);
             });
         }
-
-
-        this.grid.getChildren().add(button);
 
         return button;
     }
@@ -272,30 +267,36 @@ public class MainMenuView extends AbstractView {
                 "-fx-border-color: #7d6425; -fx-border-width: 5px;");
 
         ObjectDB db = new ObjectDB();
-        ObjectDB state = db.loadState(fileName);
+        ObjectDB state = db.loadState(gameType.name());
 
         if (state == null) {
             return;
         }
 
         button.setOnMouseClicked(e -> {
-            MainMenuView.selectedButton = fileName;
+            MainMenuView.selectedGameType = gameType;
 
-            if (state.getSelectedButton().equals(this.loadNames[0])) {
-                Settings.set(Setting.Controller,
-                        new SimpDamController(Main.gameView, (int) Settings.get(Setting.Dimension), Main.gameView.grid, state.getCheckerPieces(), state.getFields(), state.isWhiteTurn(), state.getActiveCount()));
-            } else if (state.getSelectedButton().equals(this.loadNames[1])) {
-                Settings.set(Setting.Controller, new RegularCheckersController(Main.gameView, (int) Settings.get(Setting.Dimension), Main.gameView.grid, state.getCheckerPieces(), state.getFields(), state.isWhiteTurn(), state.getActiveCount()));
-            } else if (state.getSelectedButton().equals(this.loadNames[2])) {
-                Settings.set(Setting.Controller, new CPURegularCheckersController(Main.gameView,
-                        (int) Settings.get(Setting.Dimension), Main.gameView.grid, state.getCheckerPieces(), state.getFields(), state.isWhiteTurn(), state.getActiveCount()));
-            } else if (state.getSelectedButton().equals(this.loadNames[3])) {
-                Settings.set(Setting.Controller, new FlexibleKingController(Main.gameView,
-                        (int) Settings.get(Setting.Dimension), Main.gameView.grid, state.getCheckerPieces(), state.getFields(), state.isWhiteTurn(), state.getActiveCount()));
+            int dimension = (int) Settings.get(Setting.Dimension);
+
+            AbstractController controller;
+            switch (state.getSelectedGameType()) {
+                case SimpDam:
+                    controller = new SimpDamController(Main.gameView, dimension, Main.gameView.grid, state.getCheckerPieces(), state.getFields(), state.isWhiteTurn(), state.getActiveCount());
+                    break;
+                case SinglePlayer:
+                    controller = new CPURegularCheckersController(Main.gameView, dimension, Main.gameView.grid, state.getCheckerPieces(), state.getFields(), state.isWhiteTurn(), state.getActiveCount());
+                    break;
+                case FlexibleKingTwoPlayer:
+                    controller = new FlexibleKingController(Main.gameView, dimension, Main.gameView.grid, state.getCheckerPieces(), state.getFields(), state.isWhiteTurn(), state.getActiveCount());
+                    break;
+                case TwoPlayer:
+                default:
+                    controller = new RegularCheckersController(Main.gameView, dimension, Main.gameView.grid, state.getCheckerPieces(), state.getFields(), state.isWhiteTurn(), state.getActiveCount());
+                    break;
             }
 
+            Settings.set(Setting.Controller, controller);
             Main.setView(Main.gameView, state);
-
         });
 
 
