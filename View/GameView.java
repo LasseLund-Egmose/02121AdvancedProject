@@ -151,9 +151,10 @@ public class GameView extends AbstractView {
 
         //total game time
         StackPane timepane = new StackPane();
-        timepane.setMinSize(GameView.POPUP_SIZE, GameView.POPUP_SIZE / 1.6); //design choice
-        timepane.setMaxSize(GameView.POPUP_SIZE, GameView.POPUP_SIZE / 1.6); //design choice
+        timepane.setMinSize(GameView.POPUP_SIZE, GameView.POPUP_SIZE/1.6); //design choice
+        timepane.setMaxSize(GameView.POPUP_SIZE, GameView.POPUP_SIZE/1.6);
 
+        //displays the total time the game took
         Text timetext = new Text();
         timetext.setText("Game length: " + AbstractController.formatTime(AbstractController.totalTime));
         timetext.setStyle("-fx-font: 30px Arial");
@@ -173,6 +174,7 @@ public class GameView extends AbstractView {
         dialog.show();
     }
 
+    //Setup pause scene and display it
     public void displayPauseScreen() {
         this.controller.pauseTime();
 
@@ -184,6 +186,7 @@ public class GameView extends AbstractView {
         root.setMaxSize(GameView.WIDTH, GameView.HEIGHT);
         root.setStyle("-fx-border-color: #DAA520; -fx-border-width: 5px; -fx-background-color: antiquewhite;");
 
+        //removes stopGamePane from the game stage, and starts the time again.
         Button resumeButton = new Button("Resume game");
         resumeButton.setStyle("-fx-background-image: url(/assets/dark_wood.jpg); -fx-cursor: hand;" +
                 " -fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: #DAA520;" +
@@ -194,6 +197,7 @@ public class GameView extends AbstractView {
             this.controller.startTime();
         });
 
+        //calls on instance of ObjectDB to save every variable as is in the current gamestate
         Button saveButton = new Button("Save game");
         saveButton.setStyle("-fx-background-image: url(/assets/dark_wood.jpg); -fx-cursor: hand;" +
                 " -fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: #DAA520;" +
@@ -217,6 +221,7 @@ public class GameView extends AbstractView {
             }
         });
 
+        //go to main menu
         Button quitButton = new Button("Quit game");
         quitButton.setStyle("-fx-background-image: url(/assets/dark_wood.jpg); -fx-cursor: hand;" +
                 " -fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: #DAA520;" +
@@ -226,6 +231,7 @@ public class GameView extends AbstractView {
             dialog.close();
         });
 
+        //return to game if the pausewindow is closed
         dialog.setOnCloseRequest(event -> {
             this.root.getChildren().remove(stopGamePane);
             this.controller.startTime();
@@ -388,7 +394,7 @@ public class GameView extends AbstractView {
         setupContainer(displayTurnContainer);
         displayTurnContainer.getChildren().add(this.displayTurn);
 
-        //Setup time text and the containers
+        //Setup white time text and its container
         displayWhiteTimeLeft = new Text();
         displayWhiteTimeLeft.setStyle("-fx-font: 30 Arial;");
         displayWhiteTimeLeft.setFill(Color.DARKGOLDENROD);
@@ -398,6 +404,7 @@ public class GameView extends AbstractView {
         setupContainer(displayWhiteTimeContainer);
         displayWhiteTimeContainer.getChildren().add(displayWhiteTimeLeft);
 
+        //Setup black time text and its container
         displayBlackTimeLeft = new Text();
         displayBlackTimeLeft.setStyle("-fx-font: 30 Arial;");
         displayBlackTimeLeft.setFill(Color.DARKGOLDENROD);
@@ -424,25 +431,29 @@ public class GameView extends AbstractView {
         this.setupSurface();
         boardContainer.getChildren().add(this.surfacePane);
 
-        //setup pause button
+        //styling for the pane the prevents player interaction while the game is paused.
         this.stopGamePane.setMinSize(GameView.WIDTH, GameView.HEIGHT);
         this.stopGamePane.setMaxSize(GameView.WIDTH, GameView.HEIGHT);
         this.stopGamePane.setStyle("-fx-background-color: #555555a0");
-        this.stopGamePane.setTranslateZ(2 * -GameView.zOffset());
+        this.stopGamePane.setTranslateZ(2*-GameView.zOffset());
+
+        //setup and style pause button
         StackPane pausepane = new StackPane();
         pausepane.setMinHeight(40);
         pausepane.setMinWidth(10);
         pausepane.setMaxHeight(20);
         pausepane.setMaxWidth(100);
+        pausepane.setStyle("-fx-background-image: url(/assets/dark_wood.jpg);  -fx-cursor: hand");
 
+        //setup and style text for pause button
         Text pauseText = new Text();
         pauseText.setText("Pause");
         pauseText.setStyle("-fx-font: 20 Arial;");
         pauseText.setFill(Color.DARKGOLDENROD);
         pausepane.getChildren().add(pauseText);
 
-        pausepane.setStyle("-fx-background-image: url(/assets/dark_wood.jpg);  -fx-cursor: hand");
-        pausepane.setOnMouseClicked(e -> {
+        //add clickevent to pausebutton, adds stopGamePane to root in front of the other game elements.
+        pausepane.setOnMouseClicked( e ->{
             root.getChildren().add(this.stopGamePane);
             displayPauseScreen();
         });

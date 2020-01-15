@@ -101,9 +101,9 @@ public class MainMenuView extends AbstractView {
         informationContainer.setPadding(new Insets(10));
 
         TextFlow textFlow = new TextFlow();
-        textFlow.setMaxSize(200, 50);
-        textFlow.setMinSize(200, 50);
-        this.information = new Text("Solong and thanks for all the fish! biotch");
+        textFlow.setMaxSize(200,50);
+        textFlow.setMinSize(200,50);
+        this.information = new Text("Solong and thanks for all the fish!");
         textFlow.getChildren().add(this.information);
         informationContainer.getChildren().add(textFlow);
 
