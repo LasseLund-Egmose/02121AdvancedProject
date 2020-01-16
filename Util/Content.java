@@ -38,20 +38,20 @@ public class Content { // This class contains all text displayed within the appl
      * Game descriptions
      */
 
-    public static final String GAME_DESCRIPTION_SIMP_DAM = "This is the simplest version of checkers. " +
-            "In this version each player has exactly one piece each, starting at opposite corners of the board. " +
-            "However, in this version every checker piece acts as a king piece, meaning it is not locked to only moving forward.";
-
-    public static final String GAME_DESCRIPTION_TWO_PLAYER = "This is the American/British version of checkers for two players. " +
-            "Every player has pieces on the three first rows of the board on their own respective side. " +
-            "All pieces can only move forward, unless they become king pieces";
-
-    public static final String GAME_DESCRIPTION_SINGLE_PLAYER = "This is the Single player version of checkers, where you play against an AI. " +
-            "The rules are the same as for regular checkers.";
-
-    public static final String GAME_DESCRIPTION_FLEXIBLE_KING_TWO_PLAYER = "This is the international version of checkers. For two players. " +
-            "This version has the international rules meaning you can move the king pieces an arbitrary amount of spaces. ";
+    public static final String GAME_DESCRIPTION_FLEXIBLE_KING_TWO_PLAYER = "This game type is based on the two player game. " +
+            "However, this version enables you to move the king pieces an arbitrary amount of spaces instead of only field away.";
 
     public static final String GAME_DESCRIPTION_NONE = "Please select a game mode.";
+
+    public static final String GAME_DESCRIPTION_SIMP_DAM = "This is the simplest version of checkers. " +
+            "In this version, each player has exactly one piece, starting in opposite corners of the board. " +
+            "However, in this version every checker piece acts as a king piece, meaning it is not locked to only moving forward.";
+
+    public static final String GAME_DESCRIPTION_SINGLE_PLAYER = "This is the single player version of checkers in which you play against your computer. " +
+            "The rules are the same as for regular checkers.";
+
+    public static final String GAME_DESCRIPTION_TWO_PLAYER = "This is the American/British version of checkers for two players. " +
+            "Every player has pieces on the three first rows of the board on their own respective sides. " +
+            "All pieces can only move forward, unless they are king pieces.";
 
 }
