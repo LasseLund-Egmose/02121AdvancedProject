@@ -460,8 +460,8 @@ public class GameView extends AbstractView {
         StackPane.setAlignment(timeText, Pos.CENTER);
 
         // Add children to parents
+        timePane.getChildren().add(timeText);
         pane.getChildren().addAll(text, timePane, button);
-        timePane.getChildren().add(timePane);
         root.getChildren().add(pane);
 
         // Setup scene and show stage
