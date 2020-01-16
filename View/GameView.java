@@ -63,7 +63,7 @@ public class GameView extends AbstractView {
     // GameControllers.Controller instance
     protected AbstractController controller;
 
-    // Timeline for handling baground music
+    // Timeline for handling background music
     protected Timeline musicTimeline;
 
     // Board
@@ -89,7 +89,7 @@ public class GameView extends AbstractView {
         return Math.sqrt(2) * (GameView.BOARD_SIZE / 2.0) * Math.sin(Math.toRadians(GameView.BOARD_TILT));
     }
 
-    // Construct text field containing time left for player
+    // Construct text containing time left for player
     protected Text constructTimeLeftText(String prefix, int time) {
         Text timeLeft = new Text();
         timeLeft.setText(prefix + AbstractController.formatTime(time));

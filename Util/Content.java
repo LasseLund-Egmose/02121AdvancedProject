@@ -42,7 +42,7 @@ public class Content { // This class contains all text displayed within the appl
             "In this version each player has exactly one piece each, starting at opposite corners of the board. " +
             "However, in this version every checker piece acts as a king piece, meaning it is not locked to only moving forward.";
 
-    public static final String GAME_DESCRIPTION_TWO_PLAYER = "This is the normal version of checkers for two players. " +
+    public static final String GAME_DESCRIPTION_TWO_PLAYER = "This is the American/British version of checkers for two players. " +
             "Every player has pieces on the three first rows of the board on their own respective side. " +
             "All pieces can only move forward, unless they become king pieces";
 
