@@ -579,8 +579,7 @@ public class GameView extends AbstractView {
 
     // Setup scene
     public Scene setupScene() {
-
-        setupMusic();
+        this.setupMusic();
 
         // Setup controller
         this.controller = (AbstractController) Settings.get(Setting.Controller);
@@ -602,8 +601,7 @@ public class GameView extends AbstractView {
 
     // Setup scene from saved game
     public Scene setupScene(ObjectDB db) {
-
-        setupMusic();
+        this.setupMusic();
 
         // Setup controller
         this.controller = (AbstractController) Settings.get(Setting.Controller);
