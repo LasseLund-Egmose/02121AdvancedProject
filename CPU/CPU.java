@@ -27,7 +27,7 @@ public class CPU {
     protected ArrayList<AbstractStrategy> strategies = new ArrayList<>(); // All strategy instances
 
     // Take rest of turn after pausing 1 second
-    public void takeRestOfTurn(Move nextMove) {
+    protected void takeRestOfTurn(Move nextMove) {
         boolean shouldFinishTurn = true;
 
         // Do move
