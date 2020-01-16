@@ -13,6 +13,7 @@ import Model.Settings;
 
 import Persistence.ObjectDB;
 
+import Util.Content;
 import Util.StyleCollection;
 import Util.StyleProp;
 
@@ -126,14 +127,14 @@ public class GameView extends AbstractView {
         displayTurnContainer.getChildren().add(this.displayTurn);
 
         // Setup white time text and its container
-        GameView.displayWhiteTimeLeft = this.constructTimeLeftText("White time left: ", controller.timeWhite--);
+        GameView.displayWhiteTimeLeft = this.constructTimeLeftText(Content.WHITE_TIME_LEFT, controller.timeWhite--);
 
         StackPane displayWhiteTimeContainer = new StackPane();
         setupContainer(displayWhiteTimeContainer);
         displayWhiteTimeContainer.getChildren().add(displayWhiteTimeLeft);
 
         // Setup black time text and its container
-        GameView.displayBlackTimeLeft = this.constructTimeLeftText("Black time left: ", controller.timeBlack--);
+        GameView.displayBlackTimeLeft = this.constructTimeLeftText(Content.BLACK_TIME_LEFT, controller.timeBlack--);
 
         StackPane displayBlackTimeContainer = new StackPane();
         setupContainer(displayBlackTimeContainer);
@@ -179,7 +180,7 @@ public class GameView extends AbstractView {
 
         // Setup and style text for pause button
         Text pauseText = new Text();
-        pauseText.setText("Pause");
+        pauseText.setText(Content.PAUSE);
         pauseText.setFill(Color.DARKGOLDENROD);
 
         StyleCollection.build(
@@ -314,7 +315,7 @@ public class GameView extends AbstractView {
 
         // Setup dialog and root element
         Stage dialog = new Stage();
-        dialog.setTitle("Game paused");
+        dialog.setTitle(Content.GAME_PAUSED);
 
         StackPane root = new StackPane();
         root.setMinSize(GameView.WIDTH, GameView.HEIGHT);
@@ -327,7 +328,7 @@ public class GameView extends AbstractView {
         );
 
         // Setup resume button with click event
-        Button resumeButton = new Button("Resume game");
+        Button resumeButton = new Button(Content.RESUME_GAME);
         StyleCollection.buttonStyle(resumeButton);
 
         resumeButton.setOnMouseClicked(e -> {
@@ -338,7 +339,7 @@ public class GameView extends AbstractView {
         });
 
         // Setup save button with click event
-        Button saveButton = new Button("Save game");
+        Button saveButton = new Button(Content.SAVE_GAME);
         StyleCollection.buttonStyle(saveButton);
 
         saveButton.setOnMouseClicked(e -> {
@@ -358,14 +359,14 @@ public class GameView extends AbstractView {
 
             // Save, check if it's succesful and display message accordingly
             if (saveGame.saveState(MainMenuView.selectedGameType.name())) {
-                saveButton.setText("Game Saved!");
+                saveButton.setText(Content.GAME_SAVE_SUCCESS);
             } else {
-                saveButton.setText("Couldn't Save Game");
+                saveButton.setText(Content.GAME_SAVE_ERROR);
             }
         });
 
         // Setup quit game button with click event
-        Button quitButton = new Button("Quit game");
+        Button quitButton = new Button(Content.QUIT_GAME);
         StyleCollection.buttonStyle(quitButton);
 
         quitButton.setOnMouseClicked(e -> {
@@ -402,12 +403,12 @@ public class GameView extends AbstractView {
 
         // Setup new dialog
         Stage dialog = new Stage();
-        dialog.setTitle("You won!");
+        dialog.setTitle(Content.YOU_WON);
 
         StackPane root = new StackPane();
 
         // Setup close button
-        Button button = new Button("Close");
+        Button button = new Button(Content.CLOSE);
         StyleCollection.build(
                 button,
                 StyleProp.BACKGROUND_COLOR("transparent"),
@@ -431,7 +432,7 @@ public class GameView extends AbstractView {
 
         // Setup who won text
         Text text = new Text();
-        text.setText(winningTeam == Team.BLACK ? "Black won" : "White won");
+        text.setText(winningTeam == Team.BLACK ? Content.BLACK_WON : Content.WHITE_WON);
         StyleCollection.build(
                 text,
                 StyleProp.FONT("70px Arial")
@@ -445,7 +446,7 @@ public class GameView extends AbstractView {
 
         // Display total game time
         Text timeText = new Text();
-        timeText.setText("Game length: " + AbstractController.formatTime(controller.totalTime));
+        timeText.setText(Content.GAME_LENGTH + AbstractController.formatTime(controller.totalTime));
         StyleCollection.build(
                 timeText,
                 StyleProp.FONT("30px Arial")
@@ -476,7 +477,7 @@ public class GameView extends AbstractView {
 
     // Title
     public String getTitle() {
-        return "Game";
+        return Content.TITLE_GAME_VIEW;
     }
 
     // Add highlight to black field
@@ -542,7 +543,7 @@ public class GameView extends AbstractView {
 
     // Set text based on turn
     public void setupDisplayTurn(boolean isWhiteTurn) {
-        this.displayTurn.setText(isWhiteTurn ? "White's turn" : "Black's turn");
+        this.displayTurn.setText(isWhiteTurn ? Content.WHITE_TURN : Content.BLACK_TURN);
     }
 
     // Setup one black field

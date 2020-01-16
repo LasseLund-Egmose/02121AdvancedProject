@@ -4,6 +4,7 @@ import Controller.CPURegularCheckersController;
 import Model.CheckerPiece;
 import Model.Field;
 import Model.Move;
+import Util.Content;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -108,7 +109,7 @@ public class OffensiveStrategy extends AbstractStrategy {
             return selectedMove;
         }
 
-        System.out.println("CPU: Cannot find suitable move! Returning random move.");
+        System.out.println(Content.CPU_NO_SUITABLE_MOVE);
 
         // Select a random move as no qualified moves are available
         return this.returnRandom(this.allLegalMoves);

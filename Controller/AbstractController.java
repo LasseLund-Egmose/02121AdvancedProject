@@ -7,6 +7,7 @@ import Model.CheckerPiece;
 import Model.Field;
 import Model.Move;
 import Model.Settings;
+import Util.Content;
 import View.GameView;
 
 import javafx.animation.Animation;
@@ -89,13 +90,13 @@ abstract public class AbstractController {
     public void countDownTimer(boolean setupBlack) {
         this.timeline = new Timeline(new KeyFrame(Duration.seconds(1), ev -> {
             if (isWhiteTurn) {
-                GameView.displayWhiteTimeLeft.setText("White time left: " + formatTime(timeWhite--));
+                GameView.displayWhiteTimeLeft.setText(Content.WHITE_TIME_LEFT + formatTime(timeWhite--));
                 if (timeWhite <= -2) {
                     timeline.stop();
                     this.view.displayWin(Team.BLACK);
                 }
             } else if(setupBlack) {
-                GameView.displayBlackTimeLeft.setText("Black time left: " + formatTime(timeBlack--));
+                GameView.displayBlackTimeLeft.setText(Content.BLACK_TIME_LEFT + formatTime(timeBlack--));
                 if (timeBlack <= -2) {
                     timeline.stop();
                     this.view.displayWin(Team.WHITE);

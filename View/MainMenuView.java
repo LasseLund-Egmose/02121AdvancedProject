@@ -344,7 +344,7 @@ public class MainMenuView extends AbstractView {
 
     // Window title
     public String getTitle() {
-        return "Main Menu";
+        return Content.TITLE_MAIN_MENU_VIEW;
     }
 
     // Setup scene
