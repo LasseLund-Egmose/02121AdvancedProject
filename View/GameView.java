@@ -376,6 +376,7 @@ public class GameView extends AbstractView {
 
         // Return to game if the pause window is closed
         dialog.setOnCloseRequest(event -> {
+            this.musicTimeline.play();
             this.root.getChildren().remove(stopGamePane);
             this.controller.startTime();
         });
