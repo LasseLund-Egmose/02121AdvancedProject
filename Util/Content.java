@@ -39,7 +39,7 @@ public class Content { // This class contains all text displayed within the appl
      */
 
     public static final String GAME_DESCRIPTION_FLEXIBLE_KING_TWO_PLAYER = "This game type is based on the two player game. " +
-            "However, this version enables you to move the king pieces an arbitrary amount of spaces instead of only field away.";
+            "However, this version enables you to move the king pieces an arbitrary amount of spaces instead of only one field away.";
 
     public static final String GAME_DESCRIPTION_NONE = "Please select a game mode.";
 
