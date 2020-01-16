@@ -21,6 +21,8 @@ public class Content { // This class contains all text displayed within the appl
     public static final String QUIT_GAME = "Quit game";
     public static final String RESUME_GAME = "Resume game";
     public static final String SAVE_GAME = "Save game";
+    public static final String SLIDER_DIMENSION_LABEL = "Set board dimensions:";
+    public static final String SLIDER_TIME_LABEL = "Set time limit (in minutes):";
     public static final String WELCOME = "Welcome to the game of checkers!";
     public static final String WHITE_TIME_LEFT = "White time left: ";
     public static final String WHITE_TURN = "White's turn";

@@ -269,8 +269,8 @@ public class MainMenuView extends AbstractView {
         this.timeSliderContainer = this.constructSliderContainer();
 
         // Setup static labels
-        this.dimensionSliderLabel = this.constructSliderLabel("Set board dimensions:");
-        this.timeSliderLabel = this.constructSliderLabel("Set time constraints:");
+        this.dimensionSliderLabel = this.constructSliderLabel(Content.SLIDER_DIMENSION_LABEL);
+        this.timeSliderLabel = this.constructSliderLabel(Content.SLIDER_TIME_LABEL);
 
         // Setup status number fields
         this.dimensionSliderStatus = new TextField(String.valueOf((int)dimensionSlider.getValue()));

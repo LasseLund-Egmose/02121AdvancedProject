@@ -49,7 +49,7 @@ public class StyleCollection {
                 StyleProp.BACKGROUND_IMAGE("url(/assets/dark_wood.jpg)"),
                 StyleProp.BORDER_COLOR("#DAA520"),
                 StyleProp.BORDER_WIDTH("5px"),
-                StyleProp.FONT_SIZE("15px"),
+                StyleProp.FONT_SIZE("13.5px"),
                 StyleProp.FONT_WEIGHT("bold"),
                 StyleProp.PADDING("5 5 5 5"),
                 StyleProp.TEXT_FILL("#DAA520")
