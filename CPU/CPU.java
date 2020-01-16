@@ -26,6 +26,7 @@ public class CPU {
     protected CanJumpMoreStrategy jumpMoreStrategy; // Reference to jump more strategy (special strategy used when jumping multiple times in one turn)
     protected ArrayList<AbstractStrategy> strategies = new ArrayList<>(); // All strategy instances
 
+    // Take rest of turn after pausing 1 second
     public void takeRestOfTurn(Move nextMove) {
         boolean shouldFinishTurn = true;
 

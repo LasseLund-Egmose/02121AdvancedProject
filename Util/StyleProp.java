@@ -2,6 +2,10 @@ package Util;
 
 public class StyleProp {
 
+    /*
+     * StyleProp builders
+     */
+
     public static StyleProp BACKGROUND_COLOR(String value) {
         return new StyleProp("background-color", value);
     }
@@ -73,6 +77,10 @@ public class StyleProp {
         this.property = property;
         this.value = value;
     }
+
+    /*
+     * Getters
+     */
 
     public String getProperty() {
         return this.property;

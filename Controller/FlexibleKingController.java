@@ -13,7 +13,8 @@ import java.util.HashMap;
 
 public class FlexibleKingController extends RegularCheckersController {
 
-    // Extend
+    // Extend surrounding pieces to include all diagonal fields (more than 1 away as well) for kings
+    // until an occupied field is found in diagonal
     protected ArrayList<Point> surroundingPoints(Point point) {
         // Get regular surrounding points
         ArrayList<Point> eligiblePoints = super.surroundingPoints(point);

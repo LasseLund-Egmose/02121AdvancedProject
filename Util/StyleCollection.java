@@ -14,7 +14,7 @@ public class StyleCollection {
     protected ArrayList<StyleProp> props = new ArrayList<>(); // A list of styles to be applied to given Node
 
     /*
-     * Pre-made styles
+     * Pre-made style collections
      */
 
     public static void buttonStyle(Node applyTo) {
@@ -70,11 +70,13 @@ public class StyleCollection {
      * Static helper methods
      */
 
+    // Build a new set of styles
     public static void build(Node applyTo, StyleProp... props) {
         StyleCollection instance = new StyleCollection(props);
         instance.applyTo(applyTo);
     }
 
+    // Modify an existing set of styles
     public static void modifyProps(Node applyTo, StyleProp... props) {
         List<StyleProp> styleProps = new ArrayList<StyleProp>();
         Collections.addAll(styleProps, props);

@@ -31,8 +31,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
@@ -531,7 +529,7 @@ public class GameView extends AbstractView {
         container.setMinHeight(80);
         container.setMinWidth(20);
         container.setMaxHeight(20);
-        container.setMaxWidth(300);;
+        container.setMaxWidth(300);
         container.setTranslateZ(-GameView.zOffset());
         StyleCollection.build(
                 container,
@@ -616,7 +614,7 @@ public class GameView extends AbstractView {
 
         Scene scene = makeScene(db.isWhiteTurn());
 
-        // Loop over all the fields in the fields hashmap
+        // Loop over all the fields in the fields HashMap
         for (HashMap.Entry<Integer, HashMap<Integer, Field>> x : db.getFields().entrySet()) {
             for (HashMap.Entry<Integer, Field> y : x.getValue().entrySet()) {
                 // Setup black fields (with click events)

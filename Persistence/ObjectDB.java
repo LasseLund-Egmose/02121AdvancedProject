@@ -75,6 +75,7 @@ public class ObjectDB implements Serializable {
     /*
      * Getters
      */
+
     public HashMap<Team, Integer> getActiveCount() {
         return this.activeCount;
     }
@@ -109,10 +110,12 @@ public class ObjectDB implements Serializable {
 
     // Serialize and save state to a file
     public boolean saveState(String filename) {
-
         File dir = new File(FileSystemView.getFileSystemView().getHomeDirectory() + "/CheckerSaves");
         if (!dir.exists()) {
-            dir.mkdir();
+            if(!dir.mkdir()) {
+                System.out.println("Could not create directory for game save files!");
+                return false;
+            }
         }
 
         // Create an object stream and write a file with the state of this

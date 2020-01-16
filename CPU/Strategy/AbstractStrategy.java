@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 abstract public class AbstractStrategy {
 
-    abstract public Move getMoveOrNull();
+    abstract public Move getMoveOrNull(); // Main method called from CPU
 
     protected ArrayList<Move> allLegalMoves; // A list of all legal moves (once updated)
     protected CPURegularCheckersController controller; // Reference to game controller instance
