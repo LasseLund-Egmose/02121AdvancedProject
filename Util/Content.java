@@ -10,6 +10,7 @@ public class Content { // This class contains all text displayed within the appl
     public static final String BLACK_TURN = "Black's turn";
     public static final String BLACK_WON = "Black won!";
     public static final String CLOSE = "Close";
+    public static final String CPU = "CPU";
     public static final String CPU_NO_SUITABLE_MOVE = "CPU: Cannot find suitable move! Returning random move.";
     public static final String GAME_LENGTH = "Game length: ";
     public static final String GAME_PAUSED = "Game paused";

@@ -4,6 +4,7 @@ import CPU.CPU;
 import Enum.Team;
 import Model.CheckerPiece;
 import Model.Field;
+import Util.Content;
 import View.GameView;
 
 import javafx.scene.layout.GridPane;
@@ -46,7 +47,7 @@ public class CPURegularCheckersController extends RegularCheckersController {
     // Setup CPU-specific countdown timer
     public void countDownTimer() {
         // Do not display CPU time left as it is not relevant
-        GameView.displayBlackTimeLeft.setText("CPU");
+        GameView.displayBlackTimeLeft.setText(Content.CPU);
 
         // Setup timer for white only
         super.countDownTimer(false);
