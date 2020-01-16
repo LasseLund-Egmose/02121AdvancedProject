@@ -80,34 +80,6 @@ abstract public class AbstractController {
         return false;
     }
 
-    // Setup game timer
-    // If whiteTime or blackTime reaches 0, the opposite team wins.
-    public void countDownTimer() {
-        this.countDownTimer(true);
-    }
-
-    // Set up timer (this specific method call is used with CPU)
-    public void countDownTimer(boolean setupBlack) {
-        this.timeline = new Timeline(new KeyFrame(Duration.seconds(1), ev -> {
-            if (isWhiteTurn) {
-                GameView.displayWhiteTimeLeft.setText(Content.WHITE_TIME_LEFT + formatTime(timeWhite--));
-                if (timeWhite <= -2) {
-                    timeline.stop();
-                    this.view.displayWin(Team.BLACK);
-                }
-            } else if(setupBlack) {
-                GameView.displayBlackTimeLeft.setText(Content.BLACK_TIME_LEFT + formatTime(timeBlack--));
-                if (timeBlack <= -2) {
-                    timeline.stop();
-                    this.view.displayWin(Team.WHITE);
-                }
-            }
-            totalTime++;
-        }));
-        timeline.setCycleCount(Animation.INDEFINITE);
-        timeline.play();
-    }
-
     // Check if a jump move is eligible (e.g. no piece behind jumped piece)
     // Return field from new position if yes and null if no
     protected Object eligibleJumpMoveOrNull(CheckerPiece thisPiece, Point opponentPosition) {
@@ -178,19 +150,9 @@ abstract public class AbstractController {
         }
     }
 
-    // Returns boolean whether or not board should rotate
-    public boolean onTurnStart() {
-        return true;
-    }
-
     // Called every time a piece is moved
     protected boolean onPieceMove(CheckerPiece movedPiece, boolean didJump) {
         return true;
-    }
-
-    // Pause timer
-    public void pauseTime() {
-        this.timeline.pause();
     }
 
     //plays one of the four move sounds randomly
@@ -201,31 +163,6 @@ abstract public class AbstractController {
         Clip clip = this.soundArrayList.get(randomSound.nextInt(soundArrayList.size()));
         clip.setFramePosition(0); // Reset the clip to start
         clip.start(); // Play the clip
-    }
-
-    // Reset time for both teams
-    public void setTime() {
-        this.timeWhite = this.timeBlack = Settings.getInt(Setting.Time);
-    }
-
-    // Set black time from state
-    public void setTimeBlack(int timeBlack) {
-        this.timeBlack = timeBlack;
-    }
-
-    // Set white time from state
-    public void setTimeWhite(int timeWhite) {
-        this.timeWhite = timeWhite;
-    }
-
-    // Reset total time
-    public void setTotalTime() {
-        this.totalTime = 0;
-    }
-
-    // Set total time from state
-    public void setTotalTime(int totalTime) {
-        this.totalTime = totalTime;
     }
 
     // Setup one black field by position
@@ -241,12 +178,6 @@ abstract public class AbstractController {
         this.fields.get(p.x).put(p.y, field);
 
         this.view.setupField(field, p);
-    }
-
-    // Setup black field from exsisting field
-    public void setupField(Field field) {
-        field.addEventFilter(MouseEvent.MOUSE_PRESSED, this.moveClickEventHandler);
-        this.view.setupField(field, field.getPosition());
     }
 
     // Create a piece by team and attach it to given position
@@ -290,11 +221,6 @@ abstract public class AbstractController {
         } catch (LineUnavailableException e) {
             System.out.println("Error occurred in audio line: " + e.getMessage());
         }
-    }
-
-    // Start timer
-    public void startTime() {
-        this.timeline.play();
     }
 
     // Get diagonally surrounding fields (within board boundaries) from a given position
@@ -364,6 +290,34 @@ abstract public class AbstractController {
     /*
      * Public methods
      */
+
+    // Setup game timer
+    // If whiteTime or blackTime reaches 0, the opposite team wins.
+    public void countDownTimer() {
+        this.countDownTimer(true);
+    }
+
+    // Set up timer (this specific method call is used with CPU)
+    public void countDownTimer(boolean setupBlack) {
+        this.timeline = new Timeline(new KeyFrame(Duration.seconds(1), ev -> {
+            if (isWhiteTurn) {
+                GameView.displayWhiteTimeLeft.setText(Content.WHITE_TIME_LEFT + formatTime(timeWhite--));
+                if (timeWhite <= -2) {
+                    timeline.stop();
+                    this.view.displayWin(Team.BLACK);
+                }
+            } else if(setupBlack) {
+                GameView.displayBlackTimeLeft.setText(Content.BLACK_TIME_LEFT + formatTime(timeBlack--));
+                if (timeBlack <= -2) {
+                    timeline.stop();
+                    this.view.displayWin(Team.WHITE);
+                }
+            }
+            totalTime++;
+        }));
+        timeline.setCycleCount(Animation.INDEFINITE);
+        timeline.play();
+    }
 
     // Handle a jump move
     public void doJumpMove(Field toField, Field jumpedField) {
@@ -497,6 +451,11 @@ abstract public class AbstractController {
         }
     }
 
+    // Returns boolean whether or not board should rotate
+    public boolean onTurnStart() {
+        return true;
+    }
+
     // Get field diagonally on the other side of mainField compared to diagonalField
     public Field oppositeDiagonalField(Field mainField, Field diagonalField) {
         Point mainFieldPosition = mainField.getPosition();
@@ -513,6 +472,11 @@ abstract public class AbstractController {
                 this.fields.get(otherDiagonalPosition.x).get(otherDiagonalPosition.y) : null;
     }
 
+    // Pause timer
+    public void pauseTime() {
+        this.timeline.pause();
+    }
+
     // Setup black fields
     public void setupFields() {
         for (int i = 0; i < this.dimension; i++) {
@@ -520,6 +484,17 @@ abstract public class AbstractController {
                 this.setupField(new Point(j + 1, i + 1));
             }
         }
+    }
+
+    // Start timer
+    public void startTime() {
+        this.timeline.play();
+    }
+
+    // Setup black field from exsisting field
+    public void setupField(Field field) {
+        field.addEventFilter(MouseEvent.MOUSE_PRESSED, this.moveClickEventHandler);
+        this.view.setupField(field, field.getPosition());
     }
 
     // Get fields (diagonally) surrounding a given field
@@ -598,5 +573,30 @@ abstract public class AbstractController {
 
         // Reset selectedPiece
         this.selectedPiece = null;
+    }
+
+    // Reset time for both teams
+    public void setTime() {
+        this.timeWhite = this.timeBlack = Settings.getInt(Setting.Time);
+    }
+
+    // Set black time from state
+    public void setTimeBlack(int timeBlack) {
+        this.timeBlack = timeBlack;
+    }
+
+    // Set white time from state
+    public void setTimeWhite(int timeWhite) {
+        this.timeWhite = timeWhite;
+    }
+
+    // Reset total time
+    public void setTotalTime() {
+        this.totalTime = 0;
+    }
+
+    // Set total time from state
+    public void setTotalTime(int totalTime) {
+        this.totalTime = totalTime;
     }
 }
