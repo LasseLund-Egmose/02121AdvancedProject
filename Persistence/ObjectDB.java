@@ -36,6 +36,16 @@ public class ObjectDB implements Serializable {
     protected int timeWhite;
     protected int totalTime;
 
+    // Get save directory (a new folder in home directory)
+    protected static String saveDir() {
+        return FileSystemView.getFileSystemView().getHomeDirectory() + "/CheckerSaves";
+    }
+
+     // Get save path from fileName
+    protected static String savePath(String filename) {
+        return ObjectDB.saveDir() + "/" + filename;
+    }
+
     /*
      * Setters
      */
@@ -110,7 +120,7 @@ public class ObjectDB implements Serializable {
 
     // Serialize and save state to a file
     public boolean saveState(String filename) {
-        File dir = new File(FileSystemView.getFileSystemView().getHomeDirectory() + "/CheckerSaves");
+        File dir = new File(ObjectDB.saveDir());
         if (!dir.exists()) {
             if(!dir.mkdir()) {
                 System.out.println("Could not create directory for game save files!");
@@ -119,7 +129,7 @@ public class ObjectDB implements Serializable {
         }
 
         // Create an object stream and write a file with the state of this
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(FileSystemView.getFileSystemView().getHomeDirectory() + "/CheckerSaves/" + filename))) {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(ObjectDB.savePath(filename)))) {
             oos.writeObject(this);
             return true;
         } catch (IOException e) {
@@ -131,7 +141,7 @@ public class ObjectDB implements Serializable {
     // Deserialize file and load data into state
     public ObjectDB loadState(String filename) {
         // Create an object stream from file and load that into an instance of ObjectDB
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(FileSystemView.getFileSystemView().getHomeDirectory() + "/CheckerSaves/" + filename))) {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(ObjectDB.savePath(filename)))) {
             // Read file and initialise a new instance of ObjectDB
             ObjectDB db = (ObjectDB) ois.readObject();
 
