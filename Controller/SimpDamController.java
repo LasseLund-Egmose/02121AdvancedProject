@@ -13,10 +13,11 @@ import java.util.HashMap;
 
 public class SimpDamController extends AbstractController {
 
-
     // Short constructor
     public SimpDamController(GameView view, GridPane grid) {
         super(view, grid);
+
+        this.isWhiteTurn = false; // Make black piece start this game
     }
 
     // Long constructor
@@ -29,6 +30,8 @@ public class SimpDamController extends AbstractController {
             HashMap<Team, Integer> activeCount
     ) {
         super(view, grid, checkerPieces, fields, isWhiteTurn, activeCount);
+
+        this.isWhiteTurn = false; // Make black piece start this game
     }
 
     // Setup black fields - override to invert board so a black field is located bottom left and top right
@@ -42,8 +45,8 @@ public class SimpDamController extends AbstractController {
 
     // Setup a piece in each corner
     public void setupPieces() {
-        this.setupPiece(new Point(1, 1), Team.WHITE);
-        this.setupPiece(new Point(this.dimension, this.dimension), Team.BLACK);
+        this.setupPiece(new Point(1, 1), Team.BLACK);
+        this.setupPiece(new Point(this.dimension, this.dimension), Team.WHITE);
     }
 
 
