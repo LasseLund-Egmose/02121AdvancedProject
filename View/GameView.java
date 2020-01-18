@@ -351,14 +351,14 @@ public class GameView extends AbstractView {
             ObjectDB saveGame = new ObjectDB();
 
             // Add variables
-            saveGame.setActiveCount(controller.getActiveCount());
-            saveGame.setCheckerPieces(controller.getCheckerPieces());
-            saveGame.setFields(controller.getFields());
+            saveGame.setActiveCount(this.controller.getActiveCount());
+            saveGame.setCheckerPieces(this.controller.getCheckerPieces());
+            saveGame.setFields(this.controller.getFields());
             saveGame.setDimension(Settings.getInt(Setting.Dimension));
-            saveGame.setWhiteTurn(controller.isWhiteTurn());
-            saveGame.setTimeWhite(controller.timeWhite);
-            saveGame.setTimeBlack(controller.timeBlack);
-            saveGame.setTotalTime(controller.totalTime);
+            saveGame.setWhiteTurn(this.controller.isWhiteTurn());
+            saveGame.setTimeWhite(this.controller.timeWhite);
+            saveGame.setTimeBlack(this.controller.timeBlack);
+            saveGame.setTotalTime(this.controller.totalTime);
 
             // Save, check if it's succesful and display message accordingly
             if (saveGame.saveState(MainMenuView.selectedGameType.name())) {
@@ -642,7 +642,7 @@ public class GameView extends AbstractView {
         }
 
         // Rotate surfacePane if it's blacks turn
-        if (!db.isWhiteTurn()) {
+        if (db.isWhiteTurn() != this.controller.doesWhiteStart()) {
             this.surfacePaneRotation.play();
         }
 

@@ -322,6 +322,10 @@ abstract public class AbstractController {
         this.timeline.play();
     }
 
+    public boolean doesWhiteStart() {
+        return true;
+    }
+
     // Handle a jump move
     public void doJumpMove(Field toField, Field jumpedField) {
         // Detach (remove) jumped Model.CheckerPiece
@@ -333,9 +337,8 @@ abstract public class AbstractController {
 
     // Handle a regular move
     public void doRegularMove(Field toField, boolean didJump) {
-
-        //play on move sound
-        playOnMoveSound();
+        // Play on move sound
+        this.playOnMoveSound();
 
         // Attach selected piece to chosen field
         this.getSelectedPiece().attachToField(toField, this.activeCount);

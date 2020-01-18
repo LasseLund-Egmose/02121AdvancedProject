@@ -30,8 +30,11 @@ public class SimpDamController extends AbstractController {
             HashMap<Team, Integer> activeCount
     ) {
         super(view, grid, checkerPieces, fields, isWhiteTurn, activeCount);
+    }
 
-        this.isWhiteTurn = false; // Make black piece start this game
+    // Black starts this game
+    public boolean doesWhiteStart() {
+        return false;
     }
 
     // Setup black fields - override to invert board so a black field is located bottom left and top right
