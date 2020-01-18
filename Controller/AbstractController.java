@@ -51,8 +51,9 @@ abstract public class AbstractController {
     protected GameView view; // Reference to view instance
     protected Timeline timeline = new Timeline();
     protected ArrayList<Clip> soundArrayList = new ArrayList<>(); //used to store the paths for each audio file
-    public int timeWhite; // White players time variable
+
     public int timeBlack; // Black players time variable
+    public int timeWhite; // White players time variable
     public int totalTime = 0; // Total elapsed time of game
 
     // Setup a piece in each corner
@@ -68,11 +69,13 @@ abstract public class AbstractController {
     // Check if a team has won
     protected boolean checkForWin() {
         if (this.activeCount.get(Team.BLACK) == 0) {
+            this.timeline.stop();
             this.view.displayWin(Team.WHITE);
             return true;
         }
 
         if (this.activeCount.get(Team.WHITE) == 0) {
+            this.timeline.stop();
             this.view.displayWin(Team.BLACK);
             return true;
         }
@@ -300,23 +303,23 @@ abstract public class AbstractController {
     // Set up timer (this specific method call is used with CPU)
     public void countDownTimer(boolean setupBlack) {
         this.timeline = new Timeline(new KeyFrame(Duration.seconds(1), ev -> {
-            if (isWhiteTurn) {
-                GameView.displayWhiteTimeLeft.setText(Content.WHITE_TIME_LEFT + formatTime(timeWhite--));
-                if (timeWhite <= -2) {
-                    timeline.stop();
+            if (this.isWhiteTurn) {
+                GameView.displayWhiteTimeLeft.setText(Content.WHITE_TIME_LEFT + formatTime(this.timeWhite--));
+                if (this.timeWhite <= -2) {
+                    this.timeline.stop();
                     this.view.displayWin(Team.BLACK);
                 }
             } else if(setupBlack) {
-                GameView.displayBlackTimeLeft.setText(Content.BLACK_TIME_LEFT + formatTime(timeBlack--));
-                if (timeBlack <= -2) {
-                    timeline.stop();
+                GameView.displayBlackTimeLeft.setText(Content.BLACK_TIME_LEFT + formatTime(this.timeBlack--));
+                if (this.timeBlack <= -2) {
+                    this.timeline.stop();
                     this.view.displayWin(Team.WHITE);
                 }
             }
             totalTime++;
         }));
-        timeline.setCycleCount(Animation.INDEFINITE);
-        timeline.play();
+        this.timeline.setCycleCount(Animation.INDEFINITE);
+        this.timeline.play();
     }
 
     // Handle a jump move

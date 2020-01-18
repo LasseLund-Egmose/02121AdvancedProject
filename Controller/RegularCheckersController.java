@@ -94,6 +94,7 @@ public class RegularCheckersController extends AbstractController {
 
         // End game if team can't move
         if(!teamHasMoves) {
+            this.timeline.stop();
             this.view.displayWin(this.isWhiteTurn ? Team.BLACK : Team.WHITE);
         }
 
