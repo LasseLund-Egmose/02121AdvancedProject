@@ -65,6 +65,7 @@ public class GameView extends AbstractView {
 
     // Timeline for handling background music
     protected Timeline musicTimeline;
+    protected MediaPlayer musicPlayer;
 
     // Board
     protected int dimension = 8; // Board dimension
@@ -196,6 +197,7 @@ public class GameView extends AbstractView {
         this.pausePane.setOnMouseClicked(e -> {
             if (this.isPauseButtonActive) {
                 this.musicTimeline.pause();
+                this.musicPlayer.pause();
                 root.getChildren().add(this.stopGamePane);
                 displayPauseScreen();
             }
@@ -333,6 +335,7 @@ public class GameView extends AbstractView {
 
         resumeButton.setOnMouseClicked(e -> {
             this.musicTimeline.play();
+            this.musicPlayer.play();
             this.root.getChildren().remove(stopGamePane);
             dialog.close();
             this.controller.startTime();
@@ -377,6 +380,7 @@ public class GameView extends AbstractView {
         // Return to game if the pause window is closed
         dialog.setOnCloseRequest(event -> {
             this.musicTimeline.play();
+            this.musicPlayer.play();
             this.root.getChildren().remove(stopGamePane);
             this.controller.startTime();
         });
@@ -565,14 +569,14 @@ public class GameView extends AbstractView {
     // Setup background music
     protected void setupMusic() {
         // Load and play music file
-        String path = "/assets/hey.mp3";
+        String path = "/assets/Background_Music.mp3";
         Media media = new Media(this.getClass().getResource(path).toExternalForm());
-        MediaPlayer mediaPlayer = new MediaPlayer(media);
-        mediaPlayer.play();
+        this.musicPlayer = new MediaPlayer(media);
+        this.musicPlayer.play();
 
-        this.musicTimeline = new Timeline(new KeyFrame(Duration.seconds(0.5), ev -> {
-            mediaPlayer.seek(Duration.ZERO);
-            mediaPlayer.play();
+        this.musicTimeline = new Timeline(new KeyFrame(Duration.seconds(80), ev -> {
+            this.musicPlayer.seek(Duration.ZERO);
+            this.musicPlayer.play();
         }));
         this.musicTimeline.setCycleCount(Animation.INDEFINITE);
         this.musicTimeline.play();

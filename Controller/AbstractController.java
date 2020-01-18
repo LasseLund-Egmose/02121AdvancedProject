@@ -93,8 +93,8 @@ abstract public class AbstractController {
             return null;
         }
 
-        Field jumpOver = fields.get(opponentPosition.x).get(opponentPosition.y);
-        Field jumpTo = fields.get(newPos.x).get(newPos.y);
+        Field jumpOver = this.fields.get(opponentPosition.x).get(opponentPosition.y);
+        Field jumpTo = this.fields.get(newPos.x).get(newPos.y);
 
         CheckerPiece attachedPiece = jumpOver.getAttachedPieceSecure();
 
