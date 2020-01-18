@@ -406,6 +406,10 @@ public class GameView extends AbstractView {
     public void displayWin(Team winningTeam) {
         Main.setView(Main.mainMenuView); // Go back to main menu
 
+        // Stop background musik
+        this.musicTimeline.stop();
+        this.musicPlayer.stop();
+
         // Setup new dialog
         Stage dialog = new Stage();
         dialog.setTitle(Content.YOU_WON);
